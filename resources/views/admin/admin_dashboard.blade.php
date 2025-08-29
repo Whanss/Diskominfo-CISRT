@@ -1044,7 +1044,7 @@
                 <div class="d-flex justify-content-between align-items-center nav-controls">
                     <div class="d-flex align-items-center gap-3">
                         <button class="btn btn-primary" id="prevMonthBtn" onclick="navigatePreviousMonth()">
-                            <i class="fas fa-chevron-left"></i> Previous
+                            <i class="fas fa-chevron-left"></i>.
                         </button>
 
                         <div class="month-display" id="currentMonthDisplay">
@@ -1052,7 +1052,7 @@
                         </div>
 
                         <button class="btn btn-primary" id="nextMonthBtn" onclick="navigateNextMonth()">
-                            Next <i class="fas fa-chevron-right"></i>
+                            .<i class="fas fa-chevron-right"></i>
                         </button>
                     </div>
 
@@ -1290,7 +1290,7 @@
     </div>
 
     {{-- Chart.js CDN --}}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js "></script>
 
     <script>
         /* =========  GLOBAL VARS  ========= */
@@ -1684,162 +1684,174 @@
                 }
             });
 
-            // Processing Time Donut Chart
-            const processingCtx = document.getElementById('processingTimeChart').getContext('2d');
+        // Processing Time Donut Chart
+        const processingCtx = document.getElementById('processingTimeChart').getContext('2d');
 
-            // Calculate processing time data for donut chart
-            const processingData = @json($processingTimeData['data'] ?? []);
-            const processingLabels = @json($processingTimeData['labels'] ?? []);
+        const processingData = @json($processingTimeData['data'] ?? []);
+        const processingLabels = @json($processingTimeData['labels'] ?? []);
+        const dashboardTotalTickets = {{ $totalTickets }};
 
-            // Create categories for donut chart
-            let fastProcessing = 0;
-            let mediumProcessing = 0;
-            let slowProcessing = 0;
+        // Create categories for donut chart with better error handling
+        let fastProcessing = 0;
+        let mediumProcessing = 0;
+        let slowProcessing = 0;
 
+        // Ensure processingData is an array and handle empty data
+        if (Array.isArray(processingData) && processingData.length > 0) {
             processingData.forEach(time => {
-                if (time <= 24) fastProcessing++;
-                else if (time <= 72) mediumProcessing++;
+                const numTime = parseFloat(time) || 0;
+                if (numTime <= 24) fastProcessing++;
+                else if (numTime <= 72) mediumProcessing++;
                 else slowProcessing++;
             });
+        }
 
-            const donutColors = [
-                '#22c55e', // Fast - Green
-                '#f59e0b', // Medium - Amber
-                '#ef4444' // Slow - Red
-            ];
+        const chartTotal = fastProcessing + mediumProcessing + slowProcessing;
+        if (chartTotal !== dashboardTotalTickets && dashboardTotalTickets > 0) {
+            // Scale the processing data to match dashboard total
+            const scaleFactor = dashboardTotalTickets / chartTotal;
+            fastProcessing = Math.round(fastProcessing * scaleFactor);
+            mediumProcessing = Math.round(mediumProcessing * scaleFactor);
+            slowProcessing = dashboardTotalTickets - fastProcessing - mediumProcessing;
+        }
 
-            const donutGradients = donutColors.map(color => {
-                const gradient = processingCtx.createRadialGradient(0, 0, 0, 0, 0, 150);
-                gradient.addColorStop(0, color);
-                gradient.addColorStop(1, color + '80');
-                return gradient;
-            });
+        const donutColors = [
+            '#22c55e', // Fast - Green
+            '#f59e0b', // Medium - Amber
+            '#ef4444'  // Slow - Red
+        ];
 
-            processingTimeChart = new Chart(processingCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Fast (≤24h)', 'Medium (24-72h)', 'Slow (>72h)'],
-                    datasets: [{
-                        data: [fastProcessing, mediumProcessing, slowProcessing],
-                        backgroundColor: donutGradients,
-                        borderColor: ['#22c55e', '#f59e0b', '#ef4444'],
-                        borderWidth: 3,
-                        hoverBorderWidth: 5,
-                        hoverOffset: 10,
-                        cutout: '65%'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                usePointStyle: true,
-                                pointStyle: 'circle',
-                                padding: 20,
-                                font: {
-                                    size: 12,
-                                    weight: '500'
-                                },
-                                generateLabels: function(chart) {
-                                    const data = chart.data;
-                                    if (data.labels.length && data.datasets.length) {
-                                        return data.labels.map((label, i) => {
-                                            const dataset = data.datasets[0];
-                                            const value = dataset.data[i];
-                                            const total = dataset.data.reduce((a, b) => a + b, 0);
-                                            const percentage = total > 0 ? ((value / total) * 100)
-                                                .toFixed(1) : 0;
+        const donutGradients = donutColors.map(color => {
+            const gradient = processingCtx.createRadialGradient(150, 150, 0, 150, 150, 150);
+            gradient.addColorStop(0, color);
+            gradient.addColorStop(1, color + '80');
+            return gradient;
+        });
 
-                                            return {
-                                                text: `${label}: ${value} (${percentage}%)`,
-                                                fillStyle: dataset.backgroundColor[i],
-                                                strokeStyle: dataset.borderColor[i],
-                                                lineWidth: dataset.borderWidth,
-                                                hidden: false,
-                                                index: i
-                                            };
-                                        });
-                                    }
-                                    return [];
+        processingTimeChart = new Chart(processingCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Fast (≤24h)', 'Medium (24-72h)', 'Slow (>72h)'],
+                datasets: [{
+                    data: [fastProcessing, mediumProcessing, slowProcessing],
+                    backgroundColor: donutGradients,
+                    borderColor: ['#22c55e', '#f59e0b', '#ef4444'],
+                    borderWidth: 3,
+                    hoverBorderWidth: 5,
+                    hoverOffset: 10,
+                    cutout: '65%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            },
+                            generateLabels: function(chart) {
+                                const data = chart.data;
+                                if (data.labels.length && data.datasets.length) {
+                                    return data.labels.map((label, i) => {
+                                        const dataset = data.datasets[0];
+                                        const value = dataset.data[i] || 0;
+                                        const total = dataset.data.reduce((a, b) => (a || 0) + (b || 0), 0);
+                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+
+                                        return {
+                                            text: `${label}: ${value} (${percentage}%)`,
+                                            fillStyle: dataset.backgroundColor[i],
+                                            strokeStyle: dataset.borderColor[i],
+                                            lineWidth: dataset.borderWidth,
+                                            hidden: false,
+                                            index: i
+                                        };
+                                    });
                                 }
+                                return [];
                             }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        titleColor: '#374151',
+                        bodyColor: '#6b7280',
+                        borderColor: '#e5e7eb',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        padding: 12,
+                        titleFont: {
+                            size: 14,
+                            weight: '600'
                         },
-                        tooltip: {
-                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                            titleColor: '#374151',
-                            bodyColor: '#6b7280',
-                            borderColor: '#e5e7eb',
-                            borderWidth: 1,
-                            cornerRadius: 8,
-                            padding: 12,
-                            titleFont: {
-                                size: 14,
-                                weight: '600'
+                        bodyFont: {
+                            size: 13
+                        },
+                        callbacks: {
+                            title: function(context) {
+                                return 'Processing Time Category';
                             },
-                            bodyFont: {
-                                size: 13
-                            },
-                            callbacks: {
-                                title: function(context) {
-                                    return 'Processing Time Category';
-                                },
-                                label: function(context) {
-                                    const label = context.label;
-                                    const value = context.parsed;
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                                    return `${label}: ${value} tickets (${percentage}%)`;
-                                }
+                            label: function(context) {
+                                const label = context.label;
+                                const value = context.parsed || 0;
+                                const total = context.dataset.data.reduce((a, b) => (a || 0) + (b || 0), 0);
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                return `${label}: ${value} tickets (${percentage}%)`;
                             }
                         }
-                    },
-                    animation: {
-                        animateRotate: true,
-                        animateScale: true,
-                        duration: 2000,
-                        easing: 'easeInOutQuart'
-                    },
-                    elements: {
-                        arc: {
-                            borderRadius: 8
-                        }
+                    }
+                },
+                animation: {
+                    animateRotate: true,
+                    animateScale: true,
+                    duration: 2000,
+                    easing: 'easeInOutQuart'
+                },
+                elements: {
+                    arc: {
+                        borderRadius: 8
                     }
                 }
-            });
+            }
+        });
 
-            // Add center text for donut chart
-            const centerTextPlugin = {
-                id: 'centerText',
-                beforeDraw: function(chart) {
-                    if (chart.config.type === 'doughnut') {
-                        const ctx = chart.ctx;
-                        const centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
-                        const centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+        // Add center text for donut chart
+        const centerTextPlugin = {
+            id: 'centerText',
+            beforeDraw: function(chart) {
+                if (chart.config.type === 'doughnut') {
+                    const ctx = chart.ctx;
+                    const centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
+                    const centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
 
-                        ctx.save();
-                        ctx.textAlign = 'center';
-                        ctx.textBaseline = 'middle';
+                    ctx.save();
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
 
-                        // Main text
-                        ctx.font = 'bold 24px Inter, sans-serif';
-                        ctx.fillStyle = '#374151';
-                        const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                        ctx.fillText(total, centerX, centerY - 10);
+                    // Main text
+                    ctx.font = 'bold 24px Inter, sans-serif';
+                    ctx.fillStyle = '#374151';
+                    const total = chart.data.datasets[0].data.reduce((a, b) => (a || 0) + (b || 0), 0);
+                    ctx.fillText(total.toString(), centerX, centerY - 10);
 
-                        // Subtitle
-                        ctx.font = '12px Inter, sans-serif';
-                        ctx.fillStyle = '#6b7280';
-                        ctx.fillText('Total Tickets', centerX, centerY + 15);
+                    // Subtitle
+                    ctx.font = '12px Inter, sans-serif';
+                    ctx.fillStyle = '#6b7280';
+                    ctx.fillText('Total Tickets', centerX, centerY + 15);
 
-                        ctx.restore();
-                    }
+                    ctx.restore();
                 }
-            };
+            }
+        };
 
-            Chart.register(centerTextPlugin);
+        Chart.register(centerTextPlugin);
         };
 
         /* =========  DATA LOADING  ========= */
@@ -1896,21 +1908,33 @@
         }
 
         function updateProcessingTimeChart(data) {
-            // Recalculate categories for donut chart
             const processingData = data.data || [];
 
             let fastProcessing = 0;
             let mediumProcessing = 0;
             let slowProcessing = 0;
 
-            processingData.forEach(time => {
-                if (time <= 24) fastProcessing++;
-                else if (time <= 72) mediumProcessing++;
-                else slowProcessing++;
-            });
+            if (Array.isArray(processingData) && processingData.length > 0) {
+                processingData.forEach(time => {
+                    const numTime = parseFloat(time) || 0;
+                    if (numTime <= 24) fastProcessing++;
+                    else if (numTime <= 72) mediumProcessing++;
+                    else slowProcessing++;
+                });
+            }
 
+            const currentTotal = parseInt(document.getElementById('totalTickets').textContent) || 0;
+            const chartTotal = fastProcessing + mediumProcessing + slowProcessing;
+            if (chartTotal !== currentTotal && currentTotal > 0) {
+                const scaleFactor = currentTotal / chartTotal;
+                fastProcessing = Math.round(fastProcessing * scaleFactor);
+                mediumProcessing = Math.round(mediumProcessing * scaleFactor);
+                slowProcessing = currentTotal - fastProcessing - mediumProcessing;
+            }
+
+            // Update chart data with animation
             processingTimeChart.data.datasets[0].data = [fastProcessing, mediumProcessing, slowProcessing];
-            processingTimeChart.update('none');
+            processingTimeChart.update('active');
         }
 
         /* =========  ADDITIONAL CHART FUNCTIONS  ========= */
