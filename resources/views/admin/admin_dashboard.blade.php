@@ -953,6 +953,89 @@
                 right: -75px;
             }
         }
+
+        /* Modern Statistics Cards Styles */
+        .stat-card-modern {
+            transition: all 0.3s ease;
+            border-radius: 16px !important;
+            overflow: hidden;
+        }
+
+        .stat-card-modern:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .stat-icon-modern {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card-modern:hover .stat-icon-modern {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .stat-trend {
+            font-size: 24px;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card-modern:hover .stat-trend {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+        .card-footer {
+            background: transparent !important;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        /* Animation for cards */
+        .stat-card-modern {
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        .stat-card-modern:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card-modern:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card-modern:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card-modern:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive adjustments for modern cards */
+        @media (max-width: 768px) {
+            .stat-card-modern {
+                margin-bottom: 1rem;
+            }
+            
+            .stat-icon-modern {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+        }
     </style>
 
     <div class="container-fluid py-4">
@@ -963,76 +1046,210 @@
                 <p class="page-subtitle">Monitor and manage your CSIRT tickets</p>
             </div>
 
-            <!-- Statistics Cards -->
-            <div class="row mb-4">
-                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                    <div class="stats-card primary animate-slide-up">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <p class="stat-label">Total Tickets</p>
-                                <h3 class="stat-number" id="totalTickets">{{ $totalTickets }}</h3>
+            <!-- Modern Statistics Cards -->
+            <div class="row g-4 mb-5">
+                <!-- Total Tickets Card -->
+                <div class="col-xl-3 col-lg-6 col-md-6">
+                    <div class="card border-0 shadow-sm h-100 stat-card-modern">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="stat-icon-modern bg-primary bg-opacity-10 text-primary me-3">
+                                            <i class="fas fa-ticket-alt"></i>
+                                        </div>
+                                        <h6 class="text-muted mb-0 fw-medium">Total Tiket</h6>
+                                    </div>
+                                    <h2 class="mb-0 fw-bold text-dark" id="totalTickets">{{ $totalTickets }}</h2>
+                                    <div class="mt-2">
+                                        <span class="badge bg-primary bg-opacity-10 text-primary">
+                                            <i class="fas fa-chart-line me-1"></i>Semua Status
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="stat-trend text-primary">
+                                    <i class="fas fa-arrow-up"></i>
+                                </div>
                             </div>
-                            <div class="icon-container primary">
-                                <i class="fas fa-ticket-alt"></i>
-                            </div>
+                        </div>
+                        <div class="card-footer bg-primary bg-opacity-5 border-0 py-2">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>Total keseluruhan tiket
+                            </small>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                    <div class="stats-card warning animate-slide-up">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <p class="stat-label">Pending</p>
-                                <h3 class="stat-number" id="pendingTickets">{{ $pendingTickets }}</h3>
+                <!-- Pending Tickets Card -->
+                <div class="col-xl-3 col-lg-6 col-md-6">
+                    <div class="card border-0 shadow-sm h-100 stat-card-modern">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="stat-icon-modern bg-warning bg-opacity-10 text-warning me-3">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <h6 class="text-muted mb-0 fw-medium">Menunggu</h6>
+                                    </div>
+                                    <h2 class="mb-0 fw-bold text-dark" id="pendingTickets">{{ $pendingTickets }}</h2>
+                                    <div class="mt-2">
+                                        <span class="badge bg-warning bg-opacity-10 text-warning">
+                                            <i class="fas fa-hourglass-half me-1"></i>Perlu Tindakan
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="stat-trend text-warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
                             </div>
-                            <div class="icon-container warning">
-                                <i class="fas fa-hourglass-half"></i>
-                            </div>
+                        </div>
+                        <div class="card-footer bg-warning bg-opacity-5 border-0 py-2">
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>Menunggu persetujuan
+                            </small>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                    <div class="stats-card success animate-slide-up">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <p class="stat-label">Accepted</p>
-                                <h3 class="stat-number" id="acceptedTickets">{{ $acceptedTickets }}</h3>
+                <!-- Accepted Tickets Card -->
+                <div class="col-xl-3 col-lg-6 col-md-6">
+                    <div class="card border-0 shadow-sm h-100 stat-card-modern">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="stat-icon-modern bg-success bg-opacity-10 text-success me-3">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <h6 class="text-muted mb-0 fw-medium">Diterima</h6>
+                                    </div>
+                                    <h2 class="mb-0 fw-bold text-dark" id="acceptedTickets">{{ $acceptedTickets }}</h2>
+                                    <div class="mt-2">
+                                        <span class="badge bg-success bg-opacity-10 text-success">
+                                            <i class="fas fa-thumbs-up me-1"></i>Disetujui
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="stat-trend text-success">
+                                    <i class="fas fa-check"></i>
+                                </div>
                             </div>
-                            <div class="icon-container success">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
+                        </div>
+                        <div class="card-footer bg-success bg-opacity-5 border-0 py-2">
+                            <small class="text-muted">
+                                <i class="fas fa-check-circle me-1"></i>Sedang diproses
+                            </small>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                    <div class="stats-card info animate-slide-up">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <p class="stat-label">Resolved</p>
-                                <h3 class="stat-number" id="resolvedTickets">{{ $resolvedTickets }}</h3>
+                <!-- Resolved Tickets Card -->
+                <div class="col-xl-3 col-lg-6 col-md-6">
+                    <div class="card border-0 shadow-sm h-100 stat-card-modern">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="stat-icon-modern bg-info bg-opacity-10 text-info me-3">
+                                            <i class="fas fa-check-double"></i>
+                                        </div>
+                                        <h6 class="text-muted mb-0 fw-medium">Selesai</h6>
+                                    </div>
+                                    <h2 class="mb-0 fw-bold text-dark" id="resolvedTickets">{{ $resolvedTickets }}</h2>
+                                    <div class="mt-2">
+                                        <span class="badge bg-info bg-opacity-10 text-info">
+                                            <i class="fas fa-flag-checkered me-1"></i>Tuntas
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="stat-trend text-info">
+                                    <i class="fas fa-trophy"></i>
+                                </div>
                             </div>
-                            <div class="icon-container info">
-                                <i class="fas fa-check-double"></i>
-                            </div>
+                        </div>
+                        <div class="card-footer bg-info bg-opacity-5 border-0 py-2">
+                            <small class="text-muted">
+                                <i class="fas fa-check-double me-1"></i>Berhasil diselesaikan
+                            </small>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Second Row for Additional Stats -->
-            <div class="row mb-4">
-                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                    <div class="stats-card danger animate-slide-up">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <p class="stat-label">Rejected</p>
-                                <h3 class="stat-number" id="rejectedTickets">{{ $rejectedTickets ?? 0 }}</h3>
+            <!-- Additional Stats Row -->
+            <div class="row g-4 mb-5">
+                <!-- Rejected Tickets Card -->
+                <div class="col-xl-3 col-lg-6 col-md-6">
+                    <div class="card border-0 shadow-sm h-100 stat-card-modern">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="stat-icon-modern bg-danger bg-opacity-10 text-danger me-3">
+                                            <i class="fas fa-times-circle"></i>
+                                        </div>
+                                        <h6 class="text-muted mb-0 fw-medium">Ditolak</h6>
+                                    </div>
+                                    <h2 class="mb-0 fw-bold text-dark" id="rejectedTickets">{{ $rejectedTickets ?? 0 }}</h2>
+                                    <div class="mt-2">
+                                        <span class="badge bg-danger bg-opacity-10 text-danger">
+                                            <i class="fas fa-ban me-1"></i>Tidak Disetujui
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="stat-trend text-danger">
+                                    <i class="fas fa-times"></i>
+                                </div>
                             </div>
-                            <div class="icon-container danger">
-                                <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="card-footer bg-danger bg-opacity-5 border-0 py-2">
+                            <small class="text-muted">
+                                <i class="fas fa-times-circle me-1"></i>Tiket yang ditolak
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Card -->
+                <div class="col-xl-9 col-lg-6 col-md-6">
+                    <div class="card border-0 shadow-sm h-100 stat-card-modern">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div>
+                                    <h6 class="text-muted mb-1 fw-medium">Ringkasan Kinerja</h6>
+                                    <h5 class="mb-0 fw-bold text-dark">Status Tiket Keseluruhan</h5>
+                                </div>
+                                <div class="stat-icon-modern bg-secondary bg-opacity-10 text-secondary">
+                                    <i class="fas fa-chart-pie"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="row g-3">
+                                <div class="col-6 col-lg-3">
+                                    <div class="text-center p-2 rounded bg-light">
+                                        <div class="fw-bold text-primary fs-5">{{ round(($resolvedTickets / max($totalTickets, 1)) * 100) }}%</div>
+                                        <small class="text-muted">Tingkat Penyelesaian</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-lg-3">
+                                    <div class="text-center p-2 rounded bg-light">
+                                        <div class="fw-bold text-success fs-5">{{ round((($acceptedTickets + $resolvedTickets) / max($totalTickets, 1)) * 100) }}%</div>
+                                        <small class="text-muted">Tingkat Persetujuan</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-lg-3">
+                                    <div class="text-center p-2 rounded bg-light">
+                                        <div class="fw-bold text-warning fs-5">{{ $pendingTickets }}</div>
+                                        <small class="text-muted">Perlu Tindakan</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-lg-3">
+                                    <div class="text-center p-2 rounded bg-light">
+                                        <div class="fw-bold text-info fs-5">{{ $totalTickets - $rejectedTickets }}</div>
+                                        <small class="text-muted">Tiket Aktif</small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2193,8 +2410,8 @@
                 month: 'long',
                 year: 'numeric'
             });
-            document.getElementById('chartSubtitle').textContent = `${currentRange} months performance ending ${m}`;
-            document.getElementById('processingSubtitle').textContent = `Average processing time (hours) - ${m}`;
+            document.getElementById('chartSubtitle').textContent = `${currentRange} kinerja bulan berakhir ${m}`;
+            document.getElementById('processingSubtitle').textContent = `Rata-rata waktu pemrosesan (jam) - ${m}`;
         }
 
         function showNotification(type, message) {
