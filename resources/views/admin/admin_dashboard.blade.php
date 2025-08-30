@@ -1922,7 +1922,7 @@
 
             const processingData = @json($processingTimeData['data'] ?? []);
             const processingLabels = @json($processingTimeData['labels'] ?? []);
-            const dashboardTotalTickets = {{ $totalTickets }};
+            const dashboardTotalTickets = {{ $resolvedTickets }};
 
             // Create categories for donut chart with better error handling
             let fastProcessing = 0;
@@ -1964,7 +1964,7 @@
             processingTimeChart = new Chart(processingCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Fast (≤24h)', 'Medium (24-72h)', 'Slow (>72h)'],
+                    labels: ['Cepat (≤24h)', 'Medium (24-72h)', 'Lambat (>72h)'],
                     datasets: [{
                         data: [fastProcessing, mediumProcessing, slowProcessing],
                         backgroundColor: donutGradients,
@@ -2031,7 +2031,7 @@
                             },
                             callbacks: {
                                 title: function(context) {
-                                    return 'Processing Time Category';
+                                    return 'Waktu Pemrosesan';
                                 },
                                 label: function(context) {
                                     const label = context.label;
@@ -2211,23 +2211,23 @@
                     .then(r => r.json())
                     .then(d => {
                         if (d.success) {
-                            showNotification('success', 'Ticket accepted successfully');
+                            showNotification('success', 'Tiket berhasil diterima');
                             loadRecentTickets();
                             // Refresh stats
                             location.reload();
                         } else {
-                            showNotification('danger', d.message || 'Failed to accept ticket');
+                            showNotification('danger', d.message || 'Tiket gagal diterima');
                         }
                     })
                     .catch(e => {
                         console.error(e);
-                        showNotification('danger', 'Failed to accept ticket');
+                        showNotification('danger', 'Tiket gagal diterima');
                     });
             }
         }
 
         function rejectTicket(ticketId) {
-            if (confirm('Are you sure you want to reject this ticket?')) {
+            if (confirm('Apakah anda yakin ingin menolak tiket ini?')) {
                 fetch(`/admin/tickets/${ticketId}/reject`, {
                         method: 'POST',
                         headers: {
@@ -2238,7 +2238,7 @@
                     .then(r => r.json())
                     .then(d => {
                         if (d.success) {
-                            showNotification('success', 'Ticket rejected successfully');
+                            showNotification('success', 'Tiket Berhasil ditolak');
                             loadRecentTickets();
                             // Refresh stats
                             location.reload();
