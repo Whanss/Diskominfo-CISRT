@@ -1276,7 +1276,7 @@
                 <div class="d-flex justify-content-between align-items-center nav-controls">
                     <div class="d-flex align-items-center gap-3">
                         <button class="btn btn-primary" id="prevMonthBtn" onclick="navigatePreviousMonth()">
-                            <i class="fas fa-chevron-left"></i>.
+                            <i class="fas fa-chevron-left"></i>
                         </button>
 
                         <div class="month-display" id="currentMonthDisplay">
@@ -1284,7 +1284,7 @@
                         </div>
 
                         <button class="btn btn-primary" id="nextMonthBtn" onclick="navigateNextMonth()">
-                            .<i class="fas fa-chevron-right"></i>
+                            <i class="fas fa-chevron-right"></i>
                         </button>
                     </div>
 
@@ -1427,7 +1427,8 @@
                         <div class="table-header">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <h6 style="margin: 0; font-weight: 600; color: var(--gray-900);">🎫 Recent Tickets</h6>
+                                    <h6 style="margin: 0; font-weight: 600; color: var(--gray-900);"><i
+                                            class="bi bi-ticket-perforated status-icon ticket"></i> Recent Tickets</h6>
                                     <p style="margin: 0.25rem 0 0 0; font-size: 0.875rem; color: var(--gray-600);">Tiket
                                         Terbaru </p>
                                 </div>
@@ -1464,13 +1465,17 @@
                                             <td>{{ $ticket->nama_pelapor ?? 'Anonymous' }}</td>
                                             <td>
                                                 @if ($ticket->status == 'pending')
-                                                    <span class="badge warning">⏳ Pending</span>
+                                                    <span class="badge warning"><i class="bi bi-hourglass-split"></i>
+                                                        Pending</span>
                                                 @elseif($ticket->status == 'diterima/approved')
-                                                    <span class="badge success">✅ Diterima/Approved</span>
+                                                    <span class="badge success"><i class="bi bi-check-lg"></i>
+                                                        Diterima/Approved</span>
                                                 @elseif($ticket->status == 'selesai/completed')
-                                                    <span class="badge info">🎯 Resolved</span>
+                                                    <span class="badge info"><i class="bi bi-check-circle"></i>
+                                                        Resolved</span>
                                                 @elseif($ticket->status == 'ditolak/rejected')
-                                                    <span class="badge danger">❌ Ditolak/Rejected</span>
+                                                    <span class="badge danger"><i class="bi bi-x-circle"></i>
+                                                        Ditolak/Rejected</span>
                                                 @else
                                                     <span class="badge secondary">{{ ucfirst($ticket->status) }}</span>
                                                 @endif
