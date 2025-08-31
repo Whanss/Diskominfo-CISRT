@@ -809,7 +809,7 @@
                             <!-- Step 2: Sedang Diproses -->
                             @if ($ticket->status === 'pending')
                                 <div class="timeline-item active">
-                                    <div class="timeline-dot active">⏳</div>
+                                    <div class="timeline-dot active"><i class="bi bi-hourglass-split"></i></div>
                                     <div class="timeline-content">
                                         <div class="timeline-title">Sedang Diproses</div>
                                         <div class="timeline-time">Belum diproses</div>
@@ -862,7 +862,7 @@
                                     </div>
                                 @elseif ($ticket->status === 'diterima/approved')
                                     <div class="timeline-item active">
-                                        <div class="timeline-dot active">⏳</div>
+                                        <div class="timeline-dot active"><i class="bi bi-hourglass-split"></i></div>
                                         <div class="timeline-content">
                                             <div class="timeline-title">Menunggu Keputusan</div>
                                             <div class="timeline-time">Menunggu penyelesaian akhir</div>

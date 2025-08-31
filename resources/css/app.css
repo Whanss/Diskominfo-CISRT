@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -6,6 +8,65 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    --font-sans: 'Inter', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+:root {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  margin: auto;
+}
+
+/* Bootstrap Icons Status Colors */
+.status-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-icon.pending {
+  color: #f59e0b;
+}
+
+.status-icon.approved {
+  color: #10b981;
+}
+
+.status-icon.resolved {
+  color: #3b82f6;
+}
+
+.status-icon.rejected {
+  color: #ef4444;
+}
+
+.status-icon.ticket {
+  color: #6366f1;
+}
+
+/* Badge Styles for Laravel Templates */
+.badge.warning .bi {
+  color: #92400e;
+}
+
+.badge.success .bi {
+  color: #065f46;
+}
+
+.badge.info .bi {
+  color: #1e40af;
+}
+
+.badge.danger .bi {
+  color: #991b1b;
+}
+
+.badge.primary .bi {
+  color: #1e40af;
 }
