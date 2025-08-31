@@ -58,7 +58,7 @@ class AdminController extends Controller
             ];
         }
 
-        // Update ticket counts to match our new status flow
+        // STANDARDIZED STATUS VALUES - Fixed inconsistency
         $totalTickets = \App\Models\Ticket::count();
         $pendingTickets = \App\Models\Ticket::where('status', 'pending')->count();
         $acceptedTickets = \App\Models\Ticket::where('status', 'diterima/approved')->count();
@@ -68,7 +68,7 @@ class AdminController extends Controller
         // SLA Compliance calculations
         $slaCompliance = $this->calculateSLACompliance();
 
-        // Processing time analytics
+        // Processing time analytics - FIXED: Only use resolved tickets
         $processingTimeData = $this->getProcessingTimeAnalytics($selectedMonth);
 
         // Recent tickets for the table
@@ -173,7 +173,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Get processing time analytics for specific month
+     * Get processing time analytics for specific month - FIXED: Calculate from timestamps
      */
     public function getProcessingTimeAnalytics($selectedMonth = null)
     {
@@ -182,7 +182,24 @@ class AdminController extends Controller
             $startDate = $selectedDate->startOfMonth();
             $endDate = $selectedDate->endOfMonth();
 
-            // Get daily data for the selected month
+            $resolvedTickets = \App\Models\Ticket::where('status', 'selesai/completed')
+                ->whereNotNull('resolved_at')
+                ->whereNotNull('created_at')
+                ->whereBetween('resolved_at', [$startDate, $endDate])
+                ->get();
+
+            $processingTimes = [];
+            foreach ($resolvedTickets as $ticket) {
+                $createdAt = Carbon::parse($ticket->created_at);
+                $resolvedAt = Carbon::parse($ticket->resolved_at);
+                $processingTimeHours = $createdAt->diffInHours($resolvedAt);
+
+                if ($processingTimeHours > 0) {
+                    $processingTimes[] = $processingTimeHours;
+                }
+            }
+
+            // Generate daily data for the selected month
             $days = [];
             $avgProcessingTimes = [];
 
@@ -192,42 +209,72 @@ class AdminController extends Controller
                 $days[] = $date->format('j');
 
                 // Calculate average processing time for completed tickets on this date
-                $avgTime = \App\Models\Ticket::whereDate('resolved_at', $date)
-                    ->where('status', 'selesai/completed')
-                    ->get()
-                    ->avg(function ($ticket) {
-                        return $ticket->total_processing_time / 3600; // Convert seconds to hours
-                    });
+                $dayTickets = $resolvedTickets->filter(function ($ticket) use ($date) {
+                    return Carbon::parse($ticket->resolved_at)->isSameDay($date);
+                });
 
-                $avgProcessingTimes[] = $avgTime ? round($avgTime, 1) : 0;
+                $avgTime = 0;
+                if ($dayTickets->count() > 0) {
+                    $totalHours = 0;
+                    foreach ($dayTickets as $ticket) {
+                        $createdAt = Carbon::parse($ticket->created_at);
+                        $resolvedAt = Carbon::parse($ticket->resolved_at);
+                        $totalHours += $createdAt->diffInHours($resolvedAt);
+                    }
+                    $avgTime = round($totalHours / $dayTickets->count(), 1);
+                }
+
+                $avgProcessingTimes[] = $avgTime;
             }
+
+            return [
+                'labels' => $days,
+                'data' => $avgProcessingTimes,
+                'processingTimes' => $processingTimes, // Raw processing times for pie chart
+                'totalResolvedTickets' => count($processingTimes) // Actual count of resolved tickets with processing times
+            ];
         } else {
             // Default: last 7 days
             $last7Days = [];
             $avgProcessingTimes = [];
+            $allProcessingTimes = [];
 
             for ($i = 6; $i >= 0; $i--) {
                 $date = Carbon::now()->subDays($i);
                 $last7Days[] = $date->format('M j');
 
-                // Calculate average processing time for completed tickets on this date
-                $avgTime = \App\Models\Ticket::whereDate('resolved_at', $date)
-                    ->where('status', 'selesai/completed')
-                    ->get()
-                    ->avg(function ($ticket) {
-                        return $ticket->total_processing_time / 3600; // Convert seconds to hours
-                    });
+                $dayTickets = \App\Models\Ticket::where('status', 'selesai/completed')
+                    ->whereNotNull('resolved_at')
+                    ->whereNotNull('created_at')
+                    ->whereDate('resolved_at', $date)
+                    ->get();
 
-                $avgProcessingTimes[] = $avgTime ? round($avgTime, 1) : 0;
+                $avgTime = 0;
+                if ($dayTickets->count() > 0) {
+                    $totalHours = 0;
+                    foreach ($dayTickets as $ticket) {
+                        $createdAt = Carbon::parse($ticket->created_at);
+                        $resolvedAt = Carbon::parse($ticket->resolved_at);
+                        $hours = $createdAt->diffInHours($resolvedAt);
+                        $totalHours += $hours;
+
+                        if ($hours > 0) {
+                            $allProcessingTimes[] = $hours;
+                        }
+                    }
+                    $avgTime = round($totalHours / $dayTickets->count(), 1);
+                }
+
+                $avgProcessingTimes[] = $avgTime;
             }
 
-            $days = $last7Days;
+            return [
+                'labels' => $last7Days,
+                'data' => $avgProcessingTimes,
+                'processingTimes' => $allProcessingTimes,
+                'totalResolvedTickets' => count($allProcessingTimes)
+            ];
         }
-
-        return [
-            'labels' => $days,
-            'data' => $avgProcessingTimes
-        ];
     }
 
     /**
@@ -245,7 +292,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Navigate to previous month
+     * Navigate to previous month - FIXED: Remove overly restrictive boundary checks
      */
     public function navigatePreviousMonth(Request $request)
     {
@@ -253,6 +300,15 @@ class AdminController extends Controller
         $monthsToShow = $request->input('months_to_show', 6);
 
         $currentDate = Carbon::createFromFormat('Y-m', $currentMonth);
+
+        $minDate = Carbon::create(2015, 1, 1); // More reasonable minimum date
+        if ($currentDate->copy()->subMonth()->lt($minDate)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak dapat navigasi lebih jauh ke belakang dari tahun 2015'
+            ]);
+        }
+
         $newMonth = $currentDate->subMonth()->format('Y-m');
 
         $chartData = $this->getChartData($newMonth, $monthsToShow);
@@ -267,7 +323,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Navigate to next month
+     * Navigate to next month - FIXED: Remove overly restrictive boundary checks
      */
     public function navigateNextMonth(Request $request)
     {
@@ -275,6 +331,15 @@ class AdminController extends Controller
         $monthsToShow = $request->input('months_to_show', 6);
 
         $currentDate = Carbon::createFromFormat('Y-m', $currentMonth);
+
+        $maxDate = Carbon::now()->addYears(2); // Allow navigation up to 2 years in future
+        if ($currentDate->copy()->addMonth()->gt($maxDate)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak dapat navigasi lebih dari 2 tahun ke depan'
+            ]);
+        }
+
         $newMonth = $currentDate->addMonth()->format('Y-m');
 
         $chartData = $this->getChartData($newMonth, $monthsToShow);
@@ -301,7 +366,7 @@ class AdminController extends Controller
         foreach ($tickets as $ticket) {
             $createdAt = Carbon::parse($ticket->created_at);
             $responseTime = $ticket->accepted_at ? Carbon::parse($ticket->accepted_at)->diffInHours($createdAt) : null;
-            $resolutionTime = $ticket->status === 'resolved' && $ticket->updated_at
+            $resolutionTime = $ticket->status === 'selesai/completed' && $ticket->updated_at
                 ? Carbon::parse($ticket->updated_at)->diffInHours($createdAt)
                 : null;
 
@@ -341,21 +406,34 @@ class AdminController extends Controller
         return response()->json($stats);
     }
 
+    // FIXED: Made parameters optional with defaults
     public function acceptTicket(Request $request, $id)
     {
         $ticket = \App\Models\Ticket::findOrFail($id);
 
-        $request->validate([
-            'assigned_to' => 'required|string|max:255',
-            'priority' => 'required|in:low,medium,high,critical'
-        ]);
+        // Optional validation - use defaults if not provided
+        $assignedTo = $request->input('assigned_to', 'Admin ' . (Auth::guard('admin')->user()->name ?? 'System'));
+        $priority = $request->input('priority', 'medium');
+
+        // Validate only if provided
+        if ($request->has('assigned_to')) {
+            $request->validate([
+                'assigned_to' => 'string|max:255'
+            ]);
+        }
+
+        if ($request->has('priority')) {
+            $request->validate([
+                'priority' => 'in:low,medium,high,critical'
+            ]);
+        }
 
         $ticket->update([
-            'status' => 'diterima/approved',
-            'assigned_to' => $request->assigned_to,
-            'priority' => $request->priority,
+            'status' => 'diterima/approved', // STANDARDIZED STATUS
+            'assigned_to' => $assignedTo,
+            'priority' => $priority,
             'accepted_at' => Carbon::now(),
-            'accepted_by' => Auth::guard('admin')->user()->name
+            'accepted_by' => Auth::guard('admin')->user()->name ?? 'System'
         ]);
 
         return response()->json([
@@ -368,16 +446,15 @@ class AdminController extends Controller
     {
         $ticket = \App\Models\Ticket::findOrFail($id);
 
-
         $request->validate([
             'rejection_reason' => 'required|string|max:500'
         ]);
 
         $ticket->update([
-            'status' => 'ditolak/rejected',
+            'status' => 'ditolak/rejected', // STANDARDIZED STATUS
             'rejection_reason' => $request->rejection_reason,
             'rejected_at' => Carbon::now(),
-            'rejected_by' => Auth::guard('admin')->user()->name
+            'rejected_by' => Auth::guard('admin')->user()->name ?? 'System'
         ]);
 
         return response()->json([
@@ -396,11 +473,11 @@ class AdminController extends Controller
         ]);
 
         $ticket->update([
-            'status' => 'resolved',
+            'status' => 'selesai/completed', // STANDARDIZED STATUS - changed from 'resolved'
             'resolution_notes' => $request->resolution_notes,
             'resolution_category' => $request->resolution_category,
             'resolved_at' => Carbon::now(),
-            'resolved_by' => Auth::guard('admin')->user()->name
+            'resolved_by' => Auth::guard('admin')->user()->name ?? 'System'
         ]);
 
         return response()->json([
@@ -420,6 +497,7 @@ class AdminController extends Controller
         ]);
     }
 
+    // FIXED: Return proper JSON format
     public function getRecentTickets()
     {
         $recentTickets = \App\Models\Ticket::with(['layanan'])
@@ -430,6 +508,7 @@ class AdminController extends Controller
         $html = '';
         foreach ($recentTickets as $ticket) {
             $statusBadge = '';
+            // STANDARDIZED STATUS HANDLING
             switch ($ticket->status) {
                 case 'pending':
                     $statusBadge = '<span class="badge warning">⏳ Pending</span>';
@@ -478,6 +557,10 @@ class AdminController extends Controller
             </tr>';
         }
 
-        return response($html);
+        // Return JSON instead of plain HTML
+        return response()->json([
+            'success' => true,
+            'html' => $html
+        ]);
     }
 }
