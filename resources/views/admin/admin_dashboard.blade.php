@@ -1663,10 +1663,10 @@
                                         </td>
                                         <td>
                                             <div class="d-flex gap-2">
-                                                <button class="btn btn-info btn-sm"
-                                                    onclick="viewTicketDetails('{{ $ticket->id }}')">
+                                                <a class="btn btn-info btn-sm"
+                                                    href="{{ route('admin.tickets.show', $ticket) }}">
                                                     <i class="fas fa-eye"></i>
-                                                </button>
+                                                </a>
                                                 @if ($ticket->status == 'pending')
                                                     <button class="btn btn-success btn-sm"
                                                         onclick="acceptTicket('{{ $ticket->id }}')">
@@ -1692,28 +1692,6 @@
                         @endif
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Ticket Detail Modal -->
-    <div class="modal-overlay" id="ticketDetailModal" style="display: none;">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h5 class="modal-title">Detail Tiket</h5>
-                <button type="button" class="modal-close" onclick="closeTicketModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body" id="ticketDetailContent">
-                <div class="loading-spinner">
-                    <div class="spinner"></div>
-                    <p>Memuat detail tiket...</p>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeTicketModal()">Tutup</button>
-                <div id="ticketActions"></div>
             </div>
         </div>
     </div>
@@ -1924,7 +1902,7 @@
 
             // Calculate processing time categories
             let fastProcessing = 0; // ≤ 24 hours
-            let mediumProcessing = 0; // 24-72 hours  
+            let mediumProcessing = 0; // 24-72 hours
             let slowProcessing = 0; // > 72 hours
 
             if (processingTimeData.processingTimes && Array.isArray(processingTimeData.processingTimes)) {
@@ -2131,7 +2109,7 @@
         function updateProcessingTimeChart(data) {
             // Calculate processing time categories for the selected month
             let fastProcessing = 0; // ≤ 24 hours
-            let mediumProcessing = 0; // 24-72 hours  
+            let mediumProcessing = 0; // 24-72 hours
             let slowProcessing = 0; // > 72 hours
 
             if (data.processingTimes && Array.isArray(data.processingTimes)) {
@@ -2466,18 +2444,18 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="ticket-description">
                     <h6><i class="fas fa-file-alt"></i> Judul Laporan</h6>
                     <p><strong>${ticket.judul || 'Tidak ada judul'}</strong></p>
-                    
+
                     <h6><i class="fas fa-align-left"></i> Deskripsi</h6>
                     <p>${ticket.deskripsi || 'Tidak ada deskripsi'}</p>
-                    
+
                     ${ticket.attachments && ticket.attachments.length > 0 ? `
-                            <div class="ticket-attachments">
-                                <h6><i class="fas fa-paperclip"></i> Lampiran</h6>
-                                ${ticket.attachments.map(att => `
+                                <div class="ticket-attachments">
+                                    <h6><i class="fas fa-paperclip"></i> Lampiran</h6>
+                                    ${ticket.attachments.map(att => `
                                 <div class="attachment-item">
                                     <div class="attachment-icon">
                                         <i class="fas fa-file"></i>
@@ -2491,8 +2469,8 @@
                                     </a>
                                 </div>
                             `).join('')}
-                            </div>
-                        ` : ''}
+                                </div>
+                            ` : ''}
                 </div>
             `;
 
@@ -2539,7 +2517,7 @@
             if (confirm('Apakah Anda yakin ingin menerima tiket ini?')) {
                 // Show loading state
                 showNotification('info', 'Memproses tiket...');
-                
+
                 fetch(`/admin/tickets/${ticketId}/accept`, {
                         method: 'POST',
                         headers: {
@@ -2551,7 +2529,7 @@
                     })
                     .then(response => {
                         console.log('Accept response status:', response.status);
-                        
+
                         // If successful (200-299), assume it worked even if response isn't JSON
                         if (response.ok) {
                             // Try to parse JSON, but don't fail if it's not JSON
@@ -2560,7 +2538,10 @@
                                 return response.json();
                             } else {
                                 // Assume success if we get here with 200 status
-                                return { success: true, message: 'Tiket berhasil diterima' };
+                                return {
+                                    success: true,
+                                    message: 'Tiket berhasil diterima'
+                                };
                             }
                         } else {
                             throw new Error(`HTTP error! status: ${response.status}`);
@@ -2568,22 +2549,22 @@
                     })
                     .then(data => {
                         console.log('Accept response data:', data);
-                        
+
                         // Show success message
                         showNotification('success', data.message || 'Tiket berhasil diterima');
-                        
+
                         // Refresh data
                         loadRecentTickets();
                         if (currentMonth) {
                             loadDataForMonth(currentMonth);
                         }
-                        
+
                         // Close modal if open
                         closeTicketModal();
                     })
                     .catch(error => {
                         console.error('Error accepting ticket:', error);
-                        
+
                         // Even if there's an error in parsing, the action might have succeeded
                         // So let's refresh the data and show a generic success message
                         showNotification('success', 'Tiket berhasil diterima');
@@ -2601,7 +2582,7 @@
             if (reason && confirm('Apakah Anda yakin ingin menolak tiket ini?')) {
                 // Show loading state
                 showNotification('info', 'Memproses penolakan tiket...');
-                
+
                 fetch(`/admin/tickets/${ticketId}/reject`, {
                         method: 'POST',
                         headers: {
@@ -2616,7 +2597,7 @@
                     })
                     .then(response => {
                         console.log('Reject response status:', response.status);
-                        
+
                         // If successful (200-299), assume it worked even if response isn't JSON
                         if (response.ok) {
                             // Try to parse JSON, but don't fail if it's not JSON
@@ -2625,7 +2606,10 @@
                                 return response.json();
                             } else {
                                 // Assume success if we get here with 200 status
-                                return { success: true, message: 'Tiket berhasil ditolak' };
+                                return {
+                                    success: true,
+                                    message: 'Tiket berhasil ditolak'
+                                };
                             }
                         } else {
                             throw new Error(`HTTP error! status: ${response.status}`);
@@ -2633,22 +2617,22 @@
                     })
                     .then(data => {
                         console.log('Reject response data:', data);
-                        
+
                         // Show success message
                         showNotification('success', data.message || 'Tiket berhasil ditolak');
-                        
+
                         // Refresh data
                         loadRecentTickets();
                         if (currentMonth) {
                             loadDataForMonth(currentMonth);
                         }
-                        
+
                         // Close modal if open
                         closeTicketModal();
                     })
                     .catch(error => {
                         console.error('Error rejecting ticket:', error);
-                        
+
                         // Even if there's an error in parsing, the action might have succeeded
                         // So let's refresh the data and show a generic success message
                         showNotification('success', 'Tiket berhasil ditolak');

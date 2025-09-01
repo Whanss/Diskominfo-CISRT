@@ -364,26 +364,57 @@ class TicketController extends Controller
                 return $session->started_at->format('Y-m-d');
             });
 
-        // If we have work sessions, use them
-        foreach ($workSessionsByDate as $date => $sessions) {
-            $totalDuration = $sessions->sum('duration');
-            $uniqueTickets = $sessions->pluck('ticket_id')->unique();
-            $ticketCount = $uniqueTickets->count();
+        // If we have work sessions, use them (separate completed vs in-progress)
+        $inProgressSessionsByDate = WorkSession::with(['ticket'])
+            ->whereBetween('started_at', [$start, $end])
+            ->whereIn('status', ['active', 'paused'])
+            ->get()
+            ->groupBy(function ($session) {
+                return $session->started_at->format('Y-m-d');
+            });
+
+        $allDates = collect($workSessionsByDate->keys())->merge($inProgressSessionsByDate->keys())->unique();
+
+        foreach ($allDates as $date) {
+            $completed = $workSessionsByDate->get($date, collect());
+            $inProgress = $inProgressSessionsByDate->get($date, collect());
+
+            $completedDuration = $completed->sum('duration');
+            $inProgressDuration = $inProgress->sum(function ($s) {
+                // active: duration till now + accumulated; paused: use stored duration
+                if ($s->status === 'active') {
+                    return ($s->duration ?? 0) + now()->diffInSeconds($s->started_at);
+                }
+                return $s->duration ?? 0;
+            });
+
+            $totalDuration = $completedDuration + $inProgressDuration;
+
+            $completedTicketIds = $completed->pluck('ticket_id');
+            $inProgressTicketIds = $inProgress->pluck('ticket_id');
+            $ticketCountTotal = $completedTicketIds->merge($inProgressTicketIds)->unique()->count();
 
             $formattedTime = $this->formatDuration($totalDuration);
 
             $events[] = [
                 'id' => 'work-' . $date,
-                'title' => "{$formattedTime} ({$ticketCount} tiket)",
+                'title' => "{$formattedTime} ({$ticketCountTotal} tiket)",
                 'start' => $date,
                 'backgroundColor' => $this->getColorByDuration($totalDuration),
                 'borderColor' => $this->getColorByDuration($totalDuration),
                 'extendedProps' => [
                     'type' => 'work_session',
                     'duration' => $totalDuration,
-                    'ticket_count' => $ticketCount,
-                    'sessions_count' => $sessions->count(),
-                    'formatted_duration' => $formattedTime
+                    'formatted_duration' => $formattedTime,
+                    'ticket_count' => $ticketCountTotal,
+                    'sessions_count' => $completed->count() + $inProgress->count(),
+                    // breakdowns
+                    'completed_duration' => $completedDuration,
+                    'formatted_completed_duration' => $this->formatDuration($completedDuration),
+                    'in_progress_duration' => $inProgressDuration,
+                    'formatted_in_progress_duration' => $this->formatDuration($inProgressDuration),
+                    'completed_ticket_count' => $completedTicketIds->unique()->count(),
+                    'in_progress_ticket_count' => $inProgressTicketIds->unique()->count(),
                 ]
             ];
         }
@@ -456,31 +487,44 @@ class TicketController extends Controller
             ->get();
 
         if ($workSessions->isNotEmpty()) {
-            // Use work sessions data
+            // Use work sessions data (separate completed vs in-progress)
             $completedSessions = $workSessions->where('status', 'completed');
-            $totalDuration = $completedSessions->sum('duration');
-            $uniqueTickets = $completedSessions->pluck('ticket_id')->unique();
+            $inProgressSessions = $workSessions->whereIn('status', ['active', 'paused']);
+
+            $completedDuration = $completedSessions->sum('duration');
+            $inProgressDuration = $inProgressSessions->sum(function ($s) {
+                if ($s->status === 'active') {
+                    return ($s->duration ?? 0) + now()->diffInSeconds($s->started_at);
+                }
+                return $s->duration ?? 0;
+            });
+            $totalDuration = $completedDuration + $inProgressDuration;
 
             $dailyStats = [
                 'total_duration' => $totalDuration,
+                'formatted_duration' => $this->formatDuration($totalDuration),
                 'total_sessions' => $workSessions->count(),
                 'completed_sessions' => $completedSessions->count(),
-                'unique_tickets' => $uniqueTickets->count(),
-                'formatted_duration' => $this->formatDuration($totalDuration),
+                'in_progress_sessions' => $inProgressSessions->count(),
+                'completed_duration' => $completedDuration,
+                'formatted_completed_duration' => $this->formatDuration($completedDuration),
+                'in_progress_duration' => $inProgressDuration,
+                'formatted_in_progress_duration' => $this->formatDuration($inProgressDuration),
+                'unique_tickets' => $workSessions->pluck('ticket_id')->unique()->count(),
             ];
 
             $formattedSessions = $workSessions->map(function ($session) {
-                $startTime = $session->started_at->format('H:i');
+                $startTime = $session->started_at?->format('H:i') ?? '-';
                 $endTime = $session->completed_at ? $session->completed_at->format('H:i') : 'Ongoing';
 
                 return [
                     'id' => $session->id,
-                    'ticket_code' => $session->ticket->code_tracking,
-                    'ticket_title' => $session->ticket->judul ?? 'No Title',
-                    'admin_name' => $session->admin->name ?? 'Unknown Admin',
+                    'ticket_code' => optional($session->ticket)->code_tracking ?? '-',
+                    'ticket_title' => optional($session->ticket)->judul ?? 'No Title',
+                    'admin_name' => optional($session->admin)->name ?? 'Unknown Admin',
                     'started_at' => $startTime,
                     'completed_at' => $endTime,
-                    'duration' => $this->formatDuration($session->duration),
+                    'duration' => $this->formatDuration($session->status === 'active' ? (int)($session->duration ?? 0) + now()->diffInSeconds($session->started_at) : (int)($session->duration ?? 0)),
                     'status' => $session->status,
                     'time_range' => $session->completed_at ? "{$startTime} - {$endTime}" : "Started at {$startTime}"
                 ];
@@ -496,14 +540,18 @@ class TicketController extends Controller
                 ->get();
 
             $totalDuration = 0;
+            $completedDuration = 0;
+            $inProgressDuration = 0;
             $formattedSessions = collect();
 
             foreach ($tickets as $ticket) {
                 $duration = 0;
                 if ($ticket->accepted_at && $ticket->resolved_at) {
                     $duration = $ticket->accepted_at->diffInSeconds($ticket->resolved_at);
+                    $completedDuration += $duration;
                 } else if ($ticket->accepted_at) {
                     $duration = $ticket->accepted_at->diffInSeconds(now());
+                    $inProgressDuration += $duration;
                 }
 
                 $totalDuration += $duration;
@@ -524,12 +572,20 @@ class TicketController extends Controller
                 ]);
             }
 
+            $completedCount = $tickets->where('status', 'selesai/completed')->count();
+            $inProgressCount = $tickets->count() - $completedCount;
+
             $dailyStats = [
                 'total_duration' => $totalDuration,
-                'total_sessions' => $tickets->count(),
-                'completed_sessions' => $tickets->where('status', 'selesai/completed')->count(),
-                'unique_tickets' => $tickets->count(),
                 'formatted_duration' => $this->formatDuration($totalDuration),
+                'total_sessions' => $tickets->count(),
+                'completed_sessions' => $completedCount,
+                'in_progress_sessions' => $inProgressCount,
+                'completed_duration' => $completedDuration,
+                'formatted_completed_duration' => $this->formatDuration($completedDuration),
+                'in_progress_duration' => $inProgressDuration,
+                'formatted_in_progress_duration' => $this->formatDuration($inProgressDuration),
+                'unique_tickets' => $tickets->count(),
             ];
         }
 
