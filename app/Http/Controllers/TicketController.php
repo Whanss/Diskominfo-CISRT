@@ -155,51 +155,72 @@ class TicketController extends Controller
     // Admin: accept ticket
     public function accept(Ticket $ticket)
     {
-        $oldStatus = $ticket->status;
-        $ticket->status = 'diterima/approved';
-        $ticket->accepted_at = now();
-        $ticket->save();
+        try {
+            $ticket->status = 'diterima/approved';
+            $ticket->accepted_at = now();
+            $ticket->save();
 
-        // Log activity
-        \App\Models\TicketActivityLog::create([
-            'ticket_id' => $ticket->id,
-            'action' => 'accepted',
-            'description' => 'Tiket diterima, siap untuk diproses',
-        ]);
+            if (request()->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Tiket berhasil diterima dan siap untuk diproses.'
+                ]);
+            }
 
-        // Send email notification
-        Mail::to($ticket->email)->send(new TicketStatusChanged($ticket, $oldStatus, $ticket->status));
+            return redirect()->back()->with('success', 'Tiket berhasil diterima dan siap untuk diproses.');
+        } catch (\Exception $e) {
+            Log::error('Error accepting ticket: ' . $e->getMessage());
 
-        if (request()->ajax()) {
-            return response()->json(['success' => true, 'message' => 'Ticket accepted successfully and ready for processing.']);
+            if (request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan saat menerima tiket: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat menerima tiket.');
         }
-
-        return redirect()->back()->with('success', 'Ticket accepted successfully and ready for processing.');
     }
 
     // Admin: reject ticket
     public function reject(Ticket $ticket)
     {
-        $oldStatus = $ticket->status;
-        $ticket->status = 'ditolak/rejected';
-        $ticket->resolved_at = now();
-        $ticket->save();
+        try {
+            $ticket->status = 'ditolak/rejected';
+            $ticket->resolved_at = now();
+            $ticket->save();
 
-        // Log activity
-        \App\Models\TicketActivityLog::create([
-            'ticket_id' => $ticket->id,
-            'action' => 'rejected',
-            'description' => 'Tiket ditolak',
-        ]);
+            if (request()->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Tiket berhasil ditolak.'
+                ]);
+            }
 
-        // Send email notification
-        Mail::to($ticket->email)->send(new TicketStatusChanged($ticket, $oldStatus, $ticket->status));
+            return redirect()->back()->with('success', 'Tiket berhasil ditolak.');
+        } catch (\Exception $e) {
+            Log::error('Error rejecting ticket: ' . $e->getMessage());
 
-        if (request()->ajax()) {
-            return response()->json(['success' => true, 'message' => 'Ticket rejected successfully.']);
+            if (request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan saat menolak tiket: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat menolak tiket.');
         }
+    }
 
-        return redirect()->back()->with('success', 'Ticket rejected successfully.');
+    // Get ticket details for modal
+    public function getDetails(Ticket $ticket)
+    {
+        $ticket->load(['kabupaten', 'kecamatan', 'layanan', 'attachments']);
+
+        return response()->json([
+            'success' => true,
+            'ticket' => $ticket
+        ]);
     }
 
     public function export(Request $request)
@@ -325,8 +346,6 @@ class TicketController extends Controller
 
         // Get monthly statistics
         $monthlyStats = $this->getMonthlyStats($currentMonth);
-
-        
     }
 
     public function getCalendarData(Request $request)

@@ -377,15 +377,196 @@
             transition: all 0.2s ease;
         }
 
-        .range-selector button.active {
+        .range-selector button.active,
+        .day-range-btn.active {
             background: var(--primary-600);
             color: white;
             border-color: var(--primary-600);
         }
 
-        .range-selector button:hover:not(.active) {
+        .range-selector button:hover:not(.active),
+        .day-range-btn:hover:not(.active) {
             background: var(--gray-200);
             border-color: var(--gray-300);
+        }
+
+        .day-range-btn {
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow-xl);
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--gray-50);
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            color: var(--gray-500);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--gray-50);
+        }
+
+        .loading-spinner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: var(--gray-600);
+        }
+
+        .loading-spinner .spinner {
+            margin-bottom: 1rem;
+        }
+
+        .ticket-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .ticket-detail-item {
+            background: var(--gray-50);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .ticket-detail-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        .ticket-detail-value {
+            color: var(--gray-900);
+            font-size: 0.95rem;
+        }
+
+        .ticket-description {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .ticket-description h6 {
+            margin: 0 0 1rem 0;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .ticket-attachments {
+            margin-top: 1rem;
+        }
+
+        .attachment-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+        }
+
+        .attachment-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--primary-100);
+            color: var(--primary-600);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .modal-container {
+                margin: 1rem;
+                max-height: calc(100vh - 2rem);
+            }
+            
+            .ticket-detail-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
         }
 
         /* Loading overlay */
@@ -1050,695 +1231,512 @@
         }
     </style>
 
+
     <div class="container-fluid py-4">
-        <div class="container-fluid py-4">
-            <!-- Page Header -->
-            <div class="page-header">
-                <h1 class="page-title">Dashboard Overview</h1>
-                <p class="page-subtitle">Monitor and manage your CSIRT tickets</p>
-            </div>
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Dashboard Overview</h1>
+            <p class="page-subtitle">Monitor and manage your CSIRT tickets</p>
+        </div>
 
-            <!-- Modern Statistics Cards -->
-            <div class="row g-4 mb-5">
-                <!-- Total Tickets Card -->
-                <div class="col-xl-3 col-lg-6 col-md-6">
-                    <div class="card border-0 shadow-sm h-100 stat-card-modern">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div class="flex-grow-1">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="stat-icon-modern bg-primary bg-opacity-10 text-primary me-3">
-                                            <i class="fas fa-ticket-alt"></i>
-                                        </div>
-                                        <h6 class="text-muted mb-0 fw-medium">Total Tiket</h6>
+        <!-- Modern Statistics Cards -->
+        <div class="row g-4 mb-5">
+            <!-- Total Tickets Card -->
+            <div class="col-xl-3 col-lg-6 col-md-6">
+                <div class="card border-0 shadow-sm h-100 stat-card-modern">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="stat-icon-modern bg-primary bg-opacity-10 text-primary me-3">
+                                        <i class="fas fa-ticket-alt"></i>
                                     </div>
-                                    <h2 class="mb-0 fw-bold text-dark" id="totalTickets">{{ $totalTickets }}</h2>
-                                    <div class="mt-2">
-                                        <span class="badge bg-primary bg-opacity-10 text-primary">
-                                            <i class="fas fa-chart-line me-1"></i>Semua Status
-                                        </span>
-                                    </div>
+                                    <h6 class="text-muted mb-0 fw-medium">Total Tiket</h6>
                                 </div>
-                                <div class="stat-trend text-primary">
-                                    <i class="fas fa-arrow-up"></i>
+                                <h2 class="mb-0 fw-bold text-dark" id="totalTickets">{{ $totalTickets }}</h2>
+                                <div class="mt-2">
+                                    <span class="badge bg-primary bg-opacity-10 text-primary">
+                                        <i class="fas fa-chart-line me-1"></i>Semua Status
+                                    </span>
                                 </div>
                             </div>
-                        </div>
-                        <div class="card-footer bg-primary bg-opacity-5 border-0 py-2">
-                            <small class="text-muted">
-                                <i class="fas fa-info-circle me-1"></i>Total keseluruhan tiket
-                            </small>
+                            <div class="stat-trend text-primary">
+                                <i class="fas fa-arrow-up"></i>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Pending Tickets Card -->
-                <div class="col-xl-3 col-lg-6 col-md-6">
-                    <div class="card border-0 shadow-sm h-100 stat-card-modern">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div class="flex-grow-1">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="stat-icon-modern bg-warning bg-opacity-10 text-warning me-3">
-                                            <i class="fas fa-clock"></i>
-                                        </div>
-                                        <h6 class="text-muted mb-0 fw-medium">Menunggu</h6>
-                                    </div>
-                                    <h2 class="mb-0 fw-bold text-dark" id="pendingTickets">{{ $pendingTickets }}</h2>
-                                    <div class="mt-2">
-                                        <span class="badge bg-warning bg-opacity-10 text-warning">
-                                            <i class="fas fa-hourglass-half me-1"></i>Perlu Tindakan
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="stat-trend text-warning">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer bg-warning bg-opacity-5 border-0 py-2">
-                            <small class="text-muted">
-                                <i class="fas fa-clock me-1"></i>Menunggu persetujuan
-                            </small>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Accepted Tickets Card -->
-                <div class="col-xl-3 col-lg-6 col-md-6">
-                    <div class="card border-0 shadow-sm h-100 stat-card-modern">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div class="flex-grow-1">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="stat-icon-modern bg-success bg-opacity-10 text-success me-3">
-                                            <i class="fas fa-check-circle"></i>
-                                        </div>
-                                        <h6 class="text-muted mb-0 fw-medium">Diterima</h6>
-                                    </div>
-                                    <h2 class="mb-0 fw-bold text-dark" id="acceptedTickets">{{ $acceptedTickets }}</h2>
-                                    <div class="mt-2">
-                                        <span class="badge bg-success bg-opacity-10 text-success">
-                                            <i class="fas fa-thumbs-up me-1"></i>Disetujui
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="stat-trend text-success">
-                                    <i class="fas fa-check"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer bg-success bg-opacity-5 border-0 py-2">
-                            <small class="text-muted">
-                                <i class="fas fa-check-circle me-1"></i>Sedang diproses
-                            </small>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Resolved Tickets Card -->
-                <div class="col-xl-3 col-lg-6 col-md-6">
-                    <div class="card border-0 shadow-sm h-100 stat-card-modern">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div class="flex-grow-1">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="stat-icon-modern bg-info bg-opacity-10 text-info me-3">
-                                            <i class="fas fa-check-double"></i>
-                                        </div>
-                                        <h6 class="text-muted mb-0 fw-medium">Selesai</h6>
-                                    </div>
-                                    <h2 class="mb-0 fw-bold text-dark" id="resolvedTickets">{{ $resolvedTickets }}</h2>
-                                    <div class="mt-2">
-                                        <span class="badge bg-info bg-opacity-10 text-info">
-                                            <i class="fas fa-flag-checkered me-1"></i>Tuntas
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="stat-trend text-info">
-                                    <i class="fas fa-trophy"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer bg-info bg-opacity-5 border-0 py-2">
-                            <small class="text-muted">
-                                <i class="fas fa-check-double me-1"></i>Berhasil diselesaikan
-                            </small>
-                        </div>
+                    <div class="card-footer bg-primary bg-opacity-5 border-0 py-2">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>Total keseluruhan tiket
+                        </small>
                     </div>
                 </div>
             </div>
 
-            <!-- Additional Stats Row -->
-            <div class="row g-4 mb-5">
-                <!-- Rejected Tickets Card -->
-                <div class="col-xl-3 col-lg-6 col-md-6">
-                    <div class="card border-0 shadow-sm h-100 stat-card-modern">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div class="flex-grow-1">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <div class="stat-icon-modern bg-danger bg-opacity-10 text-danger me-3">
-                                            <i class="fas fa-times-circle"></i>
-                                        </div>
-                                        <h6 class="text-muted mb-0 fw-medium">Ditolak</h6>
+            <!-- Pending Tickets Card -->
+            <div class="col-xl-3 col-lg-6 col-md-6">
+                <div class="card border-0 shadow-sm h-100 stat-card-modern">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="stat-icon-modern bg-warning bg-opacity-10 text-warning me-3">
+                                        <i class="fas fa-clock"></i>
                                     </div>
-                                    <h2 class="mb-0 fw-bold text-dark" id="rejectedTickets">{{ $rejectedTickets ?? 0 }}</h2>
-                                    <div class="mt-2">
-                                        <span class="badge bg-danger bg-opacity-10 text-danger">
-                                            <i class="fas fa-ban me-1"></i>Tidak Disetujui
-                                        </span>
-                                    </div>
+                                    <h6 class="text-muted mb-0 fw-medium">Menunggu</h6>
                                 </div>
-                                <div class="stat-trend text-danger">
-                                    <i class="fas fa-times"></i>
+                                <h2 class="mb-0 fw-bold text-dark" id="pendingTickets">{{ $pendingTickets }}</h2>
+                                <div class="mt-2">
+                                    <span class="badge bg-warning bg-opacity-10 text-warning">
+                                        <i class="fas fa-hourglass-half me-1"></i>Perlu Tindakan
+                                    </span>
                                 </div>
                             </div>
-                        </div>
-                        <div class="card-footer bg-danger bg-opacity-5 border-0 py-2">
-                            <small class="text-muted">
-                                <i class="fas fa-times-circle me-1"></i>Tiket yang ditolak
-                            </small>
+                            <div class="stat-trend text-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Summary Card -->
-                <div class="col-xl-9 col-lg-6 col-md-6">
-                    <div class="card border-0 shadow-sm h-100 stat-card-modern">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <div>
-                                    <h6 class="text-muted mb-1 fw-medium">Ringkasan Kinerja</h6>
-                                    <h5 class="mb-0 fw-bold text-dark">Status Tiket Keseluruhan</h5>
-                                </div>
-                                <div class="stat-icon-modern bg-secondary bg-opacity-10 text-secondary">
-                                    <i class="fas fa-chart-pie"></i>
-                                </div>
-                            </div>
-
-                            <div class="row g-3">
-                                <div class="col-6 col-lg-3">
-                                    <div class="text-center p-2 rounded bg-light">
-                                        <div class="fw-bold text-primary fs-5">
-                                            {{ round(($resolvedTickets / max($totalTickets, 1)) * 100) }}%</div>
-                                        <small class="text-muted">Tingkat Penyelesaian</small>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-lg-3">
-                                    <div class="text-center p-2 rounded bg-light">
-                                        <div class="fw-bold text-success fs-5">
-                                            {{ round((($acceptedTickets + $resolvedTickets) / max($totalTickets, 1)) * 100) }}%
-                                        </div>
-                                        <small class="text-muted">Tingkat Persetujuan</small>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-lg-3">
-                                    <div class="text-center p-2 rounded bg-light">
-                                        <div class="fw-bold text-warning fs-5">{{ $pendingTickets }}</div>
-                                        <small class="text-muted">Perlu Tindakan</small>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-lg-3">
-                                    <div class="text-center p-2 rounded bg-light">
-                                        <div class="fw-bold text-info fs-5">{{ $totalTickets - $rejectedTickets }}</div>
-                                        <small class="text-muted">Tiket Aktif</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="card-footer bg-warning bg-opacity-5 border-0 py-2">
+                        <small class="text-muted">
+                            <i class="fas fa-clock me-1"></i>Menunggu persetujuan
+                        </small>
                     </div>
                 </div>
             </div>
 
-            <!-- Enhanced Month Navigation -->
-            <div class="month-navigation">
-                <div class="d-flex justify-content-between align-items-center nav-controls">
-                    <div class="d-flex align-items-center gap-3">
-                        <button class="btn btn-primary" id="prevMonthBtn" onclick="navigatePreviousMonth()">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-
-                        <div class="month-display" id="currentMonthDisplay">
-                            {{ Carbon\Carbon::createFromFormat('Y-m', '2025-08')->format('F Y') }}
-                        </div>
-
-                        <button class="btn btn-primary" id="nextMonthBtn" onclick="navigateNextMonth()">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-
-                    <div class="d-flex align-items-center gap-3">
-                        <!-- Enhanced Date Picker -->
-                        <div class="date-picker-container">
-                            <input type="text" class="date-picker-input" id="datePicker"
-                                value="{{ Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->format('F Y') }}"
-                                readonly onclick="toggleCalendar()">
-                            <i class="fas fa-calendar-alt date-picker-icon"></i>
-
-                            <!-- Custom Calendar Dropdown -->
-                            <div class="calendar-dropdown" id="calendarDropdown">
-                                <div class="calendar-header">
-                                    <button type="button" class="calendar-nav-btn" onclick="navigateCalendar(-1)">
-                                        <i class="fas fa-chevron-left"></i>
-                                    </button>
-                                    <div class="calendar-title" id="calendarTitle">January 2025</div>
-                                    <button type="button" class="calendar-nav-btn" onclick="navigateCalendar(1)">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </button>
-                                </div>
-
-                                <div class="year-month-selectors">
-                                    <select class="year-selector" id="yearSelector" onchange="updateCalendarDisplay()">
-                                        <!-- Years will be populated by JavaScript -->
-                                    </select>
-                                    <select class="month-selector-dropdown" id="monthSelectorDropdown"
-                                        onchange="updateCalendarDisplay()">
-                                        <option value="0">January</option>
-                                        <option value="1">February</option>
-                                        <option value="2">March</option>
-                                        <option value="3">April</option>
-                                        <option value="4">May</option>
-                                        <option value="5">June</option>
-                                        <option value="6">July</option>
-                                        <option value="7">August</option>
-                                        <option value="8">September</option>
-                                        <option value="9">October</option>
-                                        <option value="10">November</option>
-                                        <option value="11">December</option>
-                                    </select>
-                                </div>
-
-                                <div class="calendar-grid">
-                                    <div class="calendar-weekdays">
-                                        <div class="calendar-weekday">Su</div>
-                                        <div class="calendar-weekday">Mo</div>
-                                        <div class="calendar-weekday">Tu</div>
-                                        <div class="calendar-weekday">We</div>
-                                        <div class="calendar-weekday">Th</div>
-                                        <div class="calendar-weekday">Fr</div>
-                                        <div class="calendar-weekday">Sa</div>
+            <!-- Accepted Tickets Card -->
+            <div class="col-xl-3 col-lg-6 col-md-6">
+                <div class="card border-0 shadow-sm h-100 stat-card-modern">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="stat-icon-modern bg-success bg-opacity-10 text-success me-3">
+                                        <i class="fas fa-check-circle"></i>
                                     </div>
-                                    <div class="calendar-days" id="calendarDays">
-                                        <!-- Days will be populated by JavaScript -->
-                                    </div>
+                                    <h6 class="text-muted mb-0 fw-medium">Diterima</h6>
                                 </div>
-
-                                <div class="calendar-actions">
-                                    <button type="button" class="calendar-btn" onclick="clearCalendar()">Clear</button>
-                                    <button type="button" class="calendar-btn" onclick="selectToday()">Today</button>
-                                    <button type="button" class="calendar-btn primary"
-                                        onclick="applyCalendarSelection()">Apply</button>
+                                <h2 class="mb-0 fw-bold text-dark" id="acceptedTickets">{{ $acceptedTickets }}</h2>
+                                <div class="mt-2">
+                                    <span class="badge bg-success bg-opacity-10 text-success">
+                                        <i class="fas fa-thumbs-up me-1"></i>Disetujui
+                                    </span>
                                 </div>
                             </div>
+                            <div class="stat-trend text-success">
+                                <i class="fas fa-check"></i>
+                            </div>
                         </div>
-
-                        <!-- Range Selector -->
-                        <div class="range-selector">
-                            <span style="font-size: 0.875rem; color: var(--gray-600); margin-right: 0.5rem;">Show:</span>
-                            <button onclick="changeRange(3)" class="{{ $monthsToShow == 3 ? 'active' : '' }}"
-                                id="show3M">3M</button>
-                            <button onclick="changeRange(6)" class="{{ $monthsToShow == 6 ? 'active' : '' }}">6M</button>
-                            <button onclick="changeRange(12)"
-                                class="{{ $monthsToShow == 12 ? 'active' : '' }}">12M</button>
-                        </div>
-
-                        <!-- Reset to Current Month -->
-                        <button class="nav-button secondary" onclick="resetToCurrentMonth()">
-                            <i class="fas fa-calendar-day"></i> Today
-                        </button>
+                    </div>
+                    <div class="card-footer bg-success bg-opacity-5 border-0 py-2">
+                        <small class="text-muted">
+                            <i class="fas fa-check-circle me-1"></i>Sedang diproses
+                        </small>
                     </div>
                 </div>
             </div>
 
-            <!-- Charts Section -->
-            <div class="row mb-4">
-                <div class="col-lg-8 mb-4">
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 style="margin: 0; font-weight: 600; color: var(--gray-900);">📊 Grafik Overall</h6>
-                                    <p style="margin: 0.25rem 0 0 0; font-size: 0.875rem; color: var(--gray-600);"
-                                        id="chartSubtitle">
-                                        {{ $monthsToShow }} kinerja bulan berakhir
-                                        {{ Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->format('F Y') }}
-                                    </p>
+            <!-- Resolved Tickets Card -->
+            <div class="col-xl-3 col-lg-6 col-md-6">
+                <div class="card border-0 shadow-sm h-100 stat-card-modern">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="stat-icon-modern bg-info bg-opacity-10 text-info me-3">
+                                        <i class="fas fa-check-double"></i>
+                                    </div>
+                                    <h6 class="text-muted mb-0 fw-medium">Selesai</h6>
+                                </div>
+                                <h2 class="mb-0 fw-bold text-dark" id="resolvedTickets">{{ $resolvedTickets }}</h2>
+                                <div class="mt-2">
+                                    <span class="badge bg-info bg-opacity-10 text-info">
+                                        <i class="fas fa-flag-checkered me-1"></i>Tuntas
+                                    </span>
                                 </div>
                             </div>
-                        </div>
-                        <div class="chart-body">
-                            <div class="chart-loading" id="chartLoading" style="display: none;">
-                                <div class="spinner"></div>
+                            <div class="stat-trend text-info">
+                                <i class="fas fa-trophy"></i>
                             </div>
-                            <canvas id="ticketChart" width="400" height="200"></canvas>
                         </div>
                     </div>
+                    <div class="card-footer bg-info bg-opacity-5 border-0 py-2">
+                        <small class="text-muted">
+                            <i class="fas fa-check-double me-1"></i>Berhasil diselesaikan
+                        </small>
+                    </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="col-lg-4 mb-4">
-                    <div class="chart-card">
-                        <div class="chart-header">
+        <!-- Additional Stats Row -->
+        <div class="row g-4 mb-5">
+            <!-- Rejected Tickets Card -->
+            <div class="col-xl-3 col-lg-6 col-md-6">
+                <div class="card border-0 shadow-sm h-100 stat-card-modern">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="stat-icon-modern bg-danger bg-opacity-10 text-danger me-3">
+                                        <i class="fas fa-times-circle"></i>
+                                    </div>
+                                    <h6 class="text-muted mb-0 fw-medium">Ditolak</h6>
+                                </div>
+                                <h2 class="mb-0 fw-bold text-dark" id="rejectedTickets">{{ $rejectedTickets ?? 0 }}</h2>
+                                <div class="mt-2">
+                                    <span class="badge bg-danger bg-opacity-10 text-danger">
+                                        <i class="fas fa-ban me-1"></i>Tidak Disetujui
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="stat-trend text-danger">
+                                <i class="fas fa-times"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-danger bg-opacity-5 border-0 py-2">
+                        <small class="text-muted">
+                            <i class="fas fa-times-circle me-1"></i>Tiket yang ditolak
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Card -->
+            <div class="col-xl-9 col-lg-6 col-md-6">
+                <div class="card border-0 shadow-sm h-100 stat-card-modern">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
                             <div>
-                                <h6 style="margin: 0; font-weight: 600; color: var(--gray-900);">⏱️ Processing Time
-                                    Analytics
-                                </h6>
-                                <p style="margin: 0.25rem 0 0 0; font-size: 0.875rem; color: var(--gray-600);"
-                                    id="processingSubtitle">
-                                    Rata-rata waktu pemrosesan (jam) -
+                                <h6 class="text-muted mb-1 fw-medium">Ringkasan Kinerja</h6>
+                                <h5 class="mb-0 fw-bold text-dark">Status Tiket Keseluruhan</h5>
+                            </div>
+                            <div class="stat-icon-modern bg-secondary bg-opacity-10 text-secondary">
+                                <i class="fas fa-chart-pie"></i>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-6 col-lg-3">
+                                <div class="text-center p-2 rounded bg-light">
+                                    <div class="fw-bold text-primary fs-5">
+                                        {{ round(($resolvedTickets / max($totalTickets, 1)) * 100) }}%</div>
+                                    <small class="text-muted">Tingkat Penyelesaian</small>
+                                </div>
+                            </div>
+                            <div class="col-6 col-lg-3">
+                                <div class="text-center p-2 rounded bg-light">
+                                    <div class="fw-bold text-success fs-5">
+                                        {{ round((($acceptedTickets + $resolvedTickets) / max($totalTickets, 1)) * 100) }}%
+                                    </div>
+                                    <small class="text-muted">Tingkat Persetujuan</small>
+                                </div>
+                            </div>
+                            <div class="col-6 col-lg-3">
+                                <div class="text-center p-2 rounded bg-light">
+                                    <div class="fw-bold text-warning fs-5">{{ $pendingTickets }}</div>
+                                    <small class="text-muted">Perlu Tindakan</small>
+                                </div>
+                            </div>
+                            <div class="col-6 col-lg-3">
+                                <div class="text-center p-2 rounded bg-light">
+                                    <div class="fw-bold text-info fs-5">{{ $totalTickets - $rejectedTickets }}</div>
+                                    <small class="text-muted">Tiket Aktif</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Month Navigation -->
+        <div class="month-navigation">
+            <div class="d-flex justify-content-between align-items-center nav-controls">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-primary" id="prevMonthBtn" onclick="navigatePreviousMonth()">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+
+                    <div class="month-display" id="currentMonthDisplay">
+                        {{ Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->format('F Y') }}
+                    </div>
+
+                    <button class="btn btn-primary" id="nextMonthBtn" onclick="navigateNextMonth()">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Day Range Selector -->
+                    <div class="range-selector">
+                        <span style="font-size: 0.875rem; color: var(--gray-600); margin-right: 0.5rem;">Tampilkan:</span>
+                        <button onclick="changeDayRange(7)" class="day-range-btn">7 Hari</button>
+                        <button onclick="changeDayRange(15)" class="day-range-btn">15 Hari</button>
+                        <button onclick="changeDayRange(30)" class="day-range-btn active">Semua Hari</button>
+                    </div>
+
+                    <!-- Calendar Picker -->
+                    <div class="date-picker-container">
+                        <input type="text" class="date-picker-input" id="monthPicker" readonly
+                            value="{{ Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->format('F Y') }}"
+                            placeholder="Pilih bulan...">
+                        <i class="fas fa-calendar-alt date-picker-icon"></i>
+                        <div class="calendar-dropdown" id="calendarDropdown">
+                            <div class="calendar-header">
+                                <button type="button" class="calendar-nav-btn" id="prevYearBtn">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </button>
+                                <button type="button" class="calendar-nav-btn" id="prevMonthBtn">
+                                    <i class="fas fa-angle-left"></i>
+                                </button>
+                                <div class="calendar-title" id="calendarTitle">
                                     {{ Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->format('F Y') }}
+                                </div>
+                                <button type="button" class="calendar-nav-btn" id="nextMonthBtn">
+                                    <i class="fas fa-angle-right"></i>
+                                </button>
+                                <button type="button" class="calendar-nav-btn" id="nextYearBtn">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </button>
+                            </div>
+                            <div class="year-month-selectors">
+                                <select class="year-selector" id="yearSelector">
+                                    @for ($year = 2020; $year <= Carbon\Carbon::now()->addYears(2)->year; $year++)
+                                        <option value="{{ $year }}"
+                                            {{ $year == Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->year ? 'selected' : '' }}>
+                                            {{ $year }}
+                                        </option>
+                                    @endfor
+                                </select>
+                                <select class="month-selector-dropdown" id="monthSelector">
+                                    @for ($month = 1; $month <= 12; $month++)
+                                        <option value="{{ $month }}"
+                                            {{ $month == Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->month ? 'selected' : '' }}>
+                                            {{ Carbon\Carbon::create(2024, $month, 1)->format('F') }}
+                                        </option>
+                                    @endfor
+                                </select>
+                            </div>
+                            <div class="calendar-actions">
+                                <button type="button" class="calendar-btn" onclick="closeCalendar()">Batal</button>
+                                <button type="button" class="calendar-btn primary"
+                                    onclick="applySelectedMonth()">Terapkan</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reset to Current Month -->
+                    <button class="nav-button secondary" onclick="resetToCurrentMonth()">
+                        <i class="fas fa-calendar-day"></i> Hari Ini
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="row mb-4">
+            <div class="col-lg-8 mb-4">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 style="margin: 0; font-weight: 600; color: var(--gray-900);">📊 Tren Tiket</h6>
+                                <p style="margin: 0.25rem 0 0 0; font-size: 0.875rem; color: var(--gray-600);"
+                                    id="chartSubtitle">
+                                    @if ($selectedMonth)
+                                        Data harian untuk
+                                        {{ Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->format('F Y') }}
+                                    @else
+                                        {{ $monthsToShow }} bulan terakhir hingga
+                                        {{ Carbon\Carbon::now()->format('F Y') }}
+                                    @endif
                                 </p>
                             </div>
                         </div>
-                        <div class="chart-body">
-                            <div class="chart-loading" id="processingLoading" style="display: none;">
-                                <div class="spinner"></div>
-                            </div>
-                            <canvas id="processingTimeChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="chart-body">
+                        <div class="chart-loading" id="chartLoading" style="display: none;">
+                            <div class="spinner"></div>
                         </div>
+                        <canvas id="ticketChart" width="400" height="200"></canvas>
                     </div>
                 </div>
             </div>
 
-            <!-- Recent Tickets Table -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="table-card">
-                        <div class="table-header">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 style="margin: 0; font-weight: 600; color: var(--gray-900);"><i
-                                            class="bi bi-ticket-perforated status-icon ticket"></i> Recent Tickets</h6>
-                                    <p style="margin: 0.25rem 0 0 0; font-size: 0.875rem; color: var(--gray-600);">Tiket
-                                        Terbaru </p>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-outline btn-sm" onclick="loadRecentTickets()">
-                                        <i class="fas fa-sync-alt"></i> Refresh
-                                    </button>
-                                    <a href="/admin/tickets" class="btn btn-primary btn-sm">
-                                        <i class="fas fa-list"></i> View All
-                                    </a>
-                                </div>
+            <div class="col-lg-4 mb-4">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div>
+                            <h6 style="margin: 0; font-weight: 600; color: var(--gray-900);">⏱️ Processing Time Analytics
+                            </h6>
+                            <p style="margin: 0.25rem 0 0 0; font-size: 0.875rem; color: var(--gray-600);"
+                                id="processingSubtitle">
+                                Waktu pemrosesan tiket selesai -
+                                {{ Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->format('F Y') }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="chart-body">
+                        <div class="chart-loading" id="processingLoading" style="display: none;">
+                            <div class="spinner"></div>
+                        </div>
+                        <canvas id="processingTimeChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Tickets Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="table-card">
+                    <div class="table-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 style="margin: 0; font-weight: 600; color: var(--gray-900);">
+                                    <i class="bi bi-ticket-perforated status-icon ticket"></i> Recent Tickets
+                                </h6>
+                                <p style="margin: 0.25rem 0 0 0; font-size: 0.875rem; color: var(--gray-600);">Tiket
+                                    Terbaru</p>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-outline btn-sm" onclick="loadRecentTickets()">
+                                    <i class="fas fa-sync-alt"></i> Refresh
+                                </button>
+                                <a href="/admin/tickets" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-list"></i> View All
+                                </a>
                             </div>
                         </div>
-                        <div class="table-responsive">
-                            <table class="table" id="recentTicketsTable">
-                                <thead>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table" id="recentTicketsTable">
+                            <thead>
+                                <tr>
+                                    <th>Kode Tracking</th>
+                                    <th>Judul</th>
+                                    <th>Pelapor</th>
+                                    <th>Status</th>
+                                    <th>Dibuat</th>
+                                    <th>Waktu Proses</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentTicketsBody">
+                                @foreach ($recentTickets->take(3) as $ticket)
                                     <tr>
-                                        <th>Tracking Code</th>
-                                        <th>Title</th>
-                                        <th>Reporter</th>
-                                        <th>Status</th>
-                                        <th>Created</th>
-                                        <th>Processing Time</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="recentTicketsBody">
-                                    @foreach ($recentTickets->take(3) as $ticket)
-                                        <tr>
-                                            <td>
-                                                <span class="badge primary">{{ $ticket->code_tracking }}</span>
-                                            </td>
-                                            <td>{{ Str::limit($ticket->judul ?? 'No Title', 30) }}</td>
-                                            <td>{{ $ticket->nama_pelapor ?? 'Anonymous' }}</td>
-                                            <td>
+                                        <td><span class="badge primary">{{ $ticket->code_tracking }}</span></td>
+                                        <td>{{ Str::limit($ticket->judul ?? 'No Title', 30) }}</td>
+                                        <td>{{ $ticket->nama_pelapor ?? 'Anonymous' }}</td>
+                                        <td>
+                                            @if ($ticket->status == 'pending')
+                                                <span class="badge warning"><i class="bi bi-hourglass-split"></i>
+                                                    Pending</span>
+                                            @elseif($ticket->status == 'diterima/approved')
+                                                <span class="badge success"><i class="bi bi-check-lg"></i>
+                                                    Diterima/Approved</span>
+                                            @elseif($ticket->status == 'selesai/completed')
+                                                <span class="badge info"><i class="bi bi-check-circle"></i>
+                                                    Resolved</span>
+                                            @elseif($ticket->status == 'ditolak/rejected')
+                                                <span class="badge danger"><i class="bi bi-x-circle"></i>
+                                                    Ditolak/Rejected</span>
+                                            @else
+                                                <span class="badge secondary">{{ ucfirst($ticket->status) }}</span>
+                                            @endif
+                                        </td>
+                                        <td>{{ $ticket->created_at->diffForHumans() }}</td>
+                                        <td>
+                                            @if ($ticket->resolved_at && $ticket->status == 'selesai/completed')
+                                                <span style="color: var(--green-600);">
+                                                    {{ round($ticket->created_at->diffInHours($ticket->resolved_at), 1) }}
+                                                    jam
+                                                </span>
+                                            @elseif($ticket->accepted_at)
+                                                <span style="color: var(--blue-600);">Sedang Diproses</span>
+                                            @else
+                                                <span style="color: var(--gray-500);">Belum Dimulai</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-info btn-sm"
+                                                    onclick="viewTicketDetails('{{ $ticket->id }}')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
                                                 @if ($ticket->status == 'pending')
-                                                    <span class="badge warning"><i class="bi bi-hourglass-split"></i>
-                                                        Pending</span>
-                                                @elseif($ticket->status == 'diterima/approved')
-                                                    <span class="badge success"><i class="bi bi-check-lg"></i>
-                                                        Diterima/Approved</span>
-                                                @elseif($ticket->status == 'selesai/completed')
-                                                    <span class="badge info"><i class="bi bi-check-circle"></i>
-                                                        Resolved</span>
-                                                @elseif($ticket->status == 'ditolak/rejected')
-                                                    <span class="badge danger"><i class="bi bi-x-circle"></i>
-                                                        Ditolak/Rejected</span>
-                                                @else
-                                                    <span class="badge secondary">{{ ucfirst($ticket->status) }}</span>
-                                                @endif
-                                            </td>
-                                            <td>{{ $ticket->created_at->diffForHumans() }}</td>
-                                            <td>
-                                                @if ($ticket->accepted_at)
-                                                    <span
-                                                        style="color: var(--green-600);">{{ $ticket->created_at->diffForHumans($ticket->accepted_at) }}</span>
-                                                @else
-                                                    <span style="color: var(--gray-500);">Not started</span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                <div class="d-flex gap-2">
-                                                    <button class="btn btn-info btn-sm"
-                                                        onclick="viewTicketDetails('{{ $ticket->id }}')">
-                                                        <i class="fas fa-eye"></i>
+                                                    <button class="btn btn-success btn-sm"
+                                                        onclick="acceptTicket('{{ $ticket->id }}')">
+                                                        <i class="fas fa-check"></i>
                                                     </button>
-                                                    @if ($ticket->status == 'pending')
-                                                        <button class="btn btn-success btn-sm"
-                                                            onclick="acceptTicket('{{ $ticket->id }}')">
-                                                            <i class="fas fa-check"></i>
-                                                        </button>
-                                                        <button class="btn btn-danger btn-sm"
-                                                            onclick="rejectTicket('{{ $ticket->id }}')">
-                                                            <i class="fas fa-times"></i>
-                                                        </button>
-                                                    @endif
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                            @if ($recentTickets->count() == 0)
-                                <div class="empty-state">
-                                    <div class="mb-3">
-                                        <i class="fas fa-inbox"></i>
-                                    </div>
-                                    <h6>No tickets found</h6>
-                                    <p>There are no tickets to display at the moment.</p>
-                                </div>
-                            @endif
-                        </div>
+                                                    <button class="btn btn-danger btn-sm"
+                                                        onclick="rejectTicket('{{ $ticket->id }}')">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                @endif
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                        @if ($recentTickets->count() == 0)
+                            <div class="empty-state">
+                                <div class="mb-3"><i class="fas fa-inbox"></i></div>
+                                <h6>Tidak ada tiket</h6>
+                                <p>Belum ada tiket yang tersedia untuk ditampilkan.</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Ticket Detail Modal -->
+    <div class="modal-overlay" id="ticketDetailModal" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h5 class="modal-title">Detail Tiket</h5>
+                <button type="button" class="modal-close" onclick="closeTicketModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="ticketDetailContent">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Memuat detail tiket...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeTicketModal()">Tutup</button>
+                <div id="ticketActions"></div>
+            </div>
+        </div>
+    </div>
+
     {{-- Chart.js CDN --}}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js "></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
         /* =========  GLOBAL VARS  ========= */
         let currentMonth = '{{ $selectedMonth }}';
         let currentRange = {{ $monthsToShow }};
+        let currentDayRange = 30; // Default: show all days in month
         let ticketChart, processingTimeChart;
-        let calendarDate = new Date();
-        let selectedDate = null;
+        const maxNavigableMonth = '{{ Carbon\Carbon::now()->addMonths(3)->format('Y-m') }}';
+        const minNavigableMonth = '{{ Carbon\Carbon::now()->subMonths(24)->format('Y-m') }}';
 
-        /* =========  SESSION PERSISTENCE  ========= */
-        function initializeSessionState() {
-            // Check if there's a saved month in localStorage
-            const savedMonth = localStorage.getItem('dashboard_selected_month');
-            const savedRange = localStorage.getItem('dashboard_selected_range');
-
-            if (savedMonth && savedMonth !== currentMonth) {
-                // Use saved month instead of server default
-                currentMonth = savedMonth;
-                console.log('Restored saved month:', currentMonth);
-
-                // Update display immediately
-                updateMonthDisplay(currentMonth);
-
-                // Load data for saved month
-                loadDataForMonth(currentMonth);
-            }
-
-            if (savedRange && parseInt(savedRange) !== currentRange) {
-                // Use saved range
-                currentRange = parseInt(savedRange);
-
-                // Update range selector buttons
-                document.querySelectorAll('.range-selector button').forEach(b => b.classList.remove('active'));
-                document.querySelector(`.range-selector button[onclick="changeRange(${currentRange})"]`)?.classList.add(
-                    'active');
-
-                console.log('Restored saved range:', currentRange);
-            }
-        }
-
-        function saveSessionState() {
-            // Save current month and range to localStorage
-            localStorage.setItem('dashboard_selected_month', currentMonth);
-            localStorage.setItem('dashboard_selected_range', currentRange.toString());
-            console.log('Saved session state:', {
-                month: currentMonth,
-                range: currentRange
+        /* =========  HELPER FUNCTIONS  ========= */
+        function formatMonthDisplay(monthString) {
+            const date = new Date(monthString + '-01');
+            return date.toLocaleDateString('id-ID', {
+                year: 'numeric',
+                month: 'long'
             });
-        }
-
-        function clearSessionState() {
-            // Clear saved state (useful for reset to today)
-            localStorage.removeItem('dashboard_selected_month');
-            localStorage.removeItem('dashboard_selected_range');
-            console.log('Cleared session state');
-        }
-
-        /* =========  CALENDAR HELPERS  ========= */
-        function initializeCalendar() {
-            const currentDate = new Date(currentMonth + '-01');
-            calendarDate = new Date(currentDate);
-
-            // Populate year selector
-            const yearSelector = document.getElementById('yearSelector');
-            const thisYear = new Date().getFullYear();
-            yearSelector.innerHTML = '';
-
-            for (let y = thisYear - 5; y <= thisYear + 5; y++) {
-                const opt = document.createElement('option');
-                opt.value = y;
-                opt.textContent = y;
-                opt.selected = y === calendarDate.getFullYear();
-                yearSelector.appendChild(opt);
-            }
-
-            // Set month selector
-            document.getElementById('monthSelectorDropdown').value = calendarDate.getMonth();
-
-            // Update calendar display
-            updateCalendarDisplay();
-        }
-
-        function toggleCalendar() {
-            const dd = document.getElementById('calendarDropdown');
-            const isShown = dd.classList.toggle('show');
-            if (isShown) {
-                // Re-initialize calendar when opened
-                initializeCalendar();
-                setTimeout(() => document.addEventListener('click', closeCalendarOnOutsideClick), 100);
-            } else {
-                document.removeEventListener('click', closeCalendarOnOutsideClick);
-            }
-        }
-
-        function closeCalendarOnOutsideClick(e) {
-            if (!e.target.closest('.date-picker-container')) {
-                document.getElementById('calendarDropdown').classList.remove('show');
-                document.removeEventListener('click', closeCalendarOnOutsideClick);
-            }
-        }
-
-        function navigateCalendar(dir) {
-            calendarDate.setMonth(calendarDate.getMonth() + dir);
-            document.getElementById('yearSelector').value = calendarDate.getFullYear();
-            document.getElementById('monthSelectorDropdown').value = calendarDate.getMonth();
-            updateCalendarDisplay();
-        }
-
-        function updateCalendarDisplay() {
-            const y = +document.getElementById('yearSelector').value;
-            const m = +document.getElementById('monthSelectorDropdown').value;
-            calendarDate = new Date(y, m, 1);
-
-            // Update calendar title
-            document.getElementById('calendarTitle').textContent =
-                calendarDate.toLocaleDateString('en-US', {
-                    month: 'long',
-                    year: 'numeric'
-                });
-
-            // Render calendar days
-            renderCalendarDays();
-        }
-
-        function renderCalendarDays() {
-            const container = document.getElementById('calendarDays');
-            const y = calendarDate.getFullYear();
-            const m = calendarDate.getMonth();
-
-            container.innerHTML = '';
-
-            // Get first day of month and number of days
-            const firstDay = new Date(y, m, 1).getDay();
-            const daysInMonth = new Date(y, m + 1, 0).getDate();
-            const daysInPrevMonth = new Date(y, m, 0).getDate();
-
-            // Add previous month trailing days
-            for (let i = firstDay - 1; i >= 0; i--) {
-                const dayElement = createDay(daysInPrevMonth - i, 'other-month');
-                container.appendChild(dayElement);
-            }
-
-            // Add current month days
-            for (let d = 1; d <= daysInMonth; d++) {
-                const dayElement = createDay(d);
-
-                // Check if this day is selected
-                if (selectedDate &&
-                    selectedDate.getFullYear() === y &&
-                    selectedDate.getMonth() === m &&
-                    selectedDate.getDate() === d) {
-                    dayElement.classList.add('selected');
-                }
-
-                // Check if this is today
-                const today = new Date();
-                if (today.getFullYear() === y &&
-                    today.getMonth() === m &&
-                    today.getDate() === d) {
-                    dayElement.classList.add('today');
-                }
-
-                dayElement.addEventListener('click', () => selectCalendarDate(y, m, d));
-                container.appendChild(dayElement);
-            }
-
-            // Add next month leading days (fill to complete 6 weeks = 42 days)
-            const totalCells = firstDay + daysInMonth;
-            const remainingCells = 42 - totalCells;
-            for (let d = 1; d <= remainingCells; d++) {
-                const dayElement = createDay(d, 'other-month');
-                container.appendChild(dayElement);
-            }
-        }
-
-        function createDay(day, className = '') {
-            const div = document.createElement('div');
-            div.className = `calendar-day ${className}`;
-            div.textContent = day;
-            return div;
-        }
-
-        function selectCalendarDate(y, m, d) {
-            selectedDate = new Date(y, m, d);
-
-            // Remove previous selection
-            document.querySelectorAll('.calendar-day.selected')
-                .forEach(el => el.classList.remove('selected'));
-
-            // Add selection to clicked day
-            event.target.classList.add('selected');
-        }
-
-        function clearCalendar() {
-            selectedDate = null;
-            document.querySelectorAll('.calendar-day.selected')
-                .forEach(el => el.classList.remove('selected'));
-        }
-
-        function selectToday() {
-            const today = new Date();
-            calendarDate = new Date(today.getFullYear(), today.getMonth(), 1);
-            selectedDate = today;
-
-            // Update selectors
-            document.getElementById('yearSelector').value = today.getFullYear();
-            document.getElementById('monthSelectorDropdown').value = today.getMonth();
-
-            // Re-render calendar
-            updateCalendarDisplay();
         }
 
         /* =========  CHART INITIALISATION  ========= */
@@ -1746,14 +1744,12 @@
             // Clear previous chart data
             ticketChart?.destroy();
             processingTimeChart?.destroy();
-            // Enhanced Ticket Trend Chart with gradient and animations
+
+            // Ticket Trend Chart
             const ctx = document.getElementById('ticketChart').getContext('2d');
 
             // Create gradients
             const totalGradient = ctx.createLinearGradient(0, 0, 0, 400);
-            totalGradient.addColorStop(0, 'rgba(59, 130, 246, 0.8)');
-            totalGradient.addColorStop(0.5, 'rgba(59, 130, 246, 0.4)');
-            totalGradient.addColorStop(1, 'rgba(59, 130, 246, 0.1)');
             totalGradient.addColorStop(0, 'rgba(59, 130, 246, 0.8)');
             totalGradient.addColorStop(0.5, 'rgba(59, 130, 246, 0.4)');
             totalGradient.addColorStop(1, 'rgba(59, 130, 246, 0.1)');
@@ -1773,8 +1769,8 @@
                 data: {
                     labels: @json($months),
                     datasets: [{
-                            label: 'Total Tickets',
-                            data: @json($totalCounts), // Ensure this data is accurate from the database
+                            label: 'Total Tiket',
+                            data: @json($totalCounts),
                             borderColor: '#3b82f6',
                             backgroundColor: totalGradient,
                             borderWidth: 3,
@@ -1784,17 +1780,10 @@
                             pointHoverRadius: 10,
                             pointBackgroundColor: '#3b82f6',
                             pointBorderColor: '#ffffff',
-                            pointBorderWidth: 3,
-                            pointHoverBackgroundColor: '#1d4ed8',
-                            pointHoverBorderColor: '#ffffff',
-                            pointHoverBorderWidth: 4,
-                            shadowOffsetX: 3,
-                            shadowOffsetY: 3,
-                            shadowBlur: 10,
-                            shadowColor: 'rgba(59, 130, 246, 0.3)'
+                            pointBorderWidth: 3
                         },
                         {
-                            label: 'Accepted',
+                            label: 'Diterima',
                             data: @json($acceptedCounts),
                             borderColor: '#22c55e',
                             backgroundColor: acceptedGradient,
@@ -1805,13 +1794,10 @@
                             pointHoverRadius: 10,
                             pointBackgroundColor: '#22c55e',
                             pointBorderColor: '#ffffff',
-                            pointBorderWidth: 3,
-                            pointHoverBackgroundColor: '#16a34a',
-                            pointHoverBorderColor: '#ffffff',
-                            pointHoverBorderWidth: 4
+                            pointBorderWidth: 3
                         },
                         {
-                            label: 'Resolved',
+                            label: 'Selesai',
                             data: @json($resolvedCounts),
                             borderColor: '#6366f1',
                             backgroundColor: resolvedGradient,
@@ -1822,10 +1808,7 @@
                             pointHoverRadius: 10,
                             pointBackgroundColor: '#6366f1',
                             pointBorderColor: '#ffffff',
-                            pointBorderWidth: 3,
-                            pointHoverBackgroundColor: '#4f46e5',
-                            pointHoverBorderColor: '#ffffff',
-                            pointHoverBorderWidth: 4
+                            pointBorderWidth: 3
                         }
                     ]
                 },
@@ -1837,6 +1820,19 @@
                         mode: 'index'
                     },
                     plugins: {
+                        title: {
+                            display: true,
+                            text: @json($selectedMonth) ? 'Data Harian - ' +
+                                formatMonthDisplay(@json($selectedMonth)) : 'Tren Bulanan',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            },
+                            color: '#374151',
+                            padding: {
+                                bottom: 20
+                            }
+                        },
                         legend: {
                             position: 'top',
                             labels: {
@@ -1858,25 +1854,29 @@
                             cornerRadius: 8,
                             displayColors: true,
                             padding: 12,
-                            titleFont: {
-                                size: 14,
-                                weight: '600'
-                            },
-                            bodyFont: {
-                                size: 13
-                            },
                             callbacks: {
                                 title: function(context) {
-                                    return 'Month: ' + context[0].label;
+                                    const isDaily = @json($selectedMonth) !== null;
+                                    return isDaily ? 'Hari: ' + context[0].label : 'Bulan: ' + context[0]
+                                        .label;
                                 },
                                 label: function(context) {
-                                    return context.dataset.label + ': ' + context.parsed.y + ' tickets';
+                                    return context.dataset.label + ': ' + context.parsed.y + ' tiket';
                                 }
                             }
                         }
                     },
                     scales: {
                         x: {
+                            title: {
+                                display: true,
+                                text: @json($selectedMonth) ? 'Hari dalam Bulan' : 'Bulan',
+                                font: {
+                                    size: 12,
+                                    weight: '600'
+                                },
+                                color: '#6b7280'
+                            },
                             grid: {
                                 display: true,
                                 color: 'rgba(229, 231, 235, 0.5)',
@@ -1904,15 +1904,9 @@
                                     weight: '500'
                                 },
                                 callback: function(value) {
-                                    return value + ' tickets';
+                                    return value + ' tiket';
                                 }
                             }
-                        }
-                    },
-                    elements: {
-                        line: {
-                            borderJoinStyle: 'round',
-                            borderCapStyle: 'round'
                         }
                     },
                     animation: {
@@ -1922,44 +1916,33 @@
                 }
             });
 
-            // Processing Time Donut Chart
+            // Processing Time Chart - Shows processing time analysis for current month
             const processingCtx = document.getElementById('processingTimeChart').getContext('2d');
 
-            const processingData = @json($processingTimeData['data'] ?? []);
-            const processingLabels = @json($processingTimeData['labels'] ?? []);
-            const dashboardTotalTickets = {{ $resolvedTickets }};
+            // Get processing time data for current month
+            const processingTimeData = @json($processingTimeData);
 
-            // Create categories for donut chart with better error handling
-            let fastProcessing = 0;
-            let mediumProcessing = 0;
-            let slowProcessing = 0;
+            // Calculate processing time categories
+            let fastProcessing = 0; // ≤ 24 hours
+            let mediumProcessing = 0; // 24-72 hours  
+            let slowProcessing = 0; // > 72 hours
 
-            // Ensure processingData is an array and handle empty data
-            if (Array.isArray(processingData) && processingData.length > 0) {
-                processingData.forEach(time => {
-                    const numTime = parseFloat(time) || 0;
-                    if (numTime <= 24) fastProcessing++;
-                    else if (numTime <= 72) mediumProcessing++;
-                    else slowProcessing++;
+            if (processingTimeData.processingTimes && Array.isArray(processingTimeData.processingTimes)) {
+                processingTimeData.processingTimes.forEach(time => {
+                    const hours = parseFloat(time) || 0;
+                    if (hours <= 24) {
+                        fastProcessing++;
+                    } else if (hours <= 72) {
+                        mediumProcessing++;
+                    } else {
+                        slowProcessing++;
+                    }
                 });
             }
 
-            const chartTotal = fastProcessing + mediumProcessing + slowProcessing;
-            if (chartTotal !== dashboardTotalTickets && dashboardTotalTickets > 0) {
-                // Scale the processing data to match dashboard total
-                const scaleFactor = dashboardTotalTickets / chartTotal;
-                fastProcessing = Math.round(fastProcessing * scaleFactor);
-                mediumProcessing = Math.round(mediumProcessing * scaleFactor);
-                slowProcessing = dashboardTotalTickets - fastProcessing - mediumProcessing;
-            }
-
-            const donutColors = [
-                '#22c55e', // Fast - Green
-                '#f59e0b', // Medium - Amber
-                '#ef4444' // Slow - Red
-            ];
-
-            const donutGradients = donutColors.map(color => {
+            // Create pie chart colors for processing time categories
+            const pieColors = ['#22c55e', '#f59e0b', '#ef4444']; // Green, Yellow, Red
+            const pieGradients = pieColors.map(color => {
                 const gradient = processingCtx.createRadialGradient(150, 150, 0, 150, 150, 150);
                 gradient.addColorStop(0, color);
                 gradient.addColorStop(1, color + '80');
@@ -1967,23 +1950,35 @@
             });
 
             processingTimeChart = new Chart(processingCtx, {
-                type: 'doughnut',
+                type: 'pie',
                 data: {
-                    labels: ['Cepat (≤24h)', 'Medium (24-72h)', 'Lambat (>72h)'],
+                    labels: ['Cepat (≤24 jam)', 'Sedang (24-72 jam)', 'Lambat (>72 jam)'],
                     datasets: [{
                         data: [fastProcessing, mediumProcessing, slowProcessing],
-                        backgroundColor: donutGradients,
-                        borderColor: ['#22c55e', '#f59e0b', '#ef4444'],
+                        backgroundColor: pieGradients,
+                        borderColor: pieColors,
                         borderWidth: 3,
                         hoverBorderWidth: 5,
-                        hoverOffset: 10,
-                        cutout: '65%'
+                        hoverOffset: 10
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
+                        title: {
+                            display: true,
+                            text: 'Processing Time Analysis - ' + (currentMonth ? formatMonthDisplay(
+                                currentMonth) : 'Current Month'),
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            },
+                            color: '#374151',
+                            padding: {
+                                bottom: 20
+                            }
+                        },
                         legend: {
                             position: 'bottom',
                             labels: {
@@ -1997,19 +1992,16 @@
                                 generateLabels: function(chart) {
                                     const data = chart.data;
                                     if (data.labels.length && data.datasets.length) {
+                                        const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
                                         return data.labels.map((label, i) => {
-                                            const dataset = data.datasets[0];
-                                            const value = dataset.data[i] || 0;
-                                            const total = dataset.data.reduce((a, b) => (a || 0) + (
-                                                b || 0), 0);
+                                            const value = data.datasets[0].data[i] || 0;
                                             const percentage = total > 0 ? ((value / total) * 100)
                                                 .toFixed(1) : 0;
-
                                             return {
                                                 text: `${label}: ${value} (${percentage}%)`,
-                                                fillStyle: dataset.backgroundColor[i],
-                                                strokeStyle: dataset.borderColor[i],
-                                                lineWidth: dataset.borderWidth,
+                                                fillStyle: data.datasets[0].backgroundColor[i],
+                                                strokeStyle: data.datasets[0].borderColor[i],
+                                                lineWidth: data.datasets[0].borderWidth,
                                                 hidden: false,
                                                 index: i
                                             };
@@ -2026,25 +2018,14 @@
                             borderColor: '#e5e7eb',
                             borderWidth: 1,
                             cornerRadius: 8,
+                            displayColors: true,
                             padding: 12,
-                            titleFont: {
-                                size: 14,
-                                weight: '600'
-                            },
-                            bodyFont: {
-                                size: 13
-                            },
                             callbacks: {
-                                title: function(context) {
-                                    return 'Waktu Pemrosesan';
-                                },
                                 label: function(context) {
-                                    const label = context.label;
                                     const value = context.parsed || 0;
-                                    const total = context.dataset.data.reduce((a, b) => (a || 0) + (b || 0),
-                                        0);
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                     const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                                    return `${label}: ${value} tickets (${percentage}%)`;
+                                    return `${context.label}: ${value} tickets (${percentage}%)`;
                                 }
                             }
                         }
@@ -2054,45 +2035,9 @@
                         animateScale: true,
                         duration: 2000,
                         easing: 'easeInOutQuart'
-                    },
-                    elements: {
-                        arc: {
-                            borderRadius: 8
-                        }
                     }
                 }
             });
-
-            // Add center text for donut chart
-            const centerTextPlugin = {
-                id: 'centerText',
-                beforeDraw: function(chart) {
-                    if (chart.config.type === 'doughnut') {
-                        const ctx = chart.ctx;
-                        const centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
-                        const centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
-
-                        ctx.save();
-                        ctx.textAlign = 'center';
-                        ctx.textBaseline = 'middle';
-
-                        // Main text
-                        ctx.font = 'bold 24px Inter, sans-serif';
-                        ctx.fillStyle = '#374151';
-                        const total = chart.data.datasets[0].data.reduce((a, b) => (a || 0) + (b || 0), 0);
-                        ctx.fillText(total.toString(), centerX, centerY - 10);
-
-                        // Subtitle
-                        ctx.font = '12px Inter, sans-serif';
-                        ctx.fillStyle = '#6b7280';
-                        ctx.fillText('Total Tickets', centerX, centerY + 15);
-
-                        ctx.restore();
-                    }
-                }
-            };
-
-            Chart.register(centerTextPlugin);
         };
 
         /* =========  DATA LOADING  ========= */
@@ -2113,8 +2058,9 @@
                 .then(d => {
                     if (d.success) {
                         updateChartsData(d.data);
+                        updateStats(d.stats);
                         // fetch processing-time data too
-                        return fetch('/admin/dashboard/processing-time', {
+                        return fetch('/admin/dashboard/processing-time-data', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -2138,128 +2084,89 @@
                 });
         }
 
-        function updateChartsData(chartData, processingData = null) {
+        function updateStats(stats) {
+            if (stats) {
+                document.getElementById('totalTickets').textContent = stats.totalTickets || 0;
+                document.getElementById('pendingTickets').textContent = stats.pendingTickets || 0;
+                document.getElementById('acceptedTickets').textContent = stats.acceptedTickets || 0;
+                document.getElementById('resolvedTickets').textContent = stats.resolvedTickets || 0;
+                document.getElementById('rejectedTickets').textContent = stats.rejectedTickets || 0;
+            }
+        }
+
+        function updateChartsData(chartData) {
+            // Update labels - could be months or days depending on the data
             ticketChart.data.labels = chartData.months;
             ticketChart.data.datasets[0].data = chartData.totalCounts;
             ticketChart.data.datasets[1].data = chartData.acceptedCounts;
             ticketChart.data.datasets[2].data = chartData.resolvedCounts;
-            ticketChart.update('none');
 
-            if (processingData) updateProcessingTimeChart(processingData);
+            // Clear original data cache so it gets refreshed
+            delete ticketChart.data.originalLabels;
+            delete ticketChart.data.originalDatasets;
+
+            // Update chart title based on data type
+            if (chartData.isDaily) {
+                ticketChart.options.plugins.title.text = 'Data Harian - ' + formatMonthDisplay(chartData.currentMonth);
+                ticketChart.options.scales.x.title.text = 'Hari dalam Bulan';
+            } else {
+                ticketChart.options.plugins.title.text = 'Tren Bulanan';
+                ticketChart.options.scales.x.title.text = 'Bulan';
+            }
+
+            // Update month picker display
+            document.getElementById('monthPicker').value = formatMonthDisplay(currentMonth);
+
+            // Apply current day range filter if we're in daily view
+            if (chartData.isDaily) {
+                filterChartByDayRange(currentDayRange);
+            } else {
+                ticketChart.update('none');
+            }
+
+            // Update subtitle after filtering
+            updateChartSubtitle();
         }
 
         function updateProcessingTimeChart(data) {
-            const processingData = data.data || [];
+            // Calculate processing time categories for the selected month
+            let fastProcessing = 0; // ≤ 24 hours
+            let mediumProcessing = 0; // 24-72 hours  
+            let slowProcessing = 0; // > 72 hours
 
-            let fastProcessing = 0;
-            let mediumProcessing = 0;
-            let slowProcessing = 0;
-
-            if (Array.isArray(processingData) && processingData.length > 0) {
-                processingData.forEach(time => {
-                    const numTime = parseFloat(time) || 0;
-                    if (numTime <= 24) fastProcessing++;
-                    else if (numTime <= 72) mediumProcessing++;
-                    else slowProcessing++;
+            if (data.processingTimes && Array.isArray(data.processingTimes)) {
+                data.processingTimes.forEach(time => {
+                    const hours = parseFloat(time) || 0;
+                    if (hours <= 24) {
+                        fastProcessing++;
+                    } else if (hours <= 72) {
+                        mediumProcessing++;
+                    } else {
+                        slowProcessing++;
+                    }
                 });
             }
 
-            const currentTotal = parseInt(document.getElementById('totalTickets').textContent) || 0;
-            const chartTotal = fastProcessing + mediumProcessing + slowProcessing;
-            if (chartTotal !== currentTotal && currentTotal > 0) {
-                const scaleFactor = currentTotal / chartTotal;
-                fastProcessing = Math.round(fastProcessing * scaleFactor);
-                mediumProcessing = Math.round(mediumProcessing * scaleFactor);
-                slowProcessing = currentTotal - fastProcessing - mediumProcessing;
-            }
-
-            // Update chart data with animation
+            // Update chart data
             processingTimeChart.data.datasets[0].data = [fastProcessing, mediumProcessing, slowProcessing];
+
+            // Update chart title with current month
+            processingTimeChart.options.plugins.title.text = 'Processing Time Analysis - ' +
+                (currentMonth ? formatMonthDisplay(currentMonth) : 'Current Month');
+
             processingTimeChart.update('active');
-        }
-
-        /* =========  ADDITIONAL CHART FUNCTIONS  ========= */
-        function updateChart(filterType) {
-            // This function can be used to filter the main chart by ticket type
-            console.log('Filtering chart by:', filterType);
-            // Implementation can be added based on requirements
-        }
-
-        function loadRecentTickets() {
-            // Refresh recent tickets table
-            fetch('/admin/dashboard/recent-tickets')
-                .then(r => r.json())
-                .then(d => {
-                    if (d.success) {
-                        // Update recent tickets table
-                        const tbody = document.getElementById('recentTicketsBody');
-                        tbody.innerHTML = d.html;
-                    }
-                })
-                .catch(console.error);
-        }
-
-        function viewTicketDetails(ticketId) {
-            // Open ticket details modal or redirect
-            window.open(`/admin/tickets/${ticketId}`, '_blank');
-        }
-
-        function acceptTicket(ticketId) {
-            if (confirm('Are you sure you want to accept this ticket?')) {
-                fetch(`/admin/tickets/${ticketId}/accept`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json'
-                        }
-                    })
-                    .then(r => r.json())
-                    .then(d => {
-                        if (d.success) {
-                            showNotification('success', 'Tiket berhasil diterima');
-                            loadRecentTickets();
-                            // Refresh stats
-                            location.reload();
-                        } else {
-                            showNotification('danger', d.message || 'Tiket gagal diterima');
-                        }
-                    })
-                    .catch(e => {
-                        console.error(e);
-                        showNotification('danger', 'Tiket gagal diterima');
-                    });
-            }
-        }
-
-        function rejectTicket(ticketId) {
-            if (confirm('Apakah anda yakin ingin menolak tiket ini?')) {
-                fetch(`/admin/tickets/${ticketId}/reject`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json'
-                        }
-                    })
-                    .then(r => r.json())
-                    .then(d => {
-                        if (d.success) {
-                            showNotification('success', 'Tiket Berhasil ditolak');
-                            loadRecentTickets();
-                            // Refresh stats
-                            location.reload();
-                        } else {
-                            showNotification('danger', d.message || 'Failed to reject ticket');
-                        }
-                    })
-                    .catch(e => {
-                        console.error(e);
-                        showNotification('danger', 'Failed to reject ticket');
-                    });
-            }
         }
 
         /* =========  MONTH NAVIGATION  ========= */
         function navigatePreviousMonth() {
+            const currentDate = new Date(currentMonth + '-01');
+            const minDate = new Date(minNavigableMonth + '-01');
+
+            if (currentDate <= minDate) {
+                showNotification('warning', 'Cannot navigate further back');
+                return;
+            }
+
             showLoading(true);
             fetch('/admin/dashboard/navigate/previous', {
                     method: 'POST',
@@ -2275,23 +2182,33 @@
                 .then(r => r.json())
                 .then(d => {
                     if (d.success) {
-                        updateChartsData(d.data, d.processingTimeData);
                         currentMonth = d.newMonth;
                         updateMonthDisplay(currentMonth);
-
-                        // Save session state
-                        saveSessionState();
+                        updateChartsData(d.data);
+                        updateStats(d.stats);
+                        if (d.processingTimeData) {
+                            updateProcessingTimeChart(d.processingTimeData);
+                        }
+                        updateNavigationButtons();
                     }
                     showLoading(false);
                 })
                 .catch(e => {
                     console.error(e);
                     showLoading(false);
-                    showNotification('danger', 'Gagal menavigasi ke bulan sebelumnya');
+                    showNotification('danger', 'Failed to navigate to previous month');
                 });
         }
 
         function navigateNextMonth() {
+            const currentDate = new Date(currentMonth + '-01');
+            const maxDate = new Date(maxNavigableMonth + '-01');
+
+            if (currentDate >= maxDate) {
+                showNotification('warning', 'Cannot navigate to future months');
+                return;
+            }
+
             showLoading(true);
             fetch('/admin/dashboard/navigate/next', {
                     method: 'POST',
@@ -2307,106 +2224,120 @@
                 .then(r => r.json())
                 .then(d => {
                     if (d.success) {
-                        updateChartsData(d.data, d.processingTimeData);
                         currentMonth = d.newMonth;
                         updateMonthDisplay(currentMonth);
-
-                        // Save session state
-                        saveSessionState();
+                        updateChartsData(d.data);
+                        updateStats(d.stats);
+                        if (d.processingTimeData) {
+                            updateProcessingTimeChart(d.processingTimeData);
+                        }
+                        updateNavigationButtons();
                     }
                     showLoading(false);
                 })
                 .catch(e => {
                     console.error(e);
                     showLoading(false);
-                    showNotification('danger', 'Gagal menavigasi ke bulan Selanjutnya');
+                    showNotification('danger', 'Failed to navigate to next month');
                 });
         }
 
-        function changeRange(months) {
-            document.querySelectorAll('.range-selector button').forEach(b => b.classList.remove('active'));
+        function updateNavigationButtons() {
+            const currentDate = new Date(currentMonth + '-01');
+            const minDate = new Date(minNavigableMonth + '-01');
+            const maxDate = new Date(maxNavigableMonth + '-01');
+
+            document.getElementById('prevMonthBtn').disabled = currentDate <= minDate;
+            document.getElementById('nextMonthBtn').disabled = currentDate >= maxDate;
+        }
+
+        function changeDayRange(days) {
+            document.querySelectorAll('.day-range-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
-            currentRange = months;
-            showLoading(true);
+            currentDayRange = days;
 
-            fetch('/admin/dashboard/chart-data', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        month: currentMonth,
-                        months_to_show: months
-                    })
-                })
-                .then(r => r.json())
-                .then(d => {
-                    if (d.success) {
-                        updateChartsData(d.data, d.processingTimeData);
-                        updateSubtitles();
+            // Filter chart data based on day range
+            filterChartByDayRange(days);
+            updateChartSubtitle();
+        }
 
-                        // Save session state
-                        saveSessionState();
-                    }
-                    showLoading(false);
-                })
-                .catch(e => {
-                    console.error(e);
-                    showLoading(false);
-                    showNotification('danger', 'Gagal Mengganti Jarak');
-                });
+        function filterChartByDayRange(days) {
+            if (!ticketChart || !ticketChart.data.labels) return;
+
+            const allLabels = ticketChart.data.originalLabels || ticketChart.data.labels;
+            const allDatasets = ticketChart.data.originalDatasets || ticketChart.data.datasets.map(d => ({
+                ...d,
+                data: [...d.data]
+            }));
+
+            // Store original data if not already stored
+            if (!ticketChart.data.originalLabels) {
+                ticketChart.data.originalLabels = [...allLabels];
+                ticketChart.data.originalDatasets = allDatasets.map(d => ({
+                    ...d,
+                    data: [...d.data]
+                }));
+            }
+
+            if (days >= 30) {
+                // Show all days
+                ticketChart.data.labels = allLabels;
+                ticketChart.data.datasets = allDatasets.map(d => ({
+                    ...d,
+                    data: [...d.data]
+                }));
+            } else {
+                // Calculate range based on current date in the selected month
+                const today = new Date();
+                const selectedDate = new Date(currentMonth + '-01');
+
+                let currentDay;
+                if (selectedDate.getFullYear() === today.getFullYear() &&
+                    selectedDate.getMonth() === today.getMonth()) {
+                    // Current month - use today's date
+                    currentDay = today.getDate();
+                } else {
+                    // Other month - use last day of that month
+                    const lastDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0);
+                    currentDay = lastDay.getDate();
+                }
+
+                // Calculate start and end indices
+                let startDay, endDay;
+                if (currentDay <= days) {
+                    // If current day is within the range, show from day 1 to day N
+                    startDay = 1;
+                    endDay = days;
+                } else {
+                    // Show N days ending at current day
+                    startDay = currentDay - days + 1;
+                    endDay = currentDay;
+                }
+
+                // Convert to array indices (day numbers are 1-based, array is 0-based)
+                const startIndex = Math.max(0, startDay - 1);
+                const endIndex = Math.min(allLabels.length, endDay);
+
+                ticketChart.data.labels = allLabels.slice(startIndex, endIndex);
+                ticketChart.data.datasets = allDatasets.map(d => ({
+                    ...d,
+                    data: d.data.slice(startIndex, endIndex)
+                }));
+            }
+
+            ticketChart.update('none');
         }
 
         function resetToCurrentMonth() {
             const today = new Date();
             const newMonth = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0');
             currentMonth = newMonth;
-            currentRange = {{ $monthsToShow }}; // Reset to default range
-
-            // Clear saved session state
-            clearSessionState();
-
-            // Update range selector buttons
-            document.querySelectorAll('.range-selector button').forEach(b => b.classList.remove('active'));
-            document.querySelector(`.range-selector button[onclick="changeRange(${currentRange})"]`)?.classList.add(
-                'active');
 
             updateMonthDisplay(newMonth);
             loadDataForMonth(newMonth);
+            updateNavigationButtons();
 
-            showNotification('info', 'Reset ke bulan saat ini');
-        }
-
-        function applyCalendarSelection() {
-            if (!selectedDate) {
-                showNotification('warning', 'Silakan pilih tanggal terlebih dahulu');
-                return;
-            }
-
-            const newMonth = selectedDate.getFullYear() + '-' +
-                String(selectedDate.getMonth() + 1).padStart(2, '0');
-
-            // Update date picker input
-            document.getElementById('datePicker').value =
-                selectedDate.toLocaleDateString('en-US', {
-                    month: 'long',
-                    year: 'numeric'
-                });
-
-            // Close calendar
-            document.getElementById('calendarDropdown').classList.remove('show');
-            document.removeEventListener('click', closeCalendarOnOutsideClick);
-
-            // Update current month and load data
-            currentMonth = newMonth;
-            updateMonthDisplay(newMonth);
-            loadDataForMonth(newMonth);
-
-            // Save session state
-            saveSessionState();
-
-            showNotification('success', 'Bulan berhasil diperbarui');
+            showNotification('info', 'Reset to current month');
         }
 
         /* =========  UI HELPERS  ========= */
@@ -2414,9 +2345,7 @@
             const cl = document.getElementById('chartLoading');
             const pl = document.getElementById('processingLoading');
             cl.style.display = flag ? 'flex' : 'none';
-            pl.style.display = flag ? 'none' : 'none';
-            ['prevMonthBtn', 'nextMonthBtn', 'datePicker']
-            .forEach(id => document.getElementById(id).disabled = flag);
+            pl.style.display = flag ? 'flex' : 'none';
         }
 
         function updateMonthDisplay(monthValue) {
@@ -2425,7 +2354,6 @@
                 year: 'numeric'
             });
             document.getElementById('currentMonthDisplay').textContent = m;
-            document.getElementById('datePicker').value = m;
             updateSubtitles();
         }
 
@@ -2434,66 +2362,404 @@
                 month: 'long',
                 year: 'numeric'
             });
-            document.getElementById('chartSubtitle').textContent = `${currentRange} kinerja bulan berakhir ${m}`;
-            document.getElementById('processingSubtitle').textContent = `Rata-rata waktu pemrosesan (jam) - ${m}`;
+            document.getElementById('chartSubtitle').textContent = `${currentRange} bulan berakhir ${m}`;
+            document.getElementById('processingSubtitle').textContent = `Waktu pemrosesan tiket selesai - ${m}`;
         }
 
         function showNotification(type, message) {
             const icon = type === 'success' ? 'fa-check-circle' :
                 type === 'info' ? 'fa-info-circle' :
-                'fa-exclamation-triangle';
+                type === 'warning' ? 'fa-exclamation-triangle' :
+                'fa-times-circle';
             const alert = document.createElement('div');
             alert.className = `alert alert-${type} position-fixed top-0 end-0 m-3`;
             alert.style.zIndex = 9999;
             alert.innerHTML = `
-                <i class="fas ${icon} me-2"></i>${message}
-                <button type="button" class="btn-close ms-2" onclick="this.parentElement.remove()"></button>
-            `;
+        <i class="fas ${icon} me-2"></i>${message}
+        <button type="button" class="btn-close ms-2" onclick="this.parentElement.remove()"></button>
+    `;
             document.body.appendChild(alert);
             setTimeout(() => alert.remove(), 4000);
+        }
+
+        /* =========  TICKET ACTIONS  ========= */
+        function viewTicketDetails(ticketId) {
+            // Show modal
+            document.getElementById('ticketDetailModal').style.display = 'flex';
+            
+            // Load ticket details
+            fetch(`/admin/tickets/${ticketId}/details`, {
+                method: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) {
+                    displayTicketDetails(d.ticket);
+                } else {
+                    document.getElementById('ticketDetailContent').innerHTML = 
+                        '<div class="alert alert-danger">Gagal memuat detail tiket</div>';
+                }
+            })
+            .catch(e => {
+                console.error(e);
+                document.getElementById('ticketDetailContent').innerHTML = 
+                    '<div class="alert alert-danger">Terjadi kesalahan saat memuat detail tiket</div>';
+            });
+        }
+
+        function displayTicketDetails(ticket) {
+            const statusBadges = {
+                'pending': '<span class="badge warning"><i class="bi bi-hourglass-split"></i> Pending</span>',
+                'diterima/approved': '<span class="badge success"><i class="bi bi-check-lg"></i> Diterima</span>',
+                'selesai/completed': '<span class="badge info"><i class="bi bi-check-circle"></i> Selesai</span>',
+                'ditolak/rejected': '<span class="badge danger"><i class="bi bi-x-circle"></i> Ditolak</span>'
+            };
+
+            const content = `
+                <div class="ticket-detail-grid">
+                    <div class="ticket-detail-item">
+                        <div class="ticket-detail-label">Kode Tracking</div>
+                        <div class="ticket-detail-value"><strong>${ticket.code_tracking}</strong></div>
+                    </div>
+                    <div class="ticket-detail-item">
+                        <div class="ticket-detail-label">Status</div>
+                        <div class="ticket-detail-value">${statusBadges[ticket.status] || ticket.status}</div>
+                    </div>
+                    <div class="ticket-detail-item">
+                        <div class="ticket-detail-label">Nama Pelapor</div>
+                        <div class="ticket-detail-value">${ticket.nama_pelapor || 'Anonim'}</div>
+                    </div>
+                    <div class="ticket-detail-item">
+                        <div class="ticket-detail-label">Email</div>
+                        <div class="ticket-detail-value">${ticket.email || '-'}</div>
+                    </div>
+                    <div class="ticket-detail-item">
+                        <div class="ticket-detail-label">No. Telepon</div>
+                        <div class="ticket-detail-value">${ticket.no_telepon || '-'}</div>
+                    </div>
+                    <div class="ticket-detail-item">
+                        <div class="ticket-detail-label">Tanggal Dibuat</div>
+                        <div class="ticket-detail-value">${new Date(ticket.created_at).toLocaleString('id-ID')}</div>
+                    </div>
+                    <div class="ticket-detail-item">
+                        <div class="ticket-detail-label">Kabupaten</div>
+                        <div class="ticket-detail-value">${ticket.kabupaten?.nama || '-'}</div>
+                    </div>
+                    <div class="ticket-detail-item">
+                        <div class="ticket-detail-label">Kecamatan</div>
+                        <div class="ticket-detail-value">${ticket.kecamatan?.nama || '-'}</div>
+                    </div>
+                    <div class="ticket-detail-item">
+                        <div class="ticket-detail-label">Layanan</div>
+                        <div class="ticket-detail-value">${ticket.layanan?.nama || '-'}</div>
+                    </div>
+                    <div class="ticket-detail-item">
+                        <div class="ticket-detail-label">Prioritas</div>
+                        <div class="ticket-detail-value">
+                            <span class="badge ${ticket.prioritas === 'high' ? 'danger' : ticket.prioritas === 'medium' ? 'warning' : 'secondary'}">
+                                ${ticket.prioritas === 'high' ? 'Tinggi' : ticket.prioritas === 'medium' ? 'Sedang' : 'Rendah'}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ticket-description">
+                    <h6><i class="fas fa-file-alt"></i> Judul Laporan</h6>
+                    <p><strong>${ticket.judul || 'Tidak ada judul'}</strong></p>
+                    
+                    <h6><i class="fas fa-align-left"></i> Deskripsi</h6>
+                    <p>${ticket.deskripsi || 'Tidak ada deskripsi'}</p>
+                    
+                    ${ticket.attachments && ticket.attachments.length > 0 ? `
+                        <div class="ticket-attachments">
+                            <h6><i class="fas fa-paperclip"></i> Lampiran</h6>
+                            ${ticket.attachments.map(att => `
+                                <div class="attachment-item">
+                                    <div class="attachment-icon">
+                                        <i class="fas fa-file"></i>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 500;">${att.original_name}</div>
+                                        <div style="font-size: 0.875rem; color: var(--gray-600);">${att.file_size || 'Unknown size'}</div>
+                                    </div>
+                                    <a href="/storage/${att.file_path}" target="_blank" class="btn btn-sm btn-outline">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            document.getElementById('ticketDetailContent').innerHTML = content;
+
+            // Update action buttons
+            let actionButtons = '';
+            if (ticket.status === 'pending') {
+                actionButtons = `
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-success" onclick="acceptTicketFromModal('${ticket.id}')">
+                            <i class="fas fa-check"></i> Terima
+                        </button>
+                        <button class="btn btn-danger" onclick="rejectTicketFromModal('${ticket.id}')">
+                            <i class="fas fa-times"></i> Tolak
+                        </button>
+                    </div>
+                `;
+            }
+            document.getElementById('ticketActions').innerHTML = actionButtons;
+        }
+
+        function closeTicketModal() {
+            document.getElementById('ticketDetailModal').style.display = 'none';
+        }
+
+        function acceptTicketFromModal(ticketId) {
+            if (confirm('Apakah Anda yakin ingin menerima tiket ini?')) {
+                acceptTicket(ticketId);
+                closeTicketModal();
+            }
+        }
+
+        function rejectTicketFromModal(ticketId) {
+            const reason = prompt('Alasan penolakan:');
+            if (reason && confirm('Apakah Anda yakin ingin menolak tiket ini?')) {
+                rejectTicket(ticketId);
+                closeTicketModal();
+            }
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', (e) => {
+            const modal = document.getElementById('ticketDetailModal');
+            if (e.target === modal) {
+                closeTicketModal();
+            }
+        });
+
+        function acceptTicket(ticketId) {
+            if (confirm('Apakah Anda yakin ingin menerima tiket ini?')) {
+                fetch(`/admin/tickets/${ticketId}/accept`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(r => r.json())
+                    .then(d => {
+                        if (d.success) {
+                            showNotification('success', 'Tiket berhasil diterima');
+                            loadRecentTickets();
+                            loadDataForMonth(currentMonth);
+                        } else {
+                            showNotification('danger', d.message || 'Gagal menerima tiket');
+                        }
+                    })
+                    .catch(e => {
+                        console.error(e);
+                        showNotification('danger', 'Gagal menerima tiket');
+                    });
+            }
+        }
+
+        function rejectTicket(ticketId) {
+            const reason = prompt('Alasan penolakan:');
+            if (reason && confirm('Apakah Anda yakin ingin menolak tiket ini?')) {
+                fetch(`/admin/tickets/${ticketId}/reject`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            rejection_reason: reason
+                        })
+                    })
+                    .then(r => r.json())
+                    .then(d => {
+                        if (d.success) {
+                            showNotification('success', 'Tiket berhasil ditolak');
+                            loadRecentTickets();
+                            loadDataForMonth(currentMonth);
+                        } else {
+                            showNotification('danger', d.message || 'Gagal menolak tiket');
+                        }
+                    })
+                    .catch(e => {
+                        console.error(e);
+                        showNotification('danger', 'Gagal menolak tiket');
+                    });
+            }
+        }
+
+        function loadRecentTickets() {
+            fetch('/admin/dashboard/recent-tickets')
+                .then(r => r.json())
+                .then(d => {
+                    if (d.success) {
+                        const tbody = document.getElementById('recentTicketsBody');
+                        tbody.innerHTML = d.html;
+                    }
+                })
+                .catch(console.error);
+        }
+
+        /* =========  CALENDAR PICKER  ========= */
+        let calendarCurrentYear = {{ Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->year }};
+        let calendarCurrentMonth = {{ Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->month }};
+
+        function toggleCalendar() {
+            const dropdown = document.getElementById('calendarDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        function closeCalendar() {
+            const dropdown = document.getElementById('calendarDropdown');
+            dropdown.classList.remove('show');
+        }
+
+        function applySelectedMonth() {
+            const year = document.getElementById('yearSelector').value;
+            const month = document.getElementById('monthSelector').value;
+            const selectedMonth = `${year}-${month.padStart(2, '0')}`;
+
+            // Update current month and load data
+            currentMonth = selectedMonth;
+            loadDataForMonth(selectedMonth);
+            closeCalendar();
+        }
+
+        function updateCalendarDisplay() {
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ];
+
+            document.getElementById('calendarTitle').textContent =
+                `${monthNames[calendarCurrentMonth - 1]} ${calendarCurrentYear}`;
+
+            document.getElementById('yearSelector').value = calendarCurrentYear;
+            document.getElementById('monthSelector').value = calendarCurrentMonth;
+        }
+
+        function updateChartSubtitle() {
+            const subtitle = document.getElementById('chartSubtitle');
+            if (currentMonth) {
+                const monthDisplay = formatMonthDisplay(currentMonth);
+                let rangeText = '';
+
+                if (currentDayRange >= 30) {
+                    rangeText = 'Semua hari';
+                } else {
+                    // Calculate the actual date range being shown
+                    const today = new Date();
+                    const selectedDate = new Date(currentMonth + '-01');
+
+                    let currentDay;
+                    if (selectedDate.getFullYear() === today.getFullYear() &&
+                        selectedDate.getMonth() === today.getMonth()) {
+                        // Current month - use today's date
+                        currentDay = today.getDate();
+                    } else {
+                        // Other month - use last day of that month
+                        const lastDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0);
+                        currentDay = lastDay.getDate();
+                    }
+
+                    let startDay, endDay;
+                    if (currentDay <= currentDayRange) {
+                        startDay = 1;
+                        endDay = currentDayRange;
+                    } else {
+                        startDay = currentDay - currentDayRange + 1;
+                        endDay = currentDay;
+                    }
+
+                    rangeText = `Tanggal ${startDay}-${endDay}`;
+                }
+
+                subtitle.textContent = `${rangeText} dalam ${monthDisplay}`;
+            } else {
+                subtitle.textContent = `${currentRange} bulan terakhir hingga {{ Carbon\Carbon::now()->format('F Y') }}`;
+            }
         }
 
         /* =========  BOOTSTRAP  ========= */
         document.addEventListener('DOMContentLoaded', () => {
             initializeCharts();
-            initializeCalendar();
-            initializeSessionState();
+            updateNavigationButtons();
 
-            // keyboard shortcuts
-            document.addEventListener('keydown', e => {
-                if (e.ctrlKey || e.metaKey) {
-                    switch (e.key) {
-                        case 'ArrowLeft':
-                            e.preventDefault();
-                            navigatePreviousMonth();
-                            break;
-                        case 'ArrowRight':
-                            e.preventDefault();
-                            navigateNextMonth();
-                            break;
-                        case 'h':
-                        case 'H':
-                            e.preventDefault();
-                            resetToCurrentMonth();
-                            break;
-                    }
-                }
-                if (e.key === 'Escape') {
-                    document.getElementById('calendarDropdown').classList.remove('show');
+            // Apply initial day range filter if in daily view
+            if (@json($selectedMonth)) {
+                setTimeout(() => {
+                    filterChartByDayRange(currentDayRange);
+                    updateChartSubtitle();
+                }, 100);
+            }
+
+            // Calendar picker event listeners
+            document.getElementById('monthPicker').addEventListener('click', toggleCalendar);
+
+            // Close calendar when clicking outside
+            document.addEventListener('click', (e) => {
+                const container = document.querySelector('.date-picker-container');
+                if (!container.contains(e.target)) {
+                    closeCalendar();
                 }
             });
 
-            // auto-refresh stats every 30 seconds
-            setInterval(() => fetch('/admin/dashboard/stats')
-                .then(r => r.json())
-                .then(d => {
-                    document.getElementById('totalTickets').textContent = d.total_tickets;
-                    document.getElementById('pendingTickets').textContent = d.pending_tickets;
-                    document.getElementById('acceptedTickets').textContent = d.accepted_tickets;
-                    document.getElementById('resolvedTickets').textContent = d.resolved_tickets;
-                    document.getElementById('rejectedTickets').textContent = d.rejected_tickets;
-                })
-                .catch(console.error), 30000);
+            // Calendar navigation
+            document.getElementById('prevYearBtn').addEventListener('click', () => {
+                calendarCurrentYear--;
+                updateCalendarDisplay();
+            });
+
+            document.getElementById('nextYearBtn').addEventListener('click', () => {
+                calendarCurrentYear++;
+                updateCalendarDisplay();
+            });
+
+            document.getElementById('prevMonthBtn').addEventListener('click', () => {
+                calendarCurrentMonth--;
+                if (calendarCurrentMonth < 1) {
+                    calendarCurrentMonth = 12;
+                    calendarCurrentYear--;
+                }
+                updateCalendarDisplay();
+            });
+
+            document.getElementById('nextMonthBtn').addEventListener('click', () => {
+                calendarCurrentMonth++;
+                if (calendarCurrentMonth > 12) {
+                    calendarCurrentMonth = 1;
+                    calendarCurrentYear++;
+                }
+                updateCalendarDisplay();
+            });
+
+            // Year and month selector changes
+            document.getElementById('yearSelector').addEventListener('change', (e) => {
+                calendarCurrentYear = parseInt(e.target.value);
+                updateCalendarDisplay();
+            });
+
+            document.getElementById('monthSelector').addEventListener('change', (e) => {
+                calendarCurrentMonth = parseInt(e.target.value);
+                updateCalendarDisplay();
+            });
+
+            // Auto-refresh stats every 30 seconds
+            setInterval(() => {
+                fetch('/admin/dashboard/stats')
+                    .then(r => r.json())
+                    .then(d => updateStats(d))
+                    .catch(console.error);
+            }, 30000);
         });
     </script>
 @endsection
