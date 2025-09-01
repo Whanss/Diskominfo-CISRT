@@ -2063,14 +2063,72 @@
         }
 
         function updateStats(stats) {
-            if (stats) {
-                document.getElementById('totalTickets').textContent = stats.totalTickets || 0;
-                document.getElementById('pendingTickets').textContent = stats.pendingTickets || 0;
-                document.getElementById('acceptedTickets').textContent = stats.acceptedTickets || 0;
-                document.getElementById('resolvedTickets').textContent = stats.resolvedTickets || 0;
-                document.getElementById('rejectedTickets').textContent = stats.rejectedTickets || 0;
+            if (!stats) return;
+            const normalized = {
+                total_tickets: (stats.total_tickets ?? stats.totalTickets),
+                pending_tickets: (stats.pending_tickets ?? stats.pendingTickets),
+                accepted_tickets: (stats.accepted_tickets ?? stats.acceptedTickets),
+                resolved_tickets: (stats.resolved_tickets ?? stats.resolvedTickets),
+                rejected_tickets: (stats.rejected_tickets ?? stats.rejectedTickets),
+            };
+            paintStats(normalized);
+        }
+
+        // Cache last values to prevent flicker
+        const lastStats = {
+            totalTickets: parseInt(document.getElementById('totalTickets')?.textContent || '0', 10),
+            pendingTickets: parseInt(document.getElementById('pendingTickets')?.textContent || '0', 10),
+            acceptedTickets: parseInt(document.getElementById('acceptedTickets')?.textContent || '0', 10),
+            resolvedTickets: parseInt(document.getElementById('resolvedTickets')?.textContent || '0', 10),
+            rejectedTickets: parseInt(document.getElementById('rejectedTickets')?.textContent || '0', 10),
+        };
+
+        function safeNumber(v) {
+            const n = Number(v);
+            return Number.isFinite(n) && n >= 0 ? n : null;
+        }
+
+        function paintStats(stats) {
+            const map = {
+                total_tickets: 'totalTickets',
+                pending_tickets: 'pendingTickets',
+                accepted_tickets: 'acceptedTickets',
+                resolved_tickets: 'resolvedTickets',
+                rejected_tickets: 'rejectedTickets',
+            };
+
+            Object.entries(map).forEach(([fromKey, toId]) => {
+                const el = document.getElementById(toId);
+                if (!el) return;
+                const candidate = safeNumber(stats?.[fromKey]);
+                if (candidate !== null) {
+                    el.textContent = candidate;
+                    lastStats[toId] = candidate;
+                } else if (lastStats[toId] != null) {
+                    el.textContent = lastStats[toId];
+                }
+            });
+        }
+
+        async function loadRealtimeStats() {
+            try {
+                const resp = await fetch('/admin/dashboard/stats', {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                const data = await resp.json();
+                paintStats(data);
+            } catch (e) {
+                // keep last values on error
             }
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadRealtimeStats();
+            setInterval(loadRealtimeStats, 15000);
+        });
 
         function updateChartsData(chartData) {
             // Update labels - could be months or days depending on the data
@@ -2453,9 +2511,9 @@
                     <p>${ticket.deskripsi || 'Tidak ada deskripsi'}</p>
 
                     ${ticket.attachments && ticket.attachments.length > 0 ? `
-                                <div class="ticket-attachments">
-                                    <h6><i class="fas fa-paperclip"></i> Lampiran</h6>
-                                    ${ticket.attachments.map(att => `
+                                    <div class="ticket-attachments">
+                                        <h6><i class="fas fa-paperclip"></i> Lampiran</h6>
+                                        ${ticket.attachments.map(att => `
                                 <div class="attachment-item">
                                     <div class="attachment-icon">
                                         <i class="fas fa-file"></i>
@@ -2469,8 +2527,8 @@
                                     </a>
                                 </div>
                             `).join('')}
-                                </div>
-                            ` : ''}
+                                    </div>
+                                ` : ''}
                 </div>
             `;
 
