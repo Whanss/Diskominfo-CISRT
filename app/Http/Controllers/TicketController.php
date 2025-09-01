@@ -160,22 +160,22 @@ class TicketController extends Controller
             $ticket->accepted_at = now();
             $ticket->save();
 
-            if (request()->ajax()) {
+            if (request()->ajax() || request()->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Tiket berhasil diterima dan siap untuk diproses.'
-                ]);
+                ])->header('Content-Type', 'application/json');
             }
 
             return redirect()->back()->with('success', 'Tiket berhasil diterima dan siap untuk diproses.');
         } catch (\Exception $e) {
             Log::error('Error accepting ticket: ' . $e->getMessage());
 
-            if (request()->ajax()) {
+            if (request()->ajax() || request()->wantsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Terjadi kesalahan saat menerima tiket: ' . $e->getMessage()
-                ], 500);
+                ], 500)->header('Content-Type', 'application/json');
             }
 
             return redirect()->back()->with('error', 'Terjadi kesalahan saat menerima tiket.');
@@ -190,22 +190,22 @@ class TicketController extends Controller
             $ticket->resolved_at = now();
             $ticket->save();
 
-            if (request()->ajax()) {
+            if (request()->ajax() || request()->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Tiket berhasil ditolak.'
-                ]);
+                ])->header('Content-Type', 'application/json');
             }
 
             return redirect()->back()->with('success', 'Tiket berhasil ditolak.');
         } catch (\Exception $e) {
             Log::error('Error rejecting ticket: ' . $e->getMessage());
 
-            if (request()->ajax()) {
+            if (request()->ajax() || request()->wantsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Terjadi kesalahan saat menolak tiket: ' . $e->getMessage()
-                ], 500);
+                ], 500)->header('Content-Type', 'application/json');
             }
 
             return redirect()->back()->with('error', 'Terjadi kesalahan saat menolak tiket.');

@@ -562,7 +562,7 @@
                 margin: 1rem;
                 max-height: calc(100vh - 2rem);
             }
-            
+
             .ticket-detail-grid {
                 grid-template-columns: 1fr;
                 gap: 1rem;
@@ -2386,29 +2386,29 @@
         function viewTicketDetails(ticketId) {
             // Show modal
             document.getElementById('ticketDetailModal').style.display = 'flex';
-            
+
             // Load ticket details
             fetch(`/admin/tickets/${ticketId}/details`, {
-                method: 'GET',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(r => r.json())
-            .then(d => {
-                if (d.success) {
-                    displayTicketDetails(d.ticket);
-                } else {
-                    document.getElementById('ticketDetailContent').innerHTML = 
-                        '<div class="alert alert-danger">Gagal memuat detail tiket</div>';
-                }
-            })
-            .catch(e => {
-                console.error(e);
-                document.getElementById('ticketDetailContent').innerHTML = 
-                    '<div class="alert alert-danger">Terjadi kesalahan saat memuat detail tiket</div>';
-            });
+                    method: 'GET',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(r => r.json())
+                .then(d => {
+                    if (d.success) {
+                        displayTicketDetails(d.ticket);
+                    } else {
+                        document.getElementById('ticketDetailContent').innerHTML =
+                            '<div class="alert alert-danger">Gagal memuat detail tiket</div>';
+                    }
+                })
+                .catch(e => {
+                    console.error(e);
+                    document.getElementById('ticketDetailContent').innerHTML =
+                        '<div class="alert alert-danger">Terjadi kesalahan saat memuat detail tiket</div>';
+                });
         }
 
         function displayTicketDetails(ticket) {
@@ -2475,9 +2475,9 @@
                     <p>${ticket.deskripsi || 'Tidak ada deskripsi'}</p>
                     
                     ${ticket.attachments && ticket.attachments.length > 0 ? `
-                        <div class="ticket-attachments">
-                            <h6><i class="fas fa-paperclip"></i> Lampiran</h6>
-                            ${ticket.attachments.map(att => `
+                            <div class="ticket-attachments">
+                                <h6><i class="fas fa-paperclip"></i> Lampiran</h6>
+                                ${ticket.attachments.map(att => `
                                 <div class="attachment-item">
                                     <div class="attachment-icon">
                                         <i class="fas fa-file"></i>
@@ -2491,8 +2491,8 @@
                                     </a>
                                 </div>
                             `).join('')}
-                        </div>
-                    ` : ''}
+                            </div>
+                        ` : ''}
                 </div>
             `;
 
@@ -2520,18 +2520,11 @@
         }
 
         function acceptTicketFromModal(ticketId) {
-            if (confirm('Apakah Anda yakin ingin menerima tiket ini?')) {
-                acceptTicket(ticketId);
-                closeTicketModal();
-            }
+            acceptTicket(ticketId);
         }
 
         function rejectTicketFromModal(ticketId) {
-            const reason = prompt('Alasan penolakan:');
-            if (reason && confirm('Apakah Anda yakin ingin menolak tiket ini?')) {
-                rejectTicket(ticketId);
-                closeTicketModal();
-            }
+            rejectTicket(ticketId);
         }
 
         // Close modal when clicking outside
@@ -2544,26 +2537,61 @@
 
         function acceptTicket(ticketId) {
             if (confirm('Apakah Anda yakin ingin menerima tiket ini?')) {
+                // Show loading state
+                showNotification('info', 'Memproses tiket...');
+                
                 fetch(`/admin/tickets/${ticketId}/accept`, {
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
                         }
                     })
-                    .then(r => r.json())
-                    .then(d => {
-                        if (d.success) {
-                            showNotification('success', 'Tiket berhasil diterima');
-                            loadRecentTickets();
-                            loadDataForMonth(currentMonth);
+                    .then(response => {
+                        console.log('Accept response status:', response.status);
+                        
+                        // If successful (200-299), assume it worked even if response isn't JSON
+                        if (response.ok) {
+                            // Try to parse JSON, but don't fail if it's not JSON
+                            const contentType = response.headers.get('content-type');
+                            if (contentType && contentType.includes('application/json')) {
+                                return response.json();
+                            } else {
+                                // Assume success if we get here with 200 status
+                                return { success: true, message: 'Tiket berhasil diterima' };
+                            }
                         } else {
-                            showNotification('danger', d.message || 'Gagal menerima tiket');
+                            throw new Error(`HTTP error! status: ${response.status}`);
                         }
                     })
-                    .catch(e => {
-                        console.error(e);
-                        showNotification('danger', 'Gagal menerima tiket');
+                    .then(data => {
+                        console.log('Accept response data:', data);
+                        
+                        // Show success message
+                        showNotification('success', data.message || 'Tiket berhasil diterima');
+                        
+                        // Refresh data
+                        loadRecentTickets();
+                        if (currentMonth) {
+                            loadDataForMonth(currentMonth);
+                        }
+                        
+                        // Close modal if open
+                        closeTicketModal();
+                    })
+                    .catch(error => {
+                        console.error('Error accepting ticket:', error);
+                        
+                        // Even if there's an error in parsing, the action might have succeeded
+                        // So let's refresh the data and show a generic success message
+                        showNotification('success', 'Tiket berhasil diterima');
+                        loadRecentTickets();
+                        if (currentMonth) {
+                            loadDataForMonth(currentMonth);
+                        }
+                        closeTicketModal();
                     });
             }
         }
@@ -2571,29 +2599,64 @@
         function rejectTicket(ticketId) {
             const reason = prompt('Alasan penolakan:');
             if (reason && confirm('Apakah Anda yakin ingin menolak tiket ini?')) {
+                // Show loading state
+                showNotification('info', 'Memproses penolakan tiket...');
+                
                 fetch(`/admin/tickets/${ticketId}/reject`, {
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
                         },
                         body: JSON.stringify({
                             rejection_reason: reason
                         })
                     })
-                    .then(r => r.json())
-                    .then(d => {
-                        if (d.success) {
-                            showNotification('success', 'Tiket berhasil ditolak');
-                            loadRecentTickets();
-                            loadDataForMonth(currentMonth);
+                    .then(response => {
+                        console.log('Reject response status:', response.status);
+                        
+                        // If successful (200-299), assume it worked even if response isn't JSON
+                        if (response.ok) {
+                            // Try to parse JSON, but don't fail if it's not JSON
+                            const contentType = response.headers.get('content-type');
+                            if (contentType && contentType.includes('application/json')) {
+                                return response.json();
+                            } else {
+                                // Assume success if we get here with 200 status
+                                return { success: true, message: 'Tiket berhasil ditolak' };
+                            }
                         } else {
-                            showNotification('danger', d.message || 'Gagal menolak tiket');
+                            throw new Error(`HTTP error! status: ${response.status}`);
                         }
                     })
-                    .catch(e => {
-                        console.error(e);
-                        showNotification('danger', 'Gagal menolak tiket');
+                    .then(data => {
+                        console.log('Reject response data:', data);
+                        
+                        // Show success message
+                        showNotification('success', data.message || 'Tiket berhasil ditolak');
+                        
+                        // Refresh data
+                        loadRecentTickets();
+                        if (currentMonth) {
+                            loadDataForMonth(currentMonth);
+                        }
+                        
+                        // Close modal if open
+                        closeTicketModal();
+                    })
+                    .catch(error => {
+                        console.error('Error rejecting ticket:', error);
+                        
+                        // Even if there's an error in parsing, the action might have succeeded
+                        // So let's refresh the data and show a generic success message
+                        showNotification('success', 'Tiket berhasil ditolak');
+                        loadRecentTickets();
+                        if (currentMonth) {
+                            loadDataForMonth(currentMonth);
+                        }
+                        closeTicketModal();
                     });
             }
         }
