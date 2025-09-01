@@ -96,64 +96,110 @@ class AdminController extends Controller
     }
 
     /**
-     * Get chart data for a specific month range
+     * Get chart data for a specific month - now shows daily data within the month
      */
     public function getChartData($selectedMonth = null, $monthsToShow = 6)
     {
         if ($selectedMonth) {
-            // Parse the selected month
+            // Parse the selected month and get daily data for that month
             $selectedDate = Carbon::createFromFormat('Y-m', $selectedMonth);
-            $startDate = $selectedDate->copy()->subMonths($monthsToShow - 1)->startOfMonth();
+            $startDate = $selectedDate->copy()->startOfMonth();
             $endDate = $selectedDate->copy()->endOfMonth();
+
+            // Get daily tickets for the selected month
+            $dailyTickets = \App\Models\Ticket::select(
+                DB::raw('DAY(created_at) as day'),
+                DB::raw('count(*) as total'),
+                DB::raw('sum(case when status = "selesai/completed" then 1 else 0 end) as resolved'),
+                DB::raw('sum(case when status = "pending" then 1 else 0 end) as pending'),
+                DB::raw('sum(case when status = "diterima/approved" then 1 else 0 end) as accepted'),
+                DB::raw('sum(case when status = "ditolak/rejected" then 1 else 0 end) as rejected')
+            )
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->groupBy('day')
+                ->orderBy('day')
+                ->get();
+
+            // Prepare data for charts - show all days in month
+            $days = [];
+            $totalCounts = [];
+            $resolvedCounts = [];
+            $pendingCounts = [];
+            $acceptedCounts = [];
+            $rejectedCounts = [];
+
+            $daysInMonth = $endDate->day;
+            for ($i = 1; $i <= $daysInMonth; $i++) {
+                $days[] = $i; // Just show day number
+
+                $data = $dailyTickets->firstWhere('day', $i);
+                $totalCounts[] = $data ? $data->total : 0;
+                $resolvedCounts[] = $data ? $data->resolved : 0;
+                $pendingCounts[] = $data ? $data->pending : 0;
+                $acceptedCounts[] = $data ? $data->accepted : 0;
+                $rejectedCounts[] = $data ? $data->rejected : 0;
+            }
+
+            return [
+                'months' => $days, // Now contains days instead of months
+                'totalCounts' => $totalCounts,
+                'resolvedCounts' => $resolvedCounts,
+                'pendingCounts' => $pendingCounts,
+                'acceptedCounts' => $acceptedCounts,
+                'rejectedCounts' => $rejectedCounts,
+                'currentMonth' => $selectedMonth,
+                'isDaily' => true // Flag to indicate this is daily data
+            ];
         } else {
-            // Default: last 6 months
+            // Default: last 6 months (monthly view)
             $startDate = Carbon::now()->subMonths($monthsToShow - 1)->startOfMonth();
             $endDate = Carbon::now()->endOfMonth();
+
+            $monthlyTickets = \App\Models\Ticket::select(
+                DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
+                DB::raw('count(*) as total'),
+                DB::raw('sum(case when status = "selesai/completed" then 1 else 0 end) as resolved'),
+                DB::raw('sum(case when status = "pending" then 1 else 0 end) as pending'),
+                DB::raw('sum(case when status = "diterima/approved" then 1 else 0 end) as accepted'),
+                DB::raw('sum(case when status = "ditolak/rejected" then 1 else 0 end) as rejected')
+            )
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->groupBy('month')
+                ->orderBy('month')
+                ->get();
+
+            // Prepare data for charts
+            $months = [];
+            $totalCounts = [];
+            $resolvedCounts = [];
+            $pendingCounts = [];
+            $acceptedCounts = [];
+            $rejectedCounts = [];
+
+            for ($i = 0; $i < $monthsToShow; $i++) {
+                $month = $startDate->copy()->addMonths($i)->format('M Y');
+                $monthKey = $startDate->copy()->addMonths($i)->format('Y-m');
+                $months[] = $month;
+
+                $data = $monthlyTickets->firstWhere('month', $monthKey);
+                $totalCounts[] = $data ? $data->total : 0;
+                $resolvedCounts[] = $data ? $data->resolved : 0;
+                $pendingCounts[] = $data ? $data->pending : 0;
+                $acceptedCounts[] = $data ? $data->accepted : 0;
+                $rejectedCounts[] = $data ? $data->rejected : 0;
+            }
+
+            return [
+                'months' => $months,
+                'totalCounts' => $totalCounts,
+                'resolvedCounts' => $resolvedCounts,
+                'pendingCounts' => $pendingCounts,
+                'acceptedCounts' => $acceptedCounts,
+                'rejectedCounts' => $rejectedCounts,
+                'currentMonth' => Carbon::now()->format('Y-m'),
+                'isDaily' => false // Flag to indicate this is monthly data
+            ];
         }
-
-        $monthlyTickets = \App\Models\Ticket::select(
-            DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
-            DB::raw('count(*) as total'),
-            DB::raw('sum(case when status = "selesai/completed" then 1 else 0 end) as resolved'),
-            DB::raw('sum(case when status = "pending" then 1 else 0 end) as pending'),
-            DB::raw('sum(case when status = "diterima/approved" then 1 else 0 end) as accepted'),
-            DB::raw('sum(case when status = "ditolak/rejected" then 1 else 0 end) as rejected')
-        )
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->groupBy('month')
-            ->orderBy('month')
-            ->get();
-
-        // Prepare data for charts
-        $months = [];
-        $totalCounts = [];
-        $resolvedCounts = [];
-        $pendingCounts = [];
-        $acceptedCounts = [];
-        $rejectedCounts = [];
-
-        for ($i = 0; $i < $monthsToShow; $i++) {
-            $month = $startDate->copy()->addMonths($i)->format('M Y');
-            $monthKey = $startDate->copy()->addMonths($i)->format('Y-m');
-            $months[] = $month;
-
-            $data = $monthlyTickets->firstWhere('month', $monthKey);
-            $totalCounts[] = $data ? $data->total : 0;
-            $resolvedCounts[] = $data ? $data->resolved : 0;
-            $pendingCounts[] = $data ? $data->pending : 0;
-            $acceptedCounts[] = $data ? $data->accepted : 0;
-            $rejectedCounts[] = $data ? $data->rejected : 0;
-        }
-
-        return [
-            'months' => $months,
-            'totalCounts' => $totalCounts,
-            'resolvedCounts' => $resolvedCounts,
-            'pendingCounts' => $pendingCounts,
-            'acceptedCounts' => $acceptedCounts,
-            'rejectedCounts' => $rejectedCounts,
-            'currentMonth' => $selectedMonth ?: Carbon::now()->format('Y-m')
-        ];
     }
 
     /**
@@ -173,106 +219,139 @@ class AdminController extends Controller
     }
 
     /**
-     * Get processing time analytics for specific month - FIXED: Calculate from timestamps
+     * Get processing time analytics - now shows monthly average processing time
      */
     public function getProcessingTimeAnalytics($selectedMonth = null)
     {
         if ($selectedMonth) {
+            // Show last 6 months including the selected month
             $selectedDate = Carbon::createFromFormat('Y-m', $selectedMonth);
-            $startDate = $selectedDate->startOfMonth();
-            $endDate = $selectedDate->endOfMonth();
+            $startDate = $selectedDate->copy()->subMonths(5)->startOfMonth();
+            $endDate = $selectedDate->copy()->endOfMonth();
 
-            $resolvedTickets = \App\Models\Ticket::where('status', 'selesai/completed')
+            // Get monthly resolved tickets data
+            $monthlyData = \App\Models\Ticket::select(
+                DB::raw('DATE_FORMAT(resolved_at, "%Y-%m") as month'),
+                DB::raw('COUNT(*) as resolved_count'),
+                DB::raw('AVG(TIMESTAMPDIFF(HOUR, created_at, resolved_at)) as avg_processing_hours')
+            )
+                ->where('status', 'selesai/completed')
                 ->whereNotNull('resolved_at')
                 ->whereNotNull('created_at')
                 ->whereBetween('resolved_at', [$startDate, $endDate])
+                ->groupBy('month')
+                ->orderBy('month')
                 ->get();
 
-            $processingTimes = [];
-            foreach ($resolvedTickets as $ticket) {
+            // Prepare data for charts - show last 6 months
+            $months = [];
+            $avgProcessingTimes = [];
+            $resolvedCounts = [];
+            $allProcessingTimes = [];
+
+            for ($i = 0; $i < 6; $i++) {
+                $monthDate = $startDate->copy()->addMonths($i);
+                $monthKey = $monthDate->format('Y-m');
+                $months[] = $monthDate->format('M Y');
+
+                $data = $monthlyData->firstWhere('month', $monthKey);
+                $avgTime = $data ? round($data->avg_processing_hours, 1) : 0;
+                $resolvedCount = $data ? $data->resolved_count : 0;
+
+                $avgProcessingTimes[] = $avgTime;
+                $resolvedCounts[] = $resolvedCount;
+
+                // Get raw processing times for pie chart (only for selected month)
+                if ($monthKey === $selectedMonth) {
+                    $monthTickets = \App\Models\Ticket::where('status', 'selesai/completed')
+                        ->whereNotNull('resolved_at')
+                        ->whereNotNull('created_at')
+                        ->whereYear('resolved_at', $monthDate->year)
+                        ->whereMonth('resolved_at', $monthDate->month)
+                        ->get();
+
+                    foreach ($monthTickets as $ticket) {
+                        $createdAt = Carbon::parse($ticket->created_at);
+                        $resolvedAt = Carbon::parse($ticket->resolved_at);
+                        $processingTimeHours = $createdAt->diffInHours($resolvedAt);
+
+                        if ($processingTimeHours > 0) {
+                            $allProcessingTimes[] = $processingTimeHours;
+                        }
+                    }
+                }
+            }
+
+            return [
+                'labels' => $months,
+                'data' => $avgProcessingTimes,
+                'resolvedCounts' => $resolvedCounts, // Monthly resolved counts
+                'processingTimes' => $allProcessingTimes, // Raw processing times for pie chart (selected month only)
+                'totalResolvedTickets' => count($allProcessingTimes), // Count for selected month
+                'isMonthly' => true // Flag to indicate this is monthly data
+            ];
+        } else {
+            // Default: last 6 months
+            $startDate = Carbon::now()->subMonths(5)->startOfMonth();
+            $endDate = Carbon::now()->endOfMonth();
+
+            $monthlyData = \App\Models\Ticket::select(
+                DB::raw('DATE_FORMAT(resolved_at, "%Y-%m") as month'),
+                DB::raw('COUNT(*) as resolved_count'),
+                DB::raw('AVG(TIMESTAMPDIFF(HOUR, created_at, resolved_at)) as avg_processing_hours')
+            )
+                ->where('status', 'selesai/completed')
+                ->whereNotNull('resolved_at')
+                ->whereNotNull('created_at')
+                ->whereBetween('resolved_at', [$startDate, $endDate])
+                ->groupBy('month')
+                ->orderBy('month')
+                ->get();
+
+            $months = [];
+            $avgProcessingTimes = [];
+            $resolvedCounts = [];
+            $allProcessingTimes = [];
+
+            for ($i = 0; $i < 6; $i++) {
+                $monthDate = $startDate->copy()->addMonths($i);
+                $monthKey = $monthDate->format('Y-m');
+                $months[] = $monthDate->format('M Y');
+
+                $data = $monthlyData->firstWhere('month', $monthKey);
+                $avgTime = $data ? round($data->avg_processing_hours, 1) : 0;
+                $resolvedCount = $data ? $data->resolved_count : 0;
+
+                $avgProcessingTimes[] = $avgTime;
+                $resolvedCounts[] = $resolvedCount;
+            }
+
+            // Get processing times for current month for pie chart
+            $currentMonthDate = Carbon::now();
+            $currentMonthTickets = \App\Models\Ticket::where('status', 'selesai/completed')
+                ->whereNotNull('resolved_at')
+                ->whereNotNull('created_at')
+                ->whereYear('resolved_at', $currentMonthDate->year)
+                ->whereMonth('resolved_at', $currentMonthDate->month)
+                ->get();
+
+            foreach ($currentMonthTickets as $ticket) {
                 $createdAt = Carbon::parse($ticket->created_at);
                 $resolvedAt = Carbon::parse($ticket->resolved_at);
                 $processingTimeHours = $createdAt->diffInHours($resolvedAt);
 
                 if ($processingTimeHours > 0) {
-                    $processingTimes[] = $processingTimeHours;
+                    $allProcessingTimes[] = $processingTimeHours;
                 }
-            }
-
-            // Generate daily data for the selected month
-            $days = [];
-            $avgProcessingTimes = [];
-
-            $daysInMonth = $endDate->day;
-            for ($i = 1; $i <= $daysInMonth; $i++) {
-                $date = $selectedDate->copy()->day($i);
-                $days[] = $date->format('j');
-
-                // Calculate average processing time for completed tickets on this date
-                $dayTickets = $resolvedTickets->filter(function ($ticket) use ($date) {
-                    return Carbon::parse($ticket->resolved_at)->isSameDay($date);
-                });
-
-                $avgTime = 0;
-                if ($dayTickets->count() > 0) {
-                    $totalHours = 0;
-                    foreach ($dayTickets as $ticket) {
-                        $createdAt = Carbon::parse($ticket->created_at);
-                        $resolvedAt = Carbon::parse($ticket->resolved_at);
-                        $totalHours += $createdAt->diffInHours($resolvedAt);
-                    }
-                    $avgTime = round($totalHours / $dayTickets->count(), 1);
-                }
-
-                $avgProcessingTimes[] = $avgTime;
             }
 
             return [
-                'labels' => $days,
+                'labels' => $months,
                 'data' => $avgProcessingTimes,
-                'processingTimes' => $processingTimes, // Raw processing times for pie chart
-                'totalResolvedTickets' => count($processingTimes) // Actual count of resolved tickets with processing times
-            ];
-        } else {
-            // Default: last 7 days
-            $last7Days = [];
-            $avgProcessingTimes = [];
-            $allProcessingTimes = [];
-
-            for ($i = 6; $i >= 0; $i--) {
-                $date = Carbon::now()->subDays($i);
-                $last7Days[] = $date->format('M j');
-
-                $dayTickets = \App\Models\Ticket::where('status', 'selesai/completed')
-                    ->whereNotNull('resolved_at')
-                    ->whereNotNull('created_at')
-                    ->whereDate('resolved_at', $date)
-                    ->get();
-
-                $avgTime = 0;
-                if ($dayTickets->count() > 0) {
-                    $totalHours = 0;
-                    foreach ($dayTickets as $ticket) {
-                        $createdAt = Carbon::parse($ticket->created_at);
-                        $resolvedAt = Carbon::parse($ticket->resolved_at);
-                        $hours = $createdAt->diffInHours($resolvedAt);
-                        $totalHours += $hours;
-
-                        if ($hours > 0) {
-                            $allProcessingTimes[] = $hours;
-                        }
-                    }
-                    $avgTime = round($totalHours / $dayTickets->count(), 1);
-                }
-
-                $avgProcessingTimes[] = $avgTime;
-            }
-
-            return [
-                'labels' => $last7Days,
-                'data' => $avgProcessingTimes,
+                'resolvedCounts' => $resolvedCounts,
                 'processingTimes' => $allProcessingTimes,
-                'totalResolvedTickets' => count($allProcessingTimes)
+                'totalResolvedTickets' => count($allProcessingTimes),
+                'isMonthly' => true
             ];
         }
     }

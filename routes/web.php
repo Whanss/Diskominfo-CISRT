@@ -82,6 +82,9 @@ Route::middleware(['admin.auth', 'prevent.guest.admin'])->prefix('admin')->name(
     // Accept/reject routes
     Route::post('tickets/{ticket}/accept', [TicketController::class, 'accept'])->name('tickets.accept');
     Route::post('tickets/{ticket}/reject', [TicketController::class, 'reject'])->name('tickets.reject');
+    
+    // Get ticket details for modal
+    Route::get('tickets/{ticket}/details', [TicketController::class, 'getDetails'])->name('tickets.details');
 
     // Work session management routes
     Route::post('tickets/{ticket}/start-session', [TicketController::class, 'startWorkSession'])->name('tickets.start-session');

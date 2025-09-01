@@ -10,7 +10,7 @@ class Ticket extends Model
         'code_tracking', 'judul', 'nama_pelapor', 'email', 'no_hp',
         'description', 'status', 'resolved_at', 'resolution_category', 'resolved_by',
         'kabupaten_id', 'kecamatan_id', 'accepted_at', 'processing_started_at',
-        'assigned_to', 'resolution_notes'
+        'assigned_to', 'resolution_notes', 'attachment_path'
     ];
 
     protected $casts = [
