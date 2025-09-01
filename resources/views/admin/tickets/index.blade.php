@@ -701,6 +701,114 @@
                 transform: rotate(360deg);
             }
         }
+
+        /* Pagination Styles */
+        .pagination-container {
+            padding: 24px;
+            border-top: 1px solid #e2e8f0;
+            background: #fafafa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .pagination-info {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .pagination-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pagination-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            border: 1px solid #d1d5db;
+            background: white;
+            color: #374151;
+            transition: all 0.2s ease;
+        }
+
+        .pagination-btn:hover:not(.disabled) {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+            text-decoration: none;
+            transform: translateY(-1px);
+        }
+
+        .pagination-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f9fafb;
+            color: #9ca3af;
+        }
+
+        .pagination-numbers {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin: 0 8px;
+        }
+
+        .pagination-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            border: 1px solid #d1d5db;
+            background: white;
+            color: #374151;
+            transition: all 0.2s ease;
+        }
+
+        .pagination-number:hover {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+            text-decoration: none;
+            transform: translateY(-1px);
+        }
+
+        .pagination-number.active {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Responsive pagination */
+        @media (max-width: 768px) {
+            .pagination-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .pagination-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .pagination-numbers {
+                order: -1;
+                margin: 0 0 8px 0;
+            }
+        }
     </style>
 
     <div class="modern-dashboard">
@@ -910,7 +1018,12 @@
                         Security Incident Tickets
                     </h2>
                     <div class="results-info">
-                        Showing {{ $tickets->count() }} of {{ $stats['total'] }} tickets
+                        @if ($tickets->total() > 0)
+                            Showing {{ $tickets->firstItem() }} to {{ $tickets->lastItem() }} of {{ $tickets->total() }}
+                            tickets
+                        @else
+                            No tickets found
+                        @endif
                     </div>
                 </div>
 
@@ -1030,6 +1143,59 @@
                             </div>
                         @endforeach
                     </div>
+
+                    <!-- Pagination -->
+                    @if ($tickets->hasPages())
+                        <div class="pagination-container">
+                            <div class="pagination-info">
+                                <span class="pagination-text">
+                                    Showing {{ $tickets->firstItem() }} to {{ $tickets->lastItem() }} of
+                                    {{ $tickets->total() }} tickets
+                                </span>
+                            </div>
+                            <div class="pagination-nav">
+                                {{-- Previous Page Link --}}
+                                @if ($tickets->onFirstPage())
+                                    <span class="pagination-btn disabled">
+                                        <i class="fas fa-chevron-left"></i>
+                                        Previous
+                                    </span>
+                                @else
+                                    <a href="{{ $tickets->appends(request()->query())->previousPageUrl() }}"
+                                        class="pagination-btn">
+                                        <i class="fas fa-chevron-left"></i>
+                                        Previous
+                                    </a>
+                                @endif
+
+                                {{-- Page Numbers --}}
+                                <div class="pagination-numbers">
+                                    @foreach ($tickets->appends(request()->query())->getUrlRange(1, $tickets->lastPage()) as $page => $url)
+                                        @if ($page == $tickets->currentPage())
+                                            <span class="pagination-number active">{{ $page }}</span>
+                                        @else
+                                            <a href="{{ $url }}"
+                                                class="pagination-number">{{ $page }}</a>
+                                        @endif
+                                    @endforeach
+                                </div>
+
+                                {{-- Next Page Link --}}
+                                @if ($tickets->hasMorePages())
+                                    <a href="{{ $tickets->appends(request()->query())->nextPageUrl() }}"
+                                        class="pagination-btn">
+                                        Next
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                @else
+                                    <span class="pagination-btn disabled">
+                                        Next
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
                 @endif
             </div>
         </div>
