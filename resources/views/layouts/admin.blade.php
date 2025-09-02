@@ -729,6 +729,37 @@
                             <span class="nav-text">Process Tickets</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.news*') || request()->routeIs('admin.news-categories*') ? 'active' : '' }} {{ request()->routeIs('admin.news*') || request()->routeIs('admin.news-categories*') ? '' : 'collapsed' }}"
+                            data-bs-toggle="collapse" href="#newsMenu" role="button"
+                            aria-expanded="{{ request()->routeIs('admin.news*') || request()->routeIs('admin.news-categories*') ? 'true' : 'false' }}"
+                            aria-controls="newsMenu">
+                            <div class="nav-icon">
+                                <i class="fas fa-newspaper"></i>
+                            </div>
+                            <span class="nav-text">Kelola Berita</span>
+                            <span class="nav-arrow"><i class="fas fa-chevron-right"></i></span>
+                        </a>
+                        <div class="collapse nav-collapse {{ request()->routeIs('admin.news*') || request()->routeIs('admin.news-categories*') ? 'show' : '' }}"
+                            id="newsMenu">
+                            <ul class="nav-items">
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('admin.news.index') ? 'active' : '' }}"
+                                        href="{{ route('admin.news.index') }}">
+                                        <div class="nav-icon"><i class="fas fa-list"></i></div>
+                                        <span class="nav-text">Daftar Berita</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('admin.news-categories*') ? 'active' : '' }}"
+                                        href="{{ route('admin.news-categories.index') }}">
+                                        <div class="nav-icon"><i class="fas fa-tags"></i></div>
+                                        <span class="nav-text">Kategori Berita</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
 
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('admin.tickets.export') ? 'active' : '' }}"
@@ -761,62 +792,12 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.layanan*') ? 'active' : '' }}"
-                            href="{{ route('admin.layanan.index') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.master-layanan*') ? 'active' : '' }}"
+                            href="{{ route('admin.master-layanan.index') }}">
                             <div class="nav-icon">
                                 <i class="fas fa-concierge-bell"></i>
                             </div>
                             <span class="nav-text">Layanan</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.news*') ? 'active' : '' }}"
-                            href="{{ route('admin.news.index') }}">
-                            <div class="nav-icon">
-                                <i class="fas fa-newspaper"></i>
-                            </div>
-                            <span class="nav-text">Kelola Berita</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Content Management Section -->
-            <div class="nav-section">
-                <div class="nav-heading">Content</div>
-                <ul class="nav-items">
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.news.create') ? 'active' : '' }}"
-                            href="{{ route('admin.news.create') }}">
-                            <div class="nav-icon">
-                                <i class="fas fa-plus-circle"></i>
-                            </div>
-                            <span class="nav-text">Tambah Berita</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Ticket Quick Actions -->
-            <div class="nav-section">
-                <div class="nav-heading">Ticket Actions</div>
-                <ul class="nav-items">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.tickets.index', ['status' => 'open']) }}">
-                            <div class="nav-icon">
-                                <i class="fas fa-folder-open"></i>
-                            </div>
-                            <span class="nav-text">Open Tickets</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.tickets.index', ['status' => 'closed']) }}">
-                            <div class="nav-icon">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <span class="nav-text">Closed Tickets</span>
                         </a>
                     </li>
                 </ul>

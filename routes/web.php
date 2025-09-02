@@ -66,8 +66,11 @@ Route::middleware(['admin.auth', 'prevent.guest.admin'])->prefix('admin')->name(
     // Resource routes
     Route::resource('kabupaten', KabupatenController::class);
     Route::resource('kecamatan', KecamatanController::class);
-    Route::resource('layanan', LayananController::class);
+    // Route::resource('layanan', LayananController::class); // disabled: using Master Layanan module
     Route::resource('news', AdminNewsController::class);
+    // New master data resources
+    Route::resource('master-layanan', \App\Http\Controllers\Admin\MasterLayananController::class);
+    Route::resource('news-categories', \App\Http\Controllers\Admin\NewsCategoryController::class);
 
     // Tickets - static routes FIRST (specific routes before parameterized ones)
     Route::get('tickets', [TicketController::class, 'adminIndex'])->name('tickets.index');

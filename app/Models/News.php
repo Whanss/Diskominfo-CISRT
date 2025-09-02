@@ -11,7 +11,8 @@ class News extends Model
         'title',
         'content',
         'image',
-        'category',
+        'category',     // legacy string category
+        'category_id',  // new FK to news_categories
         'is_published',
         'slug',
         'excerpt'
@@ -47,9 +48,24 @@ class News extends Model
         return $query->where('is_published', true);
     }
 
-    // Scope for category
+    // Relation to category
+    public function category()
+    {
+        return $this->belongsTo(\App\Models\NewsCategory::class, 'category_id');
+    }
+
+    // Scope for category (accepts id or slug or legacy string)
     public function scopeByCategory($query, $category)
     {
+        // If numeric, treat as category_id
+        if (is_numeric($category)) {
+            return $query->where('category_id', $category);
+        }
+        // Try resolve slug to id, else fallback to legacy string
+        $cat = \App\Models\NewsCategory::where('slug', $category)->first();
+        if ($cat) {
+            return $query->where('category_id', $cat->id);
+        }
         return $query->where('category', $category);
     }
 

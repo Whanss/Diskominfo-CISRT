@@ -39,19 +39,14 @@ class TicketController extends Controller
             'email' => 'required|email|max:255',
             'no_hp' => 'nullable|string|max:20',
             'description' => 'required|string',
-            'layanan_type' => 'required|string|in:phishing,malware,defacement,ddos,data_breach,other',
-            'layanan_custom' => 'nullable|string|max:255',
+            // layanan akan dipilih admin, bukan guest
             'attachment' => 'nullable|file|max:5120|mimes:pdf,doc,docx,xls,xlsx,png,jpg,jpeg,txt',
             'kabupaten_id' => 'required|exists:kabupaten,id',
             'kecamatan_id' => 'required|exists:kecamatan,id',
         ]);
 
-        // Normalize layanan value
-        if (($validated['layanan_type'] ?? null) === 'other') {
-            $validated['layanan_custom'] = $validated['layanan_custom'] ?? null;
-        } else {
-            $validated['layanan_custom'] = null;
-        }
+        // Hapus field layanan dari input guest (kompatibilitas lama)
+        unset($validated['layanan_type'], $validated['layanan_custom']);
 
         // Generate unique code_tracking
         do {
