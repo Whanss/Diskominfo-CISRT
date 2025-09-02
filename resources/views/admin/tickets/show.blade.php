@@ -185,14 +185,43 @@
                                 </div>
                             </div>
 
+                            <div class="mb-3">
+                                <strong>Jenis Layanan/Insiden:</strong>
+                                <div class="mt-2 p-3" style="background-color: #f8f9fc; border-radius: 6px; border-left: 4px solid #4e73df;">
+                                    @if($ticket->layanan_type === 'other' && $ticket->layanan_custom)
+                                        {{ $ticket->layanan_custom }}
+                                    @else
+                                        {{ ucfirst(str_replace('_',' ', $ticket->layanan_type ?? '-')) }}
+                                    @endif
+                                </div>
+                            </div>
+
                             @if ($ticket->attachment_path)
                                 <div class="mb-3">
-                                    <strong>Attachment:</strong>
+                                    <strong>Attachment dari Guest:</strong>
                                     <br>
                                     <a href="{{ Storage::url($ticket->attachment_path) }}" target="_blank"
                                         class="btn btn-outline-primary btn-sm mt-2">
-                                        <i class="fas fa-file"></i> View Attachment
+                                        <i class="fas fa-file"></i> Lihat/Download Lampiran
                                     </a>
+                                </div>
+                            @endif
+
+                            @if ($ticket->status === 'ditolak/rejected' && $ticket->rejection_reason)
+                                <div class="mb-3">
+                                    <strong>Alasan Penolakan:</strong>
+                                    <div class="mt-2 p-3" style="background-color: #fff5f5; border-radius: 6px; border-left: 4px solid #e74a3b;">
+                                        {{ $ticket->rejection_reason }}
+                                    </div>
+                                </div>
+                            @endif
+
+                            @if ($ticket->status === 'selesai/completed' && $ticket->resolution_notes)
+                                <div class="mb-3">
+                                    <strong>Catatan Penyelesaian:</strong>
+                                    <div class="mt-2 p-3" style="background-color: #ecfff4; border-radius: 6px; border-left: 4px solid #1cc88a;">
+                                        {{ $ticket->resolution_notes }}
+                                    </div>
                                 </div>
                             @endif
                         </div>
@@ -214,6 +243,10 @@
                                 </form>
                                 <form action="{{ route('admin.tickets.reject', $ticket) }}" method="POST">
                                     @csrf
+                                    <div class="form-group mb-2">
+                                        <label for="rejection_reason"><strong>Alasan Penolakan</strong></label>
+                                        <textarea name="rejection_reason" id="rejection_reason" class="form-control" rows="3" placeholder="Tuliskan alasan penolakan..." required></textarea>
+                                    </div>
                                     <button type="submit" class="btn btn-danger btn-block">
                                         <i class="fas fa-times"></i> Reject Ticket
                                     </button>

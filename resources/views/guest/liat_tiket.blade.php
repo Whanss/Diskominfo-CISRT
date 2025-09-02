@@ -165,7 +165,8 @@
         }
 
         .reporter-details {
-            min-width: 0; /* Prevents overflow */
+            min-width: 0;
+            /* Prevents overflow */
         }
 
         .reporter-details h3 {
@@ -364,9 +365,11 @@
             0% {
                 box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
             }
+
             50% {
                 box-shadow: 0 4px 12px rgba(255, 152, 0, 0.6);
             }
+
             100% {
                 box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
             }
@@ -555,6 +558,164 @@
         }
     </style>
 
+    <!-- Glass theme overrides for a cleaner CSIRT look -->
+    <style>
+        :root {
+            --accent: #2563eb;
+            /* blue accent */
+            --accent-weak: rgba(37, 99, 235, 0.2);
+            --card-bg: rgba(255, 255, 255, 0.72);
+            --card-border: rgba(148, 163, 184, 0.25);
+            --shadow: 0 8px 24px rgba(2, 6, 23, 0.08);
+            --text: #0f172a;
+            --muted: #475569;
+        }
+
+        body {
+            background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+        }
+
+        .ticket-header {
+            background: var(--card-bg) !important;
+            color: var(--text) !important;
+            border: 1px solid var(--card-border) !important;
+            border-left: 6px solid var(--accent) !important;
+            /* accent on header left */
+            box-shadow: var(--shadow) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .ticket-title {
+            color: var(--text) !important;
+        }
+
+        .ticket-subtitle {
+            color: var(--muted) !important;
+        }
+
+        .main-content,
+        .sidebar-card {
+            background: var(--card-bg) !important;
+            border: 1px solid var(--card-border) !important;
+            box-shadow: var(--shadow) !important;
+        }
+
+        .section {
+            border-bottom: 1px solid rgba(148, 163, 184, 0.25) !important;
+            border-left: 4px solid var(--accent-weak);
+            /* subtle left color cue */
+        }
+
+        .section-title {
+            color: var(--text) !important;
+        }
+
+        .section-title svg {
+            color: var(--accent) !important;
+        }
+
+        .description-content,
+        .reporter-info {
+            background: rgba(255, 255, 255, 0.55) !important;
+            border: 1px solid var(--card-border) !important;
+        }
+
+        .reporter-avatar {
+            background: var(--accent) !important;
+            box-shadow: none !important;
+        }
+
+        .status-badge {
+            background: rgba(148, 163, 184, 0.12) !important;
+            color: var(--text) !important;
+            border: 1px solid rgba(148, 163, 184, 0.3) !important;
+            box-shadow: none !important;
+        }
+
+        .status-pending {
+            background: rgba(100, 116, 139, 0.12) !important;
+            color: #334155 !important;
+            border-color: rgba(100, 116, 139, 0.3) !important;
+        }
+
+        .status-accepted {
+            background: rgba(37, 99, 235, 0.12) !important;
+            color: #1d4ed8 !important;
+            border-color: rgba(37, 99, 235, 0.3) !important;
+        }
+
+        .status-rejected {
+            background: rgba(239, 68, 68, 0.12) !important;
+            color: #b91c1c !important;
+            border-color: rgba(239, 68, 68, 0.3) !important;
+        }
+
+        .status-completed {
+            background: rgba(16, 185, 129, 0.12) !important;
+            color: #047857 !important;
+            border-color: rgba(16, 185, 129, 0.3) !important;
+        }
+
+        .btn-primary {
+            background: var(--accent) !important;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25) !important;
+        }
+
+        .btn-secondary {
+            color: var(--accent) !important;
+            border-color: var(--card-border) !important;
+        }
+
+        .timeline-item:not(:last-child)::after {
+            background: rgba(148, 163, 184, 0.3) !important;
+        }
+
+        .timeline-dot {
+            background: rgba(255, 255, 255, 0.6) !important;
+            border: 2px solid rgba(148, 163, 184, 0.6) !important;
+            color: var(--muted) !important;
+            box-shadow: none !important;
+        }
+
+        .timeline-dot.completed {
+            background: var(--accent) !important;
+            border-color: var(--accent) !important;
+            color: #fff !important;
+            box-shadow: none !important;
+        }
+
+        .timeline-dot.active {
+            background: transparent !important;
+            border-color: var(--accent) !important;
+            color: var(--accent) !important;
+            animation: none !important;
+        }
+
+        .timeline-dot.rejected {
+            background: rgba(239, 68, 68, 0.18) !important;
+            border-color: rgba(239, 68, 68, 0.5) !important;
+            color: #b91c1c !important;
+        }
+
+        .processing-time {
+            background: rgba(16, 185, 129, 0.12) !important;
+            border: 1px solid rgba(16, 185, 129, 0.3) !important;
+            color: #047857 !important;
+        }
+
+        .tracking-code {
+            background: rgba(241, 245, 249, 0.6) !important;
+            border-color: var(--card-border) !important;
+        }
+
+        .empty-state {
+            background: var(--card-bg) !important;
+            border-color: var(--card-border) !important;
+            box-shadow: var(--shadow) !important;
+        }
+    </style>
+
     <br><br><br>
 
     @if (!$ticket)
@@ -590,16 +751,20 @@
                     @switch($ticket->status)
                         @case('pending')
                             Menunggu Review
-                            @break
+                        @break
+
                         @case('diterima/approved')
                             Sedang diproses
-                            @break
+                        @break
+
                         @case('selesai/completed')
                             Selesai
-                            @break
+                        @break
+
                         @case('ditolak/rejected')
                             Ditolak
-                            @break
+                        @break
+
                         @default
                             {{ ucfirst($ticket->status) }}
                     @endswitch
@@ -614,7 +779,8 @@
                     <div class="section">
                         <h2 class="section-title">
                             <svg fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                                <path
+                                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                             </svg>
                             Informasi Pelapor
                         </h2>
@@ -627,14 +793,16 @@
                                 <div class="reporter-meta">
                                     <div class="reporter-meta-item">
                                         <svg fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                                            <path
+                                                d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
                                         </svg>
                                         <span>{{ $ticket->email }}</span>
                                     </div>
                                     @if ($ticket->no_hp)
                                         <div class="reporter-meta-item">
                                             <svg fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
+                                                <path
+                                                    d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
                                             </svg>
                                             <span>{{ $ticket->no_hp }}</span>
                                         </div>
@@ -642,7 +810,8 @@
                                     @if ($ticket->kabupaten)
                                         <div class="reporter-meta-item">
                                             <svg fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                                                <path
+                                                    d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                                             </svg>
                                             <span>{{ $ticket->kabupaten->nama }}</span>
                                         </div>
@@ -650,20 +819,24 @@
                                     @if ($ticket->kecamatan)
                                         <div class="reporter-meta-item">
                                             <svg fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                                                <path
+                                                    d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                                             </svg>
                                             <span>{{ $ticket->kecamatan->nama }}</span>
                                         </div>
                                     @endif
                                     <div class="reporter-meta-item">
                                         <svg fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" />
+                                            <path
+                                                d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" />
                                             <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
                                         </svg>
                                         <span>
                                             @if ($ticket->created_at)
                                                 @php
-                                                    $localTime = \Carbon\Carbon::parse($ticket->created_at)->setTimezone('Asia/Makassar');
+                                                    $localTime = \Carbon\Carbon::parse(
+                                                        $ticket->created_at,
+                                                    )->setTimezone('Asia/Makassar');
                                                 @endphp
                                                 {{ $localTime->format('d M Y, H:i') }} WITA
                                             @else
@@ -676,16 +849,120 @@
                         </div>
                     </div>
 
-                    <!-- Description -->
+                    <!-- Rincian Laporan -->
                     <div class="section">
                         <h2 class="section-title">
                             <svg fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M21 6h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1zm-4 6V3c0-.55-.45-1-1-1H3c-.55 0-1 .45-1 1v14l4-4h11c.55 0 1-.45 1-1z" />
+                                <path
+                                    d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-5 2h6v2H9V4zm0 4h6v2H9V8zm0 4h6v2H9v-2z" />
                             </svg>
-                            Deskripsi Masalah
+                            Rincian Laporan
                         </h2>
                         <div class="description-content">
-                            {{ $ticket->description }}
+                            <div style="display:grid; gap:14px;">
+                                <div>
+                                    <div style="font-weight:600; color:#4a148c; margin-bottom:6px;">Deskripsi Masalah</div>
+                                    <div>{{ $ticket->description }}</div>
+                                </div>
+                                <div>
+                                    <div style="font-weight:600; color:#4a148c; margin-bottom:6px;">Jenis Layanan/Insiden
+                                    </div>
+                                    <div>
+                                        @if ($ticket->layanan_type === 'other' && $ticket->layanan_custom)
+                                            {{ $ticket->layanan_custom }}
+                                        @else
+                                            {{ ucfirst(str_replace('_', ' ', $ticket->layanan_type ?? '-')) }}
+                                        @endif
+                                    </div>
+                                </div>
+                                @if ($ticket->attachment_path)
+                                    <div>
+                                        <div style="font-weight:600; color:#4a148c; margin-bottom:6px;">Lampiran</div>
+                                        <a href="{{ Storage::url($ticket->attachment_path) }}" target="_blank"
+                                            class="btn btn-primary" style="display:inline-block;">
+                                            Lihat/Download Lampiran
+                                        </a>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informasi Penanganan -->
+                    <div class="section">
+                        <h2 class="section-title">
+                            <svg fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Informasi Penanganan
+                        </h2>
+                        <div class="description-content">
+                            @switch($ticket->status)
+                                @case('pending')
+                                    <div>Menunggu review dari admin.</div>
+                                @break
+
+                                @case('diterima/approved')
+                                    <div style="display:grid; gap:8px;">
+                                        <div><strong>Status:</strong> Sedang diproses</div>
+                                        @if ($ticket->accepted_at)
+                                            @php $accepted = \Carbon\Carbon::parse($ticket->accepted_at)->setTimezone('Asia/Makassar'); @endphp
+                                            <div><strong>Diterima:</strong> {{ $accepted->format('d M Y, H:i') }} WITA</div>
+                                        @endif
+                                        @if (!empty($ticket->assigned_to))
+                                            <div><strong>Ditangani oleh:</strong> {{ $ticket->assigned_to }}</div>
+                                        @endif
+                                    </div>
+                                @break
+
+                                @case('ditolak/rejected')
+                                    <div
+                                        style="background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%); border:1px solid #ffcdd2; border-radius:6px; padding:12px;">
+                                        <div style="font-weight:600; color:#b71c1c; margin-bottom:6px;">Alasan Penolakan</div>
+                                        <div>{{ $ticket->rejection_reason }}</div>
+                                        @if ($ticket->resolved_at)
+                                            @php $rej = \Carbon\Carbon::parse($ticket->resolved_at)->setTimezone('Asia/Makassar'); @endphp
+                                            <div style="margin-top:6px; color:#8d6e63; font-size:12px;">Ditolak pada
+                                                {{ $rej->format('d M Y, H:i') }} WITA</div>
+                                        @endif
+                                    </div>
+                                @break
+
+                                @case('selesai/completed')
+                                    <div
+                                        style="display:grid; gap:10px; background: linear-gradient(135deg, #ecfff4 0%, #d9fbe7 100%); border:1px solid #c8e6c9; border-radius:6px; padding:12px;">
+                                        <div style="font-weight:600; color:#1b5e20;">Catatan Penyelesaian</div>
+                                        <div>{{ $ticket->resolution_notes }}</div>
+                                        <div style="display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:#2e7d32;">
+                                            @if ($ticket->resolved_at)
+                                                @php $res = \Carbon\Carbon::parse($ticket->resolved_at)->setTimezone('Asia/Makassar'); @endphp
+                                                <span>Selesai: {{ $res->format('d M Y, H:i') }} WITA</span>
+                                            @endif
+                                            @if ($ticket->accepted_at && $ticket->resolved_at)
+                                                @php
+                                                    $processingTime = \Carbon\Carbon::parse(
+                                                        $ticket->accepted_at,
+                                                    )->diffInMinutes(\Carbon\Carbon::parse($ticket->resolved_at));
+                                                    $hours = floor($processingTime / 60);
+                                                    $minutes = $processingTime % 60;
+                                                @endphp
+                                                <span>Waktu Pengerjaan: @if ($hours > 0)
+                                                        {{ $hours }}j {{ $minutes }}m
+                                                    @else
+                                                        {{ $minutes }}m
+                                                    @endif
+                                                </span>
+                                            @endif
+                                            @if (!empty($ticket->resolved_by))
+                                                <span>Ditangani oleh: {{ $ticket->resolved_by }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @break
+
+                                @default
+                                    <div>Status: {{ ucfirst($ticket->status) }}</div>
+                            @endswitch
                         </div>
                     </div>
                 </div>
@@ -696,7 +973,8 @@
                     <div class="sidebar-card">
                         <h3 class="sidebar-title">
                             <svg fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-5 2h6v2H9V4zm0 4h6v2H9V8zm0 4h6v2H9v-2z" />
+                                <path
+                                    d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-5 2h6v2H9V4zm0 4h6v2H9V8zm0 4h6v2H9v-2z" />
                             </svg>
                             Detail Tiket
                         </h3>
@@ -707,20 +985,25 @@
                         <div class="info-item">
                             <span class="info-label">Status</span>
                             <span class="info-value">
-                                <span class="status-badge {{ $statusClass }}" style="position: static; padding: 4px 8px; font-size: 10px;">
+                                <span class="status-badge {{ $statusClass }}"
+                                    style="position: static; padding: 4px 8px; font-size: 10px;">
                                     @switch($ticket->status)
                                         @case('pending')
                                             Menunggu
-                                            @break
+                                        @break
+
                                         @case('diterima/approved')
                                             Sedang diproses, Tunggu yaa
-                                            @break
+                                        @break
+
                                         @case('selesai/completed')
                                             Selesai
-                                            @break
+                                        @break
+
                                         @case('ditolak/rejected')
                                             Ditolak
-                                            @break
+                                        @break
+
                                         @default
                                             {{ ucfirst($ticket->status) }}
                                     @endswitch
@@ -732,7 +1015,9 @@
                             <span class="info-value">
                                 @if ($ticket->created_at)
                                     @php
-                                        $localTime = \Carbon\Carbon::parse($ticket->created_at)->setTimezone('Asia/Makassar');
+                                        $localTime = \Carbon\Carbon::parse($ticket->created_at)->setTimezone(
+                                            'Asia/Makassar',
+                                        );
                                     @endphp
                                     {{ $localTime->format('d M Y') }}
                                 @else
@@ -745,7 +1030,9 @@
                             <span class="info-value">
                                 @if ($ticket->created_at)
                                     @php
-                                        $localTime = \Carbon\Carbon::parse($ticket->created_at)->setTimezone('Asia/Makassar');
+                                        $localTime = \Carbon\Carbon::parse($ticket->created_at)->setTimezone(
+                                            'Asia/Makassar',
+                                        );
                                     @endphp
                                     {{ $localTime->format('H:i') }} WITA
                                 @else
@@ -756,7 +1043,9 @@
 
                         @if ($ticket->status === 'selesai/completed' && $ticket->resolved_at && $ticket->accepted_at)
                             @php
-                                $processingTime = \Carbon\Carbon::parse($ticket->accepted_at)->diffInMinutes(\Carbon\Carbon::parse($ticket->resolved_at));
+                                $processingTime = \Carbon\Carbon::parse($ticket->accepted_at)->diffInMinutes(
+                                    \Carbon\Carbon::parse($ticket->resolved_at),
+                                );
                                 $hours = floor($processingTime / 60);
                                 $minutes = $processingTime % 60;
                             @endphp
@@ -765,8 +1054,9 @@
                                 <span class="info-value">
                                     <div class="processing-time">
                                         <svg fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/>
-                                            <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                                            <path
+                                                d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" />
+                                            <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
                                         </svg>
                                         @if ($hours > 0)
                                             {{ $hours }}j {{ $minutes }}m
@@ -796,7 +1086,9 @@
                                     <div class="timeline-time">
                                         @if ($ticket->created_at)
                                             @php
-                                                $localTime = \Carbon\Carbon::parse($ticket->created_at)->setTimezone('Asia/Makassar');
+                                                $localTime = \Carbon\Carbon::parse($ticket->created_at)->setTimezone(
+                                                    'Asia/Makassar',
+                                                );
                                             @endphp
                                             {{ $localTime->format('d M Y, H:i') }} WITA
                                         @else
@@ -851,7 +1143,9 @@
                                             <div class="timeline-time">
                                                 @if ($ticket->resolved_at)
                                                     @php
-                                                        $resolvedTime = \Carbon\Carbon::parse($ticket->resolved_at)->setTimezone('Asia/Makassar');
+                                                        $resolvedTime = \Carbon\Carbon::parse(
+                                                            $ticket->resolved_at,
+                                                        )->setTimezone('Asia/Makassar');
                                                     @endphp
                                                     Selesai pada {{ $resolvedTime->format('d M Y, H:i') }} WITA
                                                 @else
@@ -885,14 +1179,16 @@
                     <div class="sidebar-card">
                         <h3 class="sidebar-title">
                             <svg fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+                                <path
+                                    d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
                             </svg>
                             Tindakan
                         </h3>
                         <div class="action-buttons">
                             <button class="btn btn-primary" onclick="window.print()">
                                 <svg fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z" />
+                                    <path
+                                        d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z" />
                                 </svg>
                                 Cetak Tiket
                             </button>
@@ -904,7 +1200,8 @@
                             </a>
                             <a href="/guest/lacak_tiket" class="btn btn-secondary">
                                 <svg fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+                                    <path
+                                        d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
                                 </svg>
                                 Lacak Tiket Lain
                             </a>

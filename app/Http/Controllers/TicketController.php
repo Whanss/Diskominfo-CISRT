@@ -39,10 +39,19 @@ class TicketController extends Controller
             'email' => 'required|email|max:255',
             'no_hp' => 'nullable|string|max:20',
             'description' => 'required|string',
-            'attachment' => 'nullable|file|max:5120', // 5MB max
+            'layanan_type' => 'required|string|in:phishing,malware,defacement,ddos,data_breach,other',
+            'layanan_custom' => 'nullable|string|max:255',
+            'attachment' => 'nullable|file|max:5120|mimes:pdf,doc,docx,xls,xlsx,png,jpg,jpeg,txt',
             'kabupaten_id' => 'required|exists:kabupaten,id',
             'kecamatan_id' => 'required|exists:kecamatan,id',
         ]);
+
+        // Normalize layanan value
+        if (($validated['layanan_type'] ?? null) === 'other') {
+            $validated['layanan_custom'] = $validated['layanan_custom'] ?? null;
+        } else {
+            $validated['layanan_custom'] = null;
+        }
 
         // Generate unique code_tracking
         do {
@@ -191,7 +200,9 @@ class TicketController extends Controller
     public function reject(Ticket $ticket)
     {
         try {
+            $rejectionReason = request()->input('rejection_reason');
             $ticket->status = 'ditolak/rejected';
+            $ticket->rejection_reason = $rejectionReason;
             $ticket->resolved_at = now();
             $ticket->save();
 
@@ -323,7 +334,9 @@ class TicketController extends Controller
     public function complete(Ticket $ticket)
     {
         $oldStatus = $ticket->status;
+        $resolutionNotes = request()->input('resolution_notes');
         $ticket->status = 'selesai/completed';
+        $ticket->resolution_notes = $resolutionNotes;
         $ticket->resolved_at = now();
         $ticket->save();
 
