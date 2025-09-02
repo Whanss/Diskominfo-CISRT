@@ -1705,8 +1705,8 @@
         let currentRange = {{ $monthsToShow }};
         let currentDayRange = 30; // Default: show all days in month
         let ticketChart, processingTimeChart;
-        const maxNavigableMonth = '{{ Carbon\Carbon::now()->addMonths(3)->format('Y-m') }}';
-        const minNavigableMonth = '{{ Carbon\Carbon::now()->subMonths(24)->format('Y-m') }}';
+        const maxNavigableMonth = '{{ Carbon\Carbon::now()->addYears(2)->format('Y-m') }}';
+        const minNavigableMonth = '{{ Carbon\Carbon::now()->subYears(10)->format('Y-m') }}';
 
         /* =========  HELPER FUNCTIONS  ========= */
         function formatMonthDisplay(monthString) {
@@ -2511,9 +2511,9 @@
                     <p>${ticket.deskripsi || 'Tidak ada deskripsi'}</p>
 
                     ${ticket.attachments && ticket.attachments.length > 0 ? `
-                                    <div class="ticket-attachments">
-                                        <h6><i class="fas fa-paperclip"></i> Lampiran</h6>
-                                        ${ticket.attachments.map(att => `
+                                        <div class="ticket-attachments">
+                                            <h6><i class="fas fa-paperclip"></i> Lampiran</h6>
+                                            ${ticket.attachments.map(att => `
                                 <div class="attachment-item">
                                     <div class="attachment-icon">
                                         <i class="fas fa-file"></i>
@@ -2527,8 +2527,8 @@
                                     </a>
                                 </div>
                             `).join('')}
-                                    </div>
-                                ` : ''}
+                                        </div>
+                                    ` : ''}
                 </div>
             `;
 
@@ -2865,6 +2865,30 @@
                     .then(d => updateStats(d))
                     .catch(console.error);
             }, 30000);
+        });
+
+        // Global guard to prevent invalid hash selectors and cyber risks from '#'
+        function qsSafe(selector) {
+            if (!selector || selector === '#' || typeof selector !== 'string') return null;
+            try {
+                return document.querySelector(selector);
+            } catch {
+                return null;
+            }
+        }
+
+        document.addEventListener('click', (e) => {
+            const a = e.target.closest('a[href^="#"]');
+            if (!a) return;
+            const href = a.getAttribute('href');
+            if (!href || href === '#') {
+                e.preventDefault();
+                return;
+            }
+            const target = qsSafe(href);
+            if (!target) {
+                e.preventDefault();
+            }
         });
     </script>
 @endsection

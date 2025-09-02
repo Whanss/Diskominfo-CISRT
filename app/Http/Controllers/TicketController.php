@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 
 class TicketController extends Controller
 {
@@ -348,10 +349,21 @@ class TicketController extends Controller
         $monthlyStats = $this->getMonthlyStats($currentMonth);
     }
 
-    public function getCalendarData(Request $request)
+    /**
+     * Build calendar events array from WorkSession or Ticket data within a date range.
+     *
+     * Request accepts optional 'start' and 'end' (Y-m-d or ISO8601). Returns list of events for FullCalendar.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getCalendarData(Request $request): JsonResponse
     {
-        $start = Carbon::parse($request->start ?? now()->startOfMonth());
-        $end = Carbon::parse($request->end ?? now()->endOfMonth());
+        // Normalize date inputs to Carbon instances
+        $startInput = $request->input('start');
+        $endInput = $request->input('end');
+        $start = $startInput ? Carbon::parse($startInput) : now()->startOfMonth();
+        $end = $endInput ? Carbon::parse($endInput) : now()->endOfMonth();
 
         $events = [];
 
@@ -359,35 +371,34 @@ class TicketController extends Controller
         $workSessionsByDate = WorkSession::with(['ticket'])
             ->whereBetween('started_at', [$start, $end])
             ->where('status', 'completed')
+            ->whereNotNull('started_at')
             ->get()
-            ->groupBy(function ($session) {
-                return $session->started_at->format('Y-m-d');
+            ->groupBy(function (WorkSession $session) {
+                return Carbon::parse($session->started_at)->format('Y-m-d');
             });
 
-        // If we have work sessions, use them (separate completed vs in-progress)
+        // Get in-progress work sessions
         $inProgressSessionsByDate = WorkSession::with(['ticket'])
             ->whereBetween('started_at', [$start, $end])
             ->whereIn('status', ['active', 'paused'])
+            ->whereNotNull('started_at')
             ->get()
-            ->groupBy(function ($session) {
-                return $session->started_at->format('Y-m-d');
+            ->groupBy(function (WorkSession $session) {
+                return Carbon::parse($session->started_at)->format('Y-m-d');
             });
 
-        $allDates = collect($workSessionsByDate->keys())->merge($inProgressSessionsByDate->keys())->unique();
+        // Combine all dates that have work sessions
+        $allDates = collect($workSessionsByDate->keys())
+            ->merge($inProgressSessionsByDate->keys())
+            ->unique()
+            ->values();
 
         foreach ($allDates as $date) {
             $completed = $workSessionsByDate->get($date, collect());
             $inProgress = $inProgressSessionsByDate->get($date, collect());
 
             $completedDuration = $completed->sum('duration');
-            $inProgressDuration = $inProgress->sum(function ($s) {
-                // active: duration till now + accumulated; paused: use stored duration
-                if ($s->status === 'active') {
-                    return ($s->duration ?? 0) + now()->diffInSeconds($s->started_at);
-                }
-                return $s->duration ?? 0;
-            });
-
+            $inProgressDuration = $this->calculateInProgressDuration($inProgress);
             $totalDuration = $completedDuration + $inProgressDuration;
 
             $completedTicketIds = $completed->pluck('ticket_id');
@@ -398,7 +409,7 @@ class TicketController extends Controller
 
             $events[] = [
                 'id' => 'work-' . $date,
-                'title' => "{$formattedTime} ({$ticketCountTotal} tiket)",
+                'title' => sprintf('%s (%d tiket)', $formattedTime, $ticketCountTotal),
                 'start' => $date,
                 'backgroundColor' => $this->getColorByDuration($totalDuration),
                 'borderColor' => $this->getColorByDuration($totalDuration),
@@ -408,7 +419,6 @@ class TicketController extends Controller
                     'formatted_duration' => $formattedTime,
                     'ticket_count' => $ticketCountTotal,
                     'sessions_count' => $completed->count() + $inProgress->count(),
-                    // breakdowns
                     'completed_duration' => $completedDuration,
                     'formatted_completed_duration' => $this->formatDuration($completedDuration),
                     'in_progress_duration' => $inProgressDuration,
@@ -419,61 +429,95 @@ class TicketController extends Controller
             ];
         }
 
-        // FALLBACK: If no work sessions, use ticket data (accepted_at to resolved_at or now)
+        // FALLBACK: If no work sessions, use ticket data
         if (empty($events)) {
-            $ticketsByDate = Ticket::where('status', '!=', 'pending')
-                ->where(function ($query) use ($start, $end) {
-                    $query->whereBetween('accepted_at', [$start, $end])
-                        ->orWhereBetween('resolved_at', [$start, $end]);
-                })
-                ->whereNotNull('accepted_at')
-                ->get()
-                ->groupBy(function ($ticket) {
-                    // Group by the date when ticket was being worked on
-                    if ($ticket->resolved_at) {
-                        return $ticket->resolved_at->format('Y-m-d');
-                    } else if ($ticket->accepted_at) {
-                        return $ticket->accepted_at->format('Y-m-d');
-                    }
-                    return null;
-                })
-                ->filter(); // Remove null keys
-
-            foreach ($ticketsByDate as $date => $tickets) {
-                $totalDuration = 0;
-                $ticketCount = $tickets->count();
-
-                foreach ($tickets as $ticket) {
-                    if ($ticket->accepted_at && $ticket->resolved_at) {
-                        $totalDuration += $ticket->accepted_at->diffInSeconds($ticket->resolved_at);
-                    } else if ($ticket->accepted_at) {
-                        // For ongoing tickets, calculate time from accepted_at to now
-                        $totalDuration += $ticket->accepted_at->diffInSeconds(now());
-                    }
-                }
-
-                $formattedTime = $this->formatDuration($totalDuration);
-
-                if ($totalDuration > 0) { // Only show if there's actual work time
-                    $events[] = [
-                        'id' => 'ticket-' . $date,
-                        'title' => "{$formattedTime} ({$ticketCount} tiket)",
-                        'start' => $date,
-                        'backgroundColor' => $this->getColorByDuration($totalDuration),
-                        'borderColor' => $this->getColorByDuration($totalDuration),
-                        'extendedProps' => [
-                            'type' => 'ticket_fallback',
-                            'duration' => $totalDuration,
-                            'ticket_count' => $ticketCount,
-                            'sessions_count' => $ticketCount,
-                            'formatted_duration' => $formattedTime
-                        ]
-                    ];
-                }
-            }
+            $events = $this->getTicketFallbackEvents($start, $end);
         }
 
         return response()->json($events);
+    }
+
+    /**
+     * Calculate total duration for in-progress work sessions
+     */
+    private function calculateInProgressDuration($inProgressSessions)
+    {
+        return $inProgressSessions->sum(function ($session) {
+            if ($session->status === 'active') {
+                return ($session->duration ?? 0) + now()->diffInSeconds($session->started_at);
+            }
+            return $session->duration ?? 0;
+        });
+    }
+
+    /**
+     * Get fallback events from ticket data when work sessions are not available
+     */
+    private function getTicketFallbackEvents($start, $end)
+    {
+        $events = [];
+
+        $ticketsByDate = Ticket::where('status', '!=', 'pending')
+            ->where(function ($query) use ($start, $end) {
+                $query->whereBetween('accepted_at', [$start, $end])
+                    ->orWhereBetween('resolved_at', [$start, $end]);
+            })
+            ->whereNotNull('accepted_at')
+            ->get()
+            ->groupBy(function (Ticket $ticket) {
+                if ($ticket->resolved_at) {
+                    return $ticket->resolved_at->format('Y-m-d');
+                }
+                if ($ticket->accepted_at) {
+                    return $ticket->accepted_at->format('Y-m-d');
+                }
+                return null;
+            })
+            ->filter(); // Remove null keys
+
+        foreach ($ticketsByDate as $date => $tickets) {
+            $totalDuration = $this->calculateTicketsDuration($tickets);
+            $ticketCount = $tickets->count();
+            $formattedTime = $this->formatDuration($totalDuration);
+
+            if ($totalDuration > 0) {
+                $events[] = [
+                    'id' => 'ticket-' . $date,
+                    'title' => sprintf('%s (%d tiket)', $formattedTime, $ticketCount),
+                    'start' => $date,
+                    'backgroundColor' => $this->getColorByDuration($totalDuration),
+                    'borderColor' => $this->getColorByDuration($totalDuration),
+                    'extendedProps' => [
+                        'type' => 'ticket_fallback',
+                        'duration' => $totalDuration,
+                        'ticket_count' => $ticketCount,
+                        'sessions_count' => $ticketCount,
+                        'formatted_duration' => $formattedTime
+                    ]
+                ];
+            }
+        }
+
+        return $events;
+    }
+
+    /**
+     * Calculate total duration for a collection of tickets
+     */
+    private function calculateTicketsDuration($tickets)
+    {
+        $totalDuration = 0;
+
+        foreach ($tickets as $ticket) {
+            if ($ticket->accepted_at && $ticket->resolved_at) {
+                $totalDuration += $ticket->accepted_at->diffInSeconds($ticket->resolved_at);
+            } else if ($ticket->accepted_at) {
+                // For ongoing tickets, calculate time from accepted_at to now
+                $totalDuration += $ticket->accepted_at->diffInSeconds(now());
+            }
+        }
+
+        return $totalDuration;
     }
 
     public function getDayDetails($date)
@@ -524,7 +568,7 @@ class TicketController extends Controller
                     'admin_name' => optional($session->admin)->name ?? 'Unknown Admin',
                     'started_at' => $startTime,
                     'completed_at' => $endTime,
-                    'duration' => $this->formatDuration($session->status === 'active' ? (int)($session->duration ?? 0) + now()->diffInSeconds($session->started_at) : (int)($session->duration ?? 0)),
+                    'duration' => $this->formatDuration($session->status === 'active' ? ($session->duration ?? 0) + now()->diffInSeconds($session->started_at) : ($session->duration ?? 0)),
                     'status' => $session->status,
                     'time_range' => $session->completed_at ? "{$startTime} - {$endTime}" : "Started at {$startTime}"
                 ];

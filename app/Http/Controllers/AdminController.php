@@ -590,16 +590,16 @@ class AdminController extends Controller
             // STANDARDIZED STATUS HANDLING
             switch ($ticket->status) {
                 case 'pending':
-                    $statusBadge = '<span class="badge warning">⏳ Pending</span>';
+                    $statusBadge = '<span class="badge warning">Pending</span>';
                     break;
                 case 'diterima/approved':
-                    $statusBadge = '<span class="badge success">✅ Diterima/Approved</span>';
+                    $statusBadge = '<span class="badge success">Diterima/Approved</span>';
                     break;
                 case 'selesai/completed':
-                    $statusBadge = '<span class="badge info">🎯 Resolved</span>';
+                    $statusBadge = '<span class="badge info">Resolved</span>';
                     break;
                 case 'ditolak/rejected':
-                    $statusBadge = '<span class="badge danger">❌ Ditolak/Rejected</span>';
+                    $statusBadge = '<span class="badge danger">Ditolak/Rejected</span>';
                     break;
                 default:
                     $statusBadge = '<span class="badge secondary">' . ucfirst($ticket->status) . '</span>';
