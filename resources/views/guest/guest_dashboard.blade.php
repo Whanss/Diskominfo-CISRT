@@ -28,6 +28,256 @@
     <!-- Main CSS File -->
     <link href="{{ asset('template/Dashboard/assets/css/main.css') }}" rel="stylesheet">
 
+    <!-- Custom Network Animation CSS -->
+    <style>
+        /* Network Animation Background */
+        .network-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            overflow: hidden;
+        }
+
+        .network-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 60%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+        }
+
+        .network-node {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #3b82f6;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        .network-line {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+            opacity: 0.3;
+            animation: flow 3s infinite linear;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: scale(1.5);
+                opacity: 1;
+            }
+        }
+
+        @keyframes flow {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100vw);
+            }
+        }
+
+        /* Ensure content is above network background */
+        .main {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Subtle overlay for better text readability */
+        .hero,
+        .about,
+        .services,
+        .features {
+            position: relative;
+        }
+
+        .hero::before,
+        .about::before,
+        .services::before,
+        .features::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: -1;
+        }
+
+        /* CSIRT Professional Styling */
+        :root {
+            --csirt-primary: #1a365d;
+            --csirt-secondary: #2d3748;
+            --csirt-accent: #e53e3e;
+            --csirt-warning: #d69e2e;
+            --csirt-success: #38a169;
+            --csirt-info: #3182ce;
+            --csirt-dark: #1a202c;
+            --csirt-light: #f7fafc;
+        }
+
+        /* Security Intelligence Section */
+        .recent-posts .post-item {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(26, 54, 93, 0.08);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .recent-posts .post-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(26, 54, 93, 0.15);
+            border-color: var(--csirt-primary);
+        }
+
+        .recent-posts .post-img {
+            width: 120px;
+            height: 120px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .recent-posts .post-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .recent-posts .post-content {
+            padding: 1.5rem;
+            flex: 1;
+        }
+
+        .recent-posts .post-meta {
+            margin-bottom: 0.75rem;
+        }
+
+        .recent-posts .post-meta .badge {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 0.5rem;
+        }
+
+        .recent-posts .post-date {
+            color: #64748b;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .recent-posts h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .recent-posts h3 a {
+            color: var(--csirt-dark);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .recent-posts h3 a:hover {
+            color: var(--csirt-primary);
+        }
+
+        .recent-posts p {
+            color: #64748b;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        /* Widgets */
+        .widget {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(26, 54, 93, 0.08);
+            border: 1px solid #e2e8f0;
+        }
+
+        .widget h4 {
+            color: var(--csirt-dark);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .threat-level-widget .threat-indicator {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .threat-level-widget .level-text {
+            display: block;
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+
+        .threat-level-widget .level-description {
+            display: block;
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-top: 0.25rem;
+        }
+
+        /* Color overrides */
+        .bg-danger {
+            background-color: var(--csirt-accent) !important;
+        }
+
+        .bg-warning {
+            background-color: var(--csirt-warning) !important;
+        }
+
+        .bg-success {
+            background-color: var(--csirt-success) !important;
+        }
+
+        .bg-info {
+            background-color: var(--csirt-info) !important;
+        }
+
+        .bg-primary {
+            background-color: var(--csirt-primary) !important;
+        }
+    </style>
+
     <!-- =======================================================
   * Template Name: FlexStart
   * Template URL: https://bootstrapmade.com/flexstart-bootstrap-startup-template/
@@ -38,6 +288,8 @@
 </head>
 
 <body class="index-page">
+    <!-- Network Animation Background -->
+    <div class="network-bg" id="networkBg"></div>
 
     <header id="header" class="header d-flex align-items-center fixed-top">
         <div class="container-fluid container-xl position-relative d-flex align-items-center">
@@ -62,6 +314,7 @@
                     <li><a href="#about">Tentang Kami</a></li>
                     <li><a href="#services">layanan</a></li>
                     <li><a href="#portfolio">Berita Terkini</a></li>
+                    <li><a href="{{ route('guest.news.index') }}">Semua Berita</a></li>
 
                 </ul>
             </nav><!-- End Nav Menu -->
@@ -228,8 +481,8 @@
 
             <!-- Section Title -->
             <div class="container section-title" data-aos="fade-up">
-                <h2>Features</h2>
-                <p>Our Advacedd Features<br></p>
+                <h2>Keunggulan Kami</h2>
+                <p>Fitur-fitur Unggulan CSIRT Lombok Tengah<br></p>
             </div><!-- End Section Title -->
 
             <div class="container">
@@ -246,43 +499,43 @@
 
                             <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
                                 <div class="feature-box d-flex align-items-center">
-                                    <i class="bi bi-check"></i>
-                                    <h3>Eos aspernatur rem</h3>
+                                    <i class="bi bi-shield-check"></i>
+                                    <h3>Deteksi Ancaman Real-time</h3>
                                 </div>
                             </div><!-- End Feature Item -->
 
                             <div class="col-md-6" data-aos="fade-up" data-aos-delay="300">
                                 <div class="feature-box d-flex align-items-center">
-                                    <i class="bi bi-check"></i>
-                                    <h3>Facilis neque ipsa</h3>
+                                    <i class="bi bi-lightning-charge"></i>
+                                    <h3>Respons Cepat 24/7</h3>
                                 </div>
                             </div><!-- End Feature Item -->
 
                             <div class="col-md-6" data-aos="fade-up" data-aos-delay="400">
                                 <div class="feature-box d-flex align-items-center">
-                                    <i class="bi bi-check"></i>
-                                    <h3>Volup amet volupt</h3>
+                                    <i class="bi bi-people"></i>
+                                    <h3>Tim Ahli Berpengalaman</h3>
                                 </div>
                             </div><!-- End Feature Item -->
 
                             <div class="col-md-6" data-aos="fade-up" data-aos-delay="500">
                                 <div class="feature-box d-flex align-items-center">
-                                    <i class="bi bi-check"></i>
-                                    <h3>Rerum omnis sint</h3>
+                                    <i class="bi bi-graph-up"></i>
+                                    <h3>Analisis Forensik Digital</h3>
                                 </div>
                             </div><!-- End Feature Item -->
 
                             <div class="col-md-6" data-aos="fade-up" data-aos-delay="600">
                                 <div class="feature-box d-flex align-items-center">
-                                    <i class="bi bi-check"></i>
-                                    <h3>Alias possimus</h3>
+                                    <i class="bi bi-book"></i>
+                                    <h3>Edukasi Keamanan Siber</h3>
                                 </div>
                             </div><!-- End Feature Item -->
 
                             <div class="col-md-6" data-aos="fade-up" data-aos-delay="700">
                                 <div class="feature-box d-flex align-items-center">
-                                    <i class="bi bi-check"></i>
-                                    <h3>Repellendus molli</h3>
+                                    <i class="bi bi-gear"></i>
+                                    <h3>Solusi Terintegrasi</h3>
                                 </div>
                             </div><!-- End Feature Item -->
 
@@ -316,28 +569,30 @@
                             </div><!-- End Feature Item -->
 
                             <div class="col-md-6 icon-box">
-                                <i class="bi bi-card-checklist"></i>
+                                <i class="bi bi-bug"></i>
                                 <div>
-                                    <h4>Ullamco laboris nisi</h4>
-                                    <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-                                        deserunt</p>
+                                    <h4>Malware & Ransomware</h4>
+                                    <p>Perangkat lunak berbahaya yang dapat merusak sistem dan mengenkripsi data untuk
+                                        meminta tebusan</p>
                                 </div>
                             </div><!-- End Feature Item -->
 
                             <div class="col-md-6 icon-box">
-                                <i class="bi bi-dribbble"></i>
+                                <i class="bi bi-wifi"></i>
                                 <div>
-                                    <h4>Labore consequatur</h4>
-                                    <p>Aut suscipit aut cum nemo deleniti aut omnis. Doloribus ut maiores omnis facere
+                                    <h4>Serangan DDoS</h4>
+                                    <p>Serangan yang membanjiri server dengan traffic palsu untuk melumpuhkan layanan
+                                        online
                                     </p>
                                 </div>
                             </div><!-- End Feature Item -->
 
                             <div class="col-md-6 icon-box">
-                                <i class="bi bi-filter-circle"></i>
+                                <i class="bi bi-person-x"></i>
                                 <div>
-                                    <h4>Beatae veritatis</h4>
-                                    <p>Expedita veritatis consequuntur nihil tempore laudantium vitae denat pacta</p>
+                                    <h4>Social Engineering</h4>
+                                    <p>Manipulasi psikologis untuk mendapatkan informasi rahasia atau akses tidak sah ke
+                                        sistem</p>
                                 </div>
                             </div><!-- End Feature Item -->
 
@@ -350,10 +605,11 @@
                             </div><!-- End Feature Item -->
 
                             <div class="col-md-6 icon-box">
-                                <i class="bi bi-patch-check"></i>
+                                <i class="bi bi-database-lock"></i>
                                 <div>
-                                    <h4>Explicabo consectetur</h4>
-                                    <p>Est autem dicta beatae suscipit. Sint veritatis et sit quasi ab aut inventore</p>
+                                    <h4>Kebocoran Data</h4>
+                                    <p>Insiden dimana data sensitif diakses, dicuri, atau diungkapkan tanpa izin kepada
+                                        pihak yang tidak berwenang</p>
                                 </div>
                             </div><!-- End Feature Item -->
 
@@ -379,7 +635,7 @@
             <!-- Section Title -->
             <div class="container section-title" data-aos="fade-up">
                 <h2>F.A.Q</h2>
-                <p>Frequently Asked Questions</p>
+                <p>Pertanyaan yang Sering Diajukan</p>
             </div><!-- End Section Title -->
 
             <div class="container">
@@ -391,33 +647,33 @@
                         <div class="faq-container">
 
                             <div class="faq-item faq-active">
-                                <h3>Non consectetur a erat nam at lectus urna duis?</h3>
+                                <h3>Apa itu CSIRT dan apa fungsinya?</h3>
                                 <div class="faq-content">
-                                    <p>Feugiat pretium nibh ipsum consequat. Tempus iaculis urna id volutpat lacus
-                                        laoreet non curabitur gravida. Venenatis lectus magna fringilla urna porttitor
-                                        rhoncus dolor purus non.</p>
+                                    <p>CSIRT (Computer Security Incident Response Team) adalah tim yang bertugas
+                                        menangani insiden keamanan siber. Kami berfungsi untuk mencegah, mendeteksi,
+                                        menganalisis, dan merespons ancaman keamanan siber yang dapat merugikan
+                                        organisasi atau masyarakat.</p>
                                 </div>
                                 <i class="faq-toggle bi bi-chevron-right"></i>
                             </div><!-- End Faq item-->
 
                             <div class="faq-item">
-                                <h3>Feugiat scelerisque varius morbi enim nunc faucibus a pellentesque?</h3>
+                                <h3>Bagaimana cara melaporkan insiden keamanan siber?</h3>
                                 <div class="faq-content">
-                                    <p>Dolor sit amet consectetur adipiscing elit pellentesque habitant morbi. Id
-                                        interdum velit laoreet id donec ultrices. Fringilla phasellus faucibus
-                                        scelerisque eleifend donec pretium. Est pellentesque elit ullamcorper dignissim.
-                                        Mauris ultrices eros in cursus turpis massa tincidunt dui.</p>
+                                    <p>Anda dapat melaporkan insiden keamanan siber melalui formulir aduan di website
+                                        kami atau menghubungi hotline 24/7. Sertakan informasi detail tentang insiden
+                                        yang terjadi, waktu kejadian, dan dampak yang dialami untuk membantu kami
+                                        memberikan respons yang tepat.</p>
                                 </div>
                                 <i class="faq-toggle bi bi-chevron-right"></i>
                             </div><!-- End Faq item-->
 
                             <div class="faq-item">
-                                <h3>Dolor sit amet consectetur adipiscing elit pellentesque?</h3>
+                                <h3>Berapa lama waktu respons CSIRT terhadap laporan insiden?</h3>
                                 <div class="faq-content">
-                                    <p>Eleifend mi in nulla posuere sollicitudin aliquam ultrices sagittis orci.
-                                        Faucibus pulvinar elementum integer enim. Sem nulla pharetra diam sit amet nisl
-                                        suscipit. Rutrum tellus pellentesque eu tincidunt. Lectus urna duis convallis
-                                        convallis tellus. Urna molestie at elementum eu facilisis sed odio morbi quis
+                                    <p>Waktu respons kami bervariasi tergantung tingkat keparahan insiden. Untuk insiden
+                                        kritis, kami merespons dalam 1-2 jam. Insiden dengan tingkat menengah ditangani
+                                        dalam 4-8 jam, sedangkan insiden ringan akan ditangani dalam 24 jam.
                                     </p>
                                 </div>
                                 <i class="faq-toggle bi bi-chevron-right"></i>
@@ -432,32 +688,33 @@
                         <div class="faq-container">
 
                             <div class="faq-item">
-                                <h3>Ac odio tempor orci dapibus. Aliquam eleifend mi in nulla?</h3>
+                                <h3>Apakah layanan CSIRT gratis untuk masyarakat?</h3>
                                 <div class="faq-content">
-                                    <p>Dolor sit amet consectetur adipiscing elit pellentesque habitant morbi. Id
-                                        interdum velit laoreet id donec ultrices. Fringilla phasellus faucibus
-                                        scelerisque eleifend donec pretium. Est pellentesque elit ullamcorper dignissim.
-                                        Mauris ultrices eros in cursus turpis massa tincidunt dui.</p>
+                                    <p>Ya, layanan dasar CSIRT seperti konsultasi keamanan siber, pelaporan insiden, dan
+                                        edukasi keamanan siber tersedia gratis untuk masyarakat. Namun untuk layanan
+                                        khusus seperti audit keamanan mendalam atau forensik digital mungkin dikenakan
+                                        biaya.</p>
                                 </div>
                                 <i class="faq-toggle bi bi-chevron-right"></i>
                             </div><!-- End Faq item-->
 
                             <div class="faq-item">
-                                <h3>Tempus quam pellentesque nec nam aliquam sem et tortor consequat?</h3>
+                                <h3>Apa yang harus dilakukan jika terkena serangan ransomware?</h3>
                                 <div class="faq-content">
-                                    <p>Molestie a iaculis at erat pellentesque adipiscing commodo. Dignissim suspendisse
-                                        in est ante in. Nunc vel risus commodo viverra maecenas accumsan. Sit amet nisl
-                                        suscipit adipiscing bibendum est. Purus gravida quis blandit turpis cursus in
+                                    <p>Jangan panik dan jangan membayar tebusan. Segera putuskan koneksi internet,
+                                        laporkan ke CSIRT, backup data yang masih bisa diselamatkan, dan jangan
+                                        menghapus file yang terenkripsi karena mungkin masih bisa dipulihkan.
                                     </p>
                                 </div>
                                 <i class="faq-toggle bi bi-chevron-right"></i>
                             </div><!-- End Faq item-->
 
                             <div class="faq-item">
-                                <h3>Perspiciatis quod quo quos nulla quo illum ullam?</h3>
+                                <h3>Bagaimana cara melindungi diri dari serangan phishing?</h3>
                                 <div class="faq-content">
-                                    <p>Enim ea facilis quaerat voluptas quidem et dolorem. Quis et consequatur non sed
-                                        in suscipit sequi. Distinctio ipsam dolore et.</p>
+                                    <p>Selalu verifikasi pengirim email, jangan klik link mencurigakan, periksa URL
+                                        dengan teliti, gunakan two-factor authentication, dan selalu update software
+                                        keamanan. Jika ragu, hubungi CSIRT untuk verifikasi.</p>
                                 </div>
                                 <i class="faq-toggle bi bi-chevron-right"></i>
                             </div><!-- End Faq item-->
@@ -472,336 +729,95 @@
 
         </section><!-- /Faq Section -->
 
-        <!-- Portfolio Section -->
-        <section id="portfolio" class="portfolio section">
-
-            <!-- Section Title -->
-            <div class="container section-title" data-aos="fade-up">
-                <h2>Berita Siber</h2>
-                <p>Mari melihat periwtiwa Siber Hari ini</p>
-            </div><!-- End Section Title -->
-
+        <!-- Security Intelligence Section -->
+        <section id="security-intelligence" class="section bg-light">
             <div class="container">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <!-- Section Title -->
+                        <div class="section-title" data-aos="fade-up">
+                            <h2>BERITA TERKINI</h2>
+                        </div>
 
-                <div class="isotope-layout" data-default-filter="*" data-layout="masonry"
-                    data-sort="original-order">
+                        <!-- Recent Posts -->
+                        <div class="recent-posts" data-aos="fade-up" data-aos-delay="100">
 
-                    <ul class="portfolio-filters isotope-filters" data-aos="fade-up" data-aos-delay="100">
-                        <li data-filter="*" class="filter-active">All</li>
-                        <li data-filter=".filter-app">App</li>
-                        <li data-filter=".filter-product">Product</li>
-                        <li data-filter=".filter-branding">Branding</li>
-                        <li data-filter=".filter-books">Books</li>
-                    </ul><!-- End Portfolio Filters -->
-
-                    <div class="row gy-4 isotope-container" data-aos="fade-up" data-aos-delay="200">
-
-                        <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-app">
-                            <div class="portfolio-content h-100">
-                                <img src="{{ asset('template/Dashboard/assets/img/portfolio/app-1.jpg') }}"
-                                    class="img-fluid" alt="">
-                                <div class="portfolio-info">
-                                    <h4>App 1</h4>
-                                    <p>Lorem ipsum, dolor sit amet consectetur</p>
-                                    <a href="{{ asset('template/Dashboard/assets/img/portfolio/app-1.jpg') }}"
-                                        title="App 1" data-gallery="portfolio-gallery-app"
-                                        class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                                    <a href="portfolio-details.html" title="More Details" class="details-link"><i
-                                            class="bi bi-link-45deg"></i></a>
+                            @forelse($latestNews as $news)
+                                <article class="post-item d-flex">
+                                    <div class="post-img">
+                                        @if ($news->image)
+                                            <img src="{{ asset('storage/' . $news->image) }}"
+                                                alt="{{ $news->title }}">
+                                        @else
+                                            <img src="{{ asset('template/Dashboard/assets/img/blog/blog-1.jpg') }}"
+                                                alt="{{ $news->title }}">
+                                        @endif
+                                    </div>
+                                    <div class="post-content">
+                                        <div class="post-meta">
+                                            <span class="post-date">{{ $news->created_at->format('d M Y') }}</span>
+                                        </div>
+                                        <h3><a
+                                                href="{{ route('guest.news.show', $news->slug) }}">{{ $news->title }}</a>
+                                        </h3>
+                                        <p>{{ $news->excerpt }}</p>
+                                        <a href="{{ route('guest.news.show', $news->slug) }}"
+                                            class="btn btn-sm btn-outline-primary">
+                                            Baca Selengkapnya <i class="bi bi-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </article>
+                            @empty
+                                <div class="text-center py-5">
+                                    <i class="bi bi-shield-exclamation" style="font-size: 3rem; color: #6c757d;"></i>
+                                    <h4 class="mt-3 text-muted">Belum Ada Informasi Keamanan</h4>
+                                    <p class="text-muted">Peringatan keamanan siber akan dipublikasikan di sini ketika
+                                        tersedia.</p>
                                 </div>
-                            </div>
-                        </div><!-- End Portfolio Item -->
+                            @endforelse
 
-                        <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-product">
-                            <div class="portfolio-content h-100">
-                                <img src="{{ asset('template/Dashboard/assets/img/portfolio/product-1.jpg') }}"
-                                    class="img-fluid" alt="">
-                                <div class="portfolio-info">
-                                    <h4>Product 1</h4>
-                                    <p>Lorem ipsum, dolor sit amet consectetur</p>
-                                    <a href="{{ asset('template/Dashboard/assets/img/portfolio/product-1.jpg') }}"
-                                        title="Product 1" data-gallery="portfolio-gallery-product"
-                                        class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                                    <a href="portfolio-details.html" title="More Details" class="details-link"><i
-                                            class="bi bi-link-45deg"></i></a>
+                            @if ($latestNews->count() > 0)
+                                <div class="text-center mt-4">
+                                    <a href="{{ route('guest.news.index') }}" class="btn btn-primary">
+                                        Lihat Semua Berita <i class="bi bi-arrow-right ms-1"></i>
+                                    </a>
                                 </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="col-lg-4">
+                        <!-- Quick Actions -->
+                        <div class="widget quick-actions-widget" data-aos="fade-up" data-aos-delay="300">
+                            <h4>Aksi Cepat</h4>
+                            <div class="d-grid gap-2">
+                                <a href="{{ route('guest.create_tiket') }}" class="btn btn-danger">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>Laporkan Insiden Keamanan
+                                </a>
+                                <a href="{{ route('guest.news.index') }}" class="btn btn-outline-primary">
+                                    <i class="bi bi-newspaper-me-2"></i>Lihat Semua Berita
+                                </a>
                             </div>
-                        </div><!-- End Portfolio Item -->
+                        </div>
 
-                        <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-branding">
-                            <div class="portfolio-content h-100">
-                                <img src="{{ asset('template/Dashboard/assets/img/portfolio/branding-1.jpg') }}"
-                                    class="img-fluid" alt="">
-                                <div class="portfolio-info">
-                                    <h4>Branding 1</h4>
-                                    <p>Lorem ipsum, dolor sit amet consectetur</p>
-                                    <a href="{{ asset('template/Dashboard/assets/img/portfolio/branding-1.jpg') }}"
-                                        title="Branding 1" data-gallery="portfolio-gallery-branding"
-                                        class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                                    <a href="portfolio-details.html" title="More Details" class="details-link"><i
-                                            class="bi bi-link-45deg"></i></a>
-                                </div>
+                        <!-- Contact Info -->
+                        <div class="widget contact-widget" data-aos="fade-up" data-aos-delay="400">
+                            <h4>Kontak Darurat</h4>
+                            <div class="contact-info">
+                                <p><strong>Respon Insiden 24/7</strong></p>
+                                <p><i class="bi bi-telephone me-2"></i>+62 370 XXX-XXXX</p>
+                                <p><i class="bi bi-envelope me-2"></i>incident@csirt-loteng.go.id</p>
+                                <p class="small text-muted">Untuk insiden keamanan kritis yang memerlukan respon segera
+                                </p>
                             </div>
-                        </div><!-- End Portfolio Item -->
-
-                        <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-books">
-                            <div class="portfolio-content h-100">
-                                <img src="{{ asset('template/Dashboard/assets/img/portfolio/books-1.jpg') }}"
-                                    class="img-fluid" alt="">
-                                <div class="portfolio-info">
-                                    <h4>Books 1</h4>
-                                    <p>Lorem ipsum, dolor sit amet consectetur</p>
-                                    <a href="{{ asset('template/Dashboard/assets/img/portfolio/books-1.jpg') }}"
-                                        title="Branding 1" data-gallery="portfolio-gallery-book"
-                                        class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                                    <a href="portfolio-details.html" title="More Details" class="details-link"><i
-                                            class="bi bi-link-45deg"></i></a>
-                                </div>
-                            </div>
-                        </div><!-- End Portfolio Item -->
-
-                        <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-app">
-                            <div class="portfolio-content h-100">
-                                <img src="{{ asset('template/Dashboard/assets/img/portfolio/app-2.jpg') }}"
-                                    class="img-fluid" alt="">
-                                <div class="portfolio-info">
-                                    <h4>App 2</h4>
-                                    <p>Lorem ipsum, dolor sit amet consectetur</p>
-                                    <a href="{{ asset('template/Dashboard/assets/img/portfolio/app-2.jpg') }}"
-                                        title="App 2" data-gallery="portfolio-gallery-app"
-                                        class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                                    <a href="portfolio-details.html" title="More Details" class="details-link"><i
-                                            class="bi bi-link-45deg"></i></a>
-                                </div>
-                            </div>
-                        </div><!-- End Portfolio Item -->
-
-                        <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-product">
-                            <div class="portfolio-content h-100">
-                                <img src="{{ asset('template/Dashboard/assets/img/portfolio/product-2.jpg') }}"
-                                    class="img-fluid" alt="">
-                                <div class="portfolio-info">
-                                    <h4>Product 2</h4>
-                                    <p>Lorem ipsum, dolor sit amet consectetur</p>
-                                    <a href="{{ asset('template/Dashboard/assets/img/portfolio/product-2.jpg') }}"
-                                        title="Product 2" data-gallery="portfolio-gallery-product"
-                                        class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                                    <a href="portfolio-details.html" title="More Details" class="details-link"><i
-                                            class="bi bi-link-45deg"></i></a>
-                                </div>
-                            </div>
-                        </div><!-- End Portfolio Item -->
-
-                        <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-branding">
-                            <div class="portfolio-content h-100">
-                                <img src="{{ asset('template/Dashboard/assets/img/portfolio/branding-2.jpg') }}"
-                                    class="img-fluid" alt="">
-                                <div class="portfolio-info">
-                                    <h4>Branding 2</h4>
-                                    <p>Lorem ipsum, dolor sit amet consectetur</p>
-                                    <a href="{{ asset('template/Dashboard/assets/img/portfolio/branding-2.jpg') }}"
-                                        title="Branding 2" data-gallery="portfolio-gallery-branding"
-                                        class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                                    <a href="portfolio-details.html" title="More Details" class="details-link"><i
-                                            class="bi bi-link-45deg"></i></a>
-                                </div>
-                            </div>
-                        </div><!-- End Portfolio Item -->
-
-                        <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-books">
-                            <div class="portfolio-content h-100">
-                                <img src="{{ asset('template/Dashboard/assets/img/portfolio/books-2.jpg') }}"
-                                    class="img-fluid" alt="">
-                                <div class="portfolio-info">
-                                    <h4>Books 2</h4>
-                                    <p>Lorem ipsum, dolor sit amet consectetur</p>
-                                    <a href="{{ asset('template/Dashboard/assets/img/portfolio/books-2.jpg') }}"
-                                        title="Branding 2" data-gallery="portfolio-gallery-book"
-                                        class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                                    <a href="portfolio-details.html" title="More Details" class="details-link"><i
-                                            class="bi bi-link-45deg"></i></a>
-                                </div>
-                            </div>
-                        </div><!-- End Portfolio Item -->
-
-                        <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-app">
-                            <div class="portfolio-content h-100">
-                                <img src="{{ asset('template/Dashboard/assets/img/portfolio/app-3.jpg') }}"
-                                    class="img-fluid" alt="">
-                                <div class="portfolio-info">
-                                    <h4>App 3</h4>
-                                    <p>Lorem ipsum, dolor sit amet consectetur</p>
-                                    <a href="{{ asset('template/Dashboard/assets/img/portfolio/app-3.jpg') }}"
-                                        title="App 3" data-gallery="portfolio-gallery-app"
-                                        class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                                    <a href="portfolio-details.html" title="More Details" class="details-link"><i
-                                            class="bi bi-link-45deg"></i></a>
-                                </div>
-                            </div>
-                        </div><!-- End Portfolio Item -->
-
-                        <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-product">
-                            <div class="portfolio-content h-100">
-                                <img src="{{ asset('template/Dashboard/assets/img/portfolio/product-3.jpg') }}"
-                                    class="img-fluid" alt="">
-                                <div class="portfolio-info">
-                                    <h4>Product 3</h4>
-                                    <p>Lorem ipsum, dolor sit amet consectetur</p>
-                                    <a href="{{ asset('template/Dashboard/assets/img/portfolio/product-3.jpg') }}"
-                                        title="Product 3" data-gallery="portfolio-gallery-product"
-                                        class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                                    <a href="portfolio-details.html" title="More Details" class="details-link"><i
-                                            class="bi bi-link-45deg"></i></a>
-                                </div>
-                            </div>
-                        </div><!-- End Portfolio Item -->
-
-                        <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-branding">
-                            <div class="portfolio-content h-100">
-                                <img src="{{ asset('template/Dashboard/assets/img/portfolio/branding-3.jpg') }}"
-                                    class="img-fluid" alt="">
-                                <div class="portfolio-info">
-                                    <h4>Branding 3</h4>
-                                    <p>Lorem ipsum, dolor sit amet consectetur</p>
-                                    <a href="{{ asset('template/Dashboard/assets/img/portfolio/branding-3.jpg') }}"
-                                        title="Branding 2" data-gallery="portfolio-gallery-branding"
-                                        class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                                    <a href="portfolio-details.html" title="More Details" class="details-link"><i
-                                            class="bi bi-link-45deg"></i></a>
-                                </div>
-                            </div>
-                        </div><!-- End Portfolio Item -->
-
-                        <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-books">
-                            <div class="portfolio-content h-100">
-                                <img src="{{ asset('template/Dashboard/assets/img/portfolio/books-3.jpg') }}"
-                                    class="img-fluid" alt="">
-                                <div class="portfolio-info">
-                                    <h4>Books 3</h4>
-                                    <p>Lorem ipsum, dolor sit amet consectetur</p>
-                                    <a href="{{ asset('template/Dashboard/assets/img/portfolio/books-3.jpg') }}"
-                                        title="Branding 3" data-gallery="portfolio-gallery-book"
-                                        class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                                    <a href="portfolio-details.html" title="More Details" class="details-link"><i
-                                            class="bi bi-link-45deg"></i></a>
-                                </div>
-                            </div>
-                        </div><!-- End Portfolio Item -->
-
-                    </div><!-- End Portfolio Container -->
-
+                        </div>
+                    </div>
                 </div>
-
             </div>
+        </section>
 
-        </section><!-- /Portfolio Section -->
 
-        <!-- Team Section -->
-        <section id="team" class="team section">
-
-            <!-- Section Title -->
-            <div class="container section-title" data-aos="fade-up">
-                <h2>Team</h2>
-                <p>Our hard working team</p>
-            </div><!-- End Section Title -->
-
-            <div class="container">
-
-                <div class="row gy-4">
-
-                    <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up"
-                        data-aos-delay="100">
-                        <div class="team-member">
-                            <div class="member-img">
-                                <img src="{{ asset('template/Dashboard/assets/img/team/team-1.jpg') }}"
-                                    class="img-fluid" alt="">
-                                <div class="social">
-                                    <a href=""><i class="bi bi-twitter-x"></i></a>
-                                    <a href=""><i class="bi bi-facebook"></i></a>
-                                    <a href=""><i class="bi bi-instagram"></i></a>
-                                    <a href=""><i class="bi bi-linkedin"></i></a>
-                                </div>
-                            </div>
-                            <div class="member-info">
-                                <h4>Walter White</h4>
-                                <span>Chief Executive Officer</span>
-                                <p>Velit aut quia fugit et et. Dolorum ea voluptate vel tempore tenetur ipsa quae aut.
-                                    Ipsum exercitationem iure minima enim corporis et voluptate.</p>
-                            </div>
-                        </div>
-                    </div><!-- End Team Member -->
-
-                    <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up"
-                        data-aos-delay="200">
-                        <div class="team-member">
-                            <div class="member-img">
-                                <img src="{{ asset('template/Dashboard/assets/img/team/team-2.jpg') }}"
-                                    class="img-fluid" alt="">
-                                <div class="social">
-                                    <a href=""><i class="bi bi-twitter-x"></i></a>
-                                    <a href=""><i class="bi bi-facebook"></i></a>
-                                    <a href=""><i class="bi bi-instagram"></i></a>
-                                    <a href=""><i class="bi bi-linkedin"></i></a>
-                                </div>
-                            </div>
-                            <div class="member-info">
-                                <h4>Sarah Jhonson</h4>
-                                <span>Product Manager</span>
-                                <p>Quo esse repellendus quia id. Est eum et accusantium pariatur fugit nihil minima
-                                    suscipit corporis. Voluptate sed quas reiciendis animi neque sapiente.</p>
-                            </div>
-                        </div>
-                    </div><!-- End Team Member -->
-
-                    <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up"
-                        data-aos-delay="300">
-                        <div class="team-member">
-                            <div class="member-img">
-                                <img src="{{ asset('template/Dashboard/assets/img/team/team-3.jpg') }}"
-                                    class="img-fluid" alt="">
-                                <div class="social">
-                                    <a href=""><i class="bi bi-twitter-x"></i></a>
-                                    <a href=""><i class="bi bi-facebook"></i></a>
-                                    <a href=""><i class="bi bi-instagram"></i></a>
-                                    <a href=""><i class="bi bi-linkedin"></i></a>
-                                </div>
-                            </div>
-                            <div class="member-info">
-                                <h4>William Anderson</h4>
-                                <span>CTO</span>
-                                <p>Vero omnis enim consequatur. Voluptas consectetur unde qui molestiae deserunt.
-                                    Voluptates enim aut architecto porro aspernatur molestiae modi.</p>
-                            </div>
-                        </div>
-                    </div><!-- End Team Member -->
-
-                    <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up"
-                        data-aos-delay="400">
-                        <div class="team-member">
-                            <div class="member-img">
-                                <img src="{{ asset('template/Dashboard/assets/img/team/team-4.jpg') }}"
-                                    class="img-fluid" alt="">
-                                <div class="social">
-                                    <a href=""><i class="bi bi-twitter-x"></i></a>
-                                    <a href=""><i class="bi bi-facebook"></i></a>
-                                    <a href=""><i class="bi bi-instagram"></i></a>
-                                    <a href=""><i class="bi bi-linkedin"></i></a>
-                                </div>
-                            </div>
-                            <div class="member-info">
-                                <h4>Amanda Jepson</h4>
-                                <span>Accountant</span>
-                                <p>Rerum voluptate non adipisci animi distinctio et deserunt amet voluptas. Quia aut
-                                    aliquid doloremque ut possimus ipsum officia.</p>
-                            </div>
-                        </div>
-                    </div><!-- End Team Member -->
-
-                </div>
-
-            </div>
-
-        </section><!-- /Team Section -->
 
         <!-- Clients Section -->
         <section id="clients" class="clients section">
@@ -881,123 +897,7 @@
 
         </section><!-- /Clients Section -->
 
-        <!-- Recent Posts Section -->
-        <section id="recent-posts" class="recent-posts section">
 
-            <!-- Section Title -->
-            <div class="container section-title" data-aos="fade-up">
-                <h2>Recent Posts</h2>
-                <p>Recent posts form our Blog</p>
-            </div><!-- End Section Title -->
-
-            <div class="container">
-
-                <div class="row gy-5">
-
-                    <div class="col-xl-4 col-md-6">
-                        <div class="post-item position-relative h-100" data-aos="fade-up" data-aos-delay="100">
-
-                            <div class="post-img position-relative overflow-hidden">
-                                <img src="{{ asset('template/Dashboard/assets/img/blog/blog-1.jpg') }}assets/img/blog/blog-1.jpg"
-                                    class="img-fluid" alt="">
-                                <span class="post-date">December 12</span>
-                            </div>
-
-                            <div class="post-content d-flex flex-column">
-
-                                <h3 class="post-title">Eum ad dolor et. Autem aut fugiat debitis</h3>
-
-                                <div class="meta d-flex align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <i class="bi bi-person"></i> <span class="ps-2">Julia Parker</span>
-                                    </div>
-                                    <span class="px-3 text-black-50">/</span>
-                                    <div class="d-flex align-items-center">
-                                        <i class="bi bi-folder2"></i> <span class="ps-2">Politics</span>
-                                    </div>
-                                </div>
-
-                                <hr>
-
-                                <a href="blog-details.html" class="readmore stretched-link"><span>Read More</span><i
-                                        class="bi bi-arrow-right"></i></a>
-
-                            </div>
-
-                        </div>
-                    </div><!-- End post item -->
-
-                    <div class="col-xl-4 col-md-6">
-                        <div class="post-item position-relative h-100" data-aos="fade-up" data-aos-delay="200">
-
-                            <div class="post-img position-relative overflow-hidden">
-                                <img src="{{ asset('template/Dashboard/assets/img/blog/blog-2.jpg') }}"
-                                    class="img-fluid" alt="">
-                                <span class="post-date">July 17</span>
-                            </div>
-
-                            <div class="post-content d-flex flex-column">
-
-                                <h3 class="post-title">Et repellendus molestiae qui est sed omnis</h3>
-
-                                <div class="meta d-flex align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <i class="bi bi-person"></i> <span class="ps-2">Mario Douglas</span>
-                                    </div>
-                                    <span class="px-3 text-black-50">/</span>
-                                    <div class="d-flex align-items-center">
-                                        <i class="bi bi-folder2"></i> <span class="ps-2">Sports</span>
-                                    </div>
-                                </div>
-
-                                <hr>
-
-                                <a href="blog-details.html" class="readmore stretched-link"><span>Read More</span><i
-                                        class="bi bi-arrow-right"></i></a>
-
-                            </div>
-
-                        </div>
-                    </div><!-- End post item -->
-
-                    <div class="col-xl-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                        <div class="post-item position-relative h-100">
-
-                            <div class="post-img position-relative overflow-hidden">
-                                <img src="{{ asset('template/Dashboard/assets/img/blog/blog-3.jpg') }}"
-                                    class="img-fluid" alt="">
-                                <span class="post-date">September 05</span>
-                            </div>
-
-                            <div class="post-content d-flex flex-column">
-
-                                <h3 class="post-title">Quia assumenda est et veritati tirana ploder</h3>
-
-                                <div class="meta d-flex align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <i class="bi bi-person"></i> <span class="ps-2">Lisa Hunter</span>
-                                    </div>
-                                    <span class="px-3 text-black-50">/</span>
-                                    <div class="d-flex align-items-center">
-                                        <i class="bi bi-folder2"></i> <span class="ps-2">Economics</span>
-                                    </div>
-                                </div>
-
-                                <hr>
-
-                                <a href="blog-details.html" class="readmore stretched-link"><span>Read More</span><i
-                                        class="bi bi-arrow-right"></i></a>
-
-                            </div>
-
-                        </div>
-                    </div><!-- End post item -->
-
-                </div>
-
-            </div>
-
-        </section><!-- /Recent Posts Section -->
 
         <!-- Contact Section -->
         <section id="contact" class="contact section">
@@ -1018,36 +918,36 @@
                             <div class="col-md-6">
                                 <div class="info-item" data-aos="fade" data-aos-delay="200">
                                     <i class="bi bi-geo-alt"></i>
-                                    <h3>Address</h3>
-                                    <p>A108 Adam Street</p>
-                                    <p>New York, NY 535022</p>
+                                    <h3>Alamat</h3>
+                                    <p>Kantor Pemerintah Daerah</p>
+                                    <p>Lombok Tengah, NTB</p>
                                 </div>
                             </div><!-- End Info Item -->
 
                             <div class="col-md-6">
                                 <div class="info-item" data-aos="fade" data-aos-delay="300">
                                     <i class="bi bi-telephone"></i>
-                                    <h3>Call Us</h3>
-                                    <p>+1 5589 55488 55</p>
-                                    <p>+1 6678 254445 41</p>
+                                    <h3>Hubungi Kami</h3>
+                                    <p>+62 370 123456</p>
+                                    <p>Hotline 24/7: 0800-CSIRT</p>
                                 </div>
                             </div><!-- End Info Item -->
 
                             <div class="col-md-6">
                                 <div class="info-item" data-aos="fade" data-aos-delay="400">
                                     <i class="bi bi-envelope"></i>
-                                    <h3>Email Us</h3>
-                                    <p>info@example.com</p>
-                                    <p>contact@example.com</p>
+                                    <h3>Email</h3>
+                                    <p>csirt@lomboktengahkab.go.id</p>
+                                    <p>incident@lomboktengahkab.go.id</p>
                                 </div>
                             </div><!-- End Info Item -->
 
                             <div class="col-md-6">
                                 <div class="info-item" data-aos="fade" data-aos-delay="500">
                                     <i class="bi bi-clock"></i>
-                                    <h3>Open Hours</h3>
-                                    <p>Monday - Friday</p>
-                                    <p>9:00AM - 05:00PM</p>
+                                    <h3>Jam Operasional</h3>
+                                    <p>Senin - Jumat: 08:00 - 16:00</p>
+                                    <p>Emergency Response: 24/7</p>
                                 </div>
                             </div><!-- End Info Item -->
 
@@ -1062,29 +962,30 @@
 
                                 <div class="col-md-6">
                                     <input type="text" name="name" class="form-control"
-                                        placeholder="Your Name" required="">
+                                        placeholder="Nama Lengkap" required="">
                                 </div>
 
                                 <div class="col-md-6 ">
                                     <input type="email" class="form-control" name="email"
-                                        placeholder="Your Email" required="">
+                                        placeholder="Email Anda" required="">
                                 </div>
 
                                 <div class="col-12">
-                                    <input type="text" class="form-control" name="subject" placeholder="Subject"
-                                        required="">
+                                    <input type="text" class="form-control" name="subject"
+                                        placeholder="Subjek Pesan" required="">
                                 </div>
 
                                 <div class="col-12">
-                                    <textarea class="form-control" name="message" rows="6" placeholder="Message" required=""></textarea>
+                                    <textarea class="form-control" name="message" rows="6" placeholder="Pesan atau Laporan Insiden Keamanan Siber"
+                                        required=""></textarea>
                                 </div>
 
                                 <div class="col-12 text-center">
-                                    <div class="loading">Loading</div>
+                                    <div class="loading">Mengirim...</div>
                                     <div class="error-message"></div>
-                                    <div class="sent-message">Your message has been sent. Thank you!</div>
+                                    <div class="sent-message">Pesan Anda telah terkirim. Terima kasih!</div>
 
-                                    <button type="submit">Send Message</button>
+                                    <button type="submit">Kirim Pesan</button>
                                 </div>
 
                             </div>
@@ -1117,6 +1018,76 @@
 
     <!-- Main JS File -->
     <script src="{{ asset('template/Dashboard/assets/js/main.js') }}"></script>
+
+    <!-- Network Animation Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const networkBg = document.getElementById('networkBg');
+
+            // Create network nodes
+            function createNetworkNodes() {
+                const nodeCount = 15;
+
+                for (let i = 0; i < nodeCount; i++) {
+                    const node = document.createElement('div');
+                    node.className = 'network-node';
+                    node.style.left = Math.random() * 100 + '%';
+                    node.style.top = Math.random() * 100 + '%';
+                    node.style.animationDelay = Math.random() * 2 + 's';
+                    networkBg.appendChild(node);
+                }
+            }
+
+            // Create flowing lines
+            function createNetworkLines() {
+                const lineCount = 8;
+
+                setInterval(() => {
+                    if (document.querySelectorAll('.network-line').length < lineCount) {
+                        const line = document.createElement('div');
+                        line.className = 'network-line';
+                        line.style.top = Math.random() * 100 + '%';
+                        line.style.width = Math.random() * 300 + 100 + 'px';
+                        line.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                        networkBg.appendChild(line);
+
+                        // Remove line after animation
+                        setTimeout(() => {
+                            if (line.parentNode) {
+                                line.parentNode.removeChild(line);
+                            }
+                        }, 5000);
+                    }
+                }, 1000);
+            }
+
+            // Initialize network animation
+            createNetworkNodes();
+            createNetworkLines();
+
+            // Add mouse interaction
+            document.addEventListener('mousemove', function(e) {
+                const nodes = document.querySelectorAll('.network-node');
+                const mouseX = e.clientX / window.innerWidth;
+                const mouseY = e.clientY / window.innerHeight;
+
+                nodes.forEach((node, index) => {
+                    const nodeX = parseFloat(node.style.left) / 100;
+                    const nodeY = parseFloat(node.style.top) / 100;
+                    const distance = Math.sqrt(Math.pow(mouseX - nodeX, 2) + Math.pow(mouseY -
+                        nodeY, 2));
+
+                    if (distance < 0.2) {
+                        node.style.transform = `scale(2)`;
+                        node.style.opacity = '1';
+                    } else {
+                        node.style.transform = `scale(1)`;
+                        node.style.opacity = '0.6';
+                    }
+                });
+            });
+        });
+    </script>
 
 </body>
 

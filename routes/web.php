@@ -6,6 +6,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\KabupatenController;
 use App\Http\Controllers\KecamatanController;
 use App\Http\Controllers\LayananController;
+use App\Http\Controllers\Admin\NewsController as AdminNewsController;
+use App\Http\Controllers\Guest\NewsController as GuestNewsController;
 use App\Models\Kabupaten;
 use App\Models\Kecamatan;
 use App\Models\Ticket;
@@ -19,11 +21,7 @@ Route::get('/api/kecamatan/{kabupatenId}', function ($kabupatenId) {
 Route::middleware(['prevent.admin.guest'])->group(function () {
     Route::get('/', [TicketController::class, 'guestDashboard']);
 
-    Route::get('/guest/guest_dashboard', function () {
-        $countSent = Ticket::count();
-        $countWorkedOn = Ticket::whereIn('status', ['diterima/approved', 'selesai/completed'])->count();
-        return view('guest.guest_dashboard', compact('countSent', 'countWorkedOn'));
-    })->name('guest.guest_dashboard');
+    Route::get('/guest/guest_dashboard', [TicketController::class, 'guestDashboard'])->name('guest.guest_dashboard');
 
     Route::get('guest/create_tiket', function () {
         $kabupatens = Kabupaten::all();
@@ -35,6 +33,10 @@ Route::middleware(['prevent.admin.guest'])->group(function () {
     Route::get('guest/lacak_tiket', [TicketController::class, 'track'])->name('guest.lacak_tiket');
 
     Route::get('guest/lihat_tiket/{code_tracking}', [TicketController::class, 'show'])->name('guest.liat_tiket');
+
+    // News routes for guests
+    Route::get('berita', [GuestNewsController::class, 'index'])->name('guest.news.index');
+    Route::get('berita/{slug}', [GuestNewsController::class, 'show'])->name('guest.news.show');
 });
 
 // Admin Authentication Routes (not protected - admins need access when not logged in)
@@ -65,6 +67,7 @@ Route::middleware(['admin.auth', 'prevent.guest.admin'])->prefix('admin')->name(
     Route::resource('kabupaten', KabupatenController::class);
     Route::resource('kecamatan', KecamatanController::class);
     Route::resource('layanan', LayananController::class);
+    Route::resource('news', AdminNewsController::class);
 
     // Tickets - static routes FIRST (specific routes before parameterized ones)
     Route::get('tickets', [TicketController::class, 'adminIndex'])->name('tickets.index');
@@ -82,7 +85,7 @@ Route::middleware(['admin.auth', 'prevent.guest.admin'])->prefix('admin')->name(
     // Accept/reject routes
     Route::post('tickets/{ticket}/accept', [TicketController::class, 'accept'])->name('tickets.accept');
     Route::post('tickets/{ticket}/reject', [TicketController::class, 'reject'])->name('tickets.reject');
-    
+
     // Get ticket details for modal
     Route::get('tickets/{ticket}/details', [TicketController::class, 'getDetails'])->name('tickets.details');
 
