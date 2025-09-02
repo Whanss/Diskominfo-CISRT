@@ -313,8 +313,7 @@
                     </li>
                     <li><a href="#about">Tentang Kami</a></li>
                     <li><a href="#services">layanan</a></li>
-                    <li><a href="#portfolio">Berita Terkini</a></li>
-                    <li><a href="{{ route('guest.news.index') }}">Semua Berita</a></li>
+                    <li><a href="{{ route('guest.news.index') }}">Berita Terkini</a></li>
 
                 </ul>
             </nav><!-- End Nav Menu -->

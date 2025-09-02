@@ -33,7 +33,7 @@
             padding-top: 70px;
             /* Adjust this value to match the height of your header */
             background-color: var(--bg);
-            
+
 
         }
 
@@ -122,7 +122,7 @@
                     </li>
                     <li><a href="{{ route('guest.guest_dashboard') }}#about">Tentang Kami</a></li>
                     <li><a href="{{ route('guest.guest_dashboard') }}#services">layanan</a></li>
-                    <li><a href="{{ route('guest.guest_dashboard') }}#portfolio">Berita Terkini</a></li>
+                    <li><a href="{{ route('guest.news.index') }}">Berita Terkini</a></li>
 
 
                 </ul>
