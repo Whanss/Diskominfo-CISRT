@@ -564,9 +564,12 @@
                                         <i class="fas fa-chevron-right"></i>
                                     </button>
                                 </div>
-                                <div style="display:flex; gap:8px; align-items:center;">
+                                <div style="display:flex; gap:12px; align-items:center;">
                                     <div id="calendar-loading" class="calendar-loading"><i
                                             class="fas fa-spinner fa-spin"></i> Memuat data kalender...</div>
+                                    <div id="calendar-range" style="font-size: 12px; color: #64748b; white-space: nowrap;">
+                                        Rentang: -
+                                    </div>
                                     <button onclick="goToToday()" class="btn" style="background: #10b981; color: white;">
                                         <i class="fas fa-calendar-day"></i> Hari Ini
                                     </button>
@@ -679,6 +682,7 @@
             // Initialize calendar
             generateCalendar();
             loadWorkData();
+            updateCalendarRangeLabel();
         });
 
         function switchTab(tabName) {
@@ -765,28 +769,33 @@
             currentDate.setMonth(currentDate.getMonth() + direction);
             generateCalendar();
             loadWorkData();
+            updateCalendarRangeLabel();
         }
 
         function goToToday() {
             currentDate = new Date();
             generateCalendar();
             loadWorkData();
+            updateCalendarRangeLabel();
         }
 
         function loadWorkData() {
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
-            const startDate = new Date(year, month, 1).toISOString().split('T')[0];
-            const endDate = new Date(year, month + 1, 0).toISOString().split('T')[0];
+            const startDate = new Date(year, month, 1);
+            const endDate = new Date(year, month + 1, 0);
 
-            console.log('Loading work data for:', startDate, 'to', endDate);
+            const startStr = startDate.toISOString().split('T')[0];
+            const endStr = endDate.toISOString().split('T')[0];
+
+            console.log('Loading work data for:', startStr, 'to', endStr);
 
             // tampilkan loading
             const loadingEl = document.getElementById('calendar-loading');
             if (loadingEl) loadingEl.classList.add('active');
 
             // Fetch real data from API
-            fetch(`{{ route('admin.tickets.calendar.data') }}?start=${startDate}&end=${endDate}`)
+            fetch(`{{ route('admin.tickets.calendar.data') }}?start=${startStr}&end=${endStr}`)
                 .then(response => response.json())
                 .then(events => {
                     workData = {};
@@ -831,6 +840,26 @@
                 });
         }
 
+        function updateCalendarRangeLabel() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const startDate = new Date(year, month, 1);
+            const endDate = new Date(year, month + 1, 0);
+
+            const opts = {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            };
+            const startText = startDate.toLocaleDateString('id-ID', opts).replace('.', '');
+            const endText = endDate.toLocaleDateString('id-ID', opts).replace('.', '');
+
+            const rangeEl = document.getElementById('calendar-range');
+            if (rangeEl) {
+                rangeEl.textContent = `Rentang: ${startText} — ${endText}`;
+            }
+        }
+
         function selectDay(dateStr) {
             // Remove previous selection
             document.querySelectorAll('.calendar-day').forEach(day => {
@@ -863,7 +892,8 @@
                             const inProgressSessions = [];
 
                             pageSessions.forEach(session => {
-                                const isCompleted = session.status === 'completed' || session.status === 'selesai/completed';
+                                const isCompleted = session.status === 'completed' || session.status ===
+                                    'selesai/completed';
                                 if (isCompleted) {
                                     completedSessions.push(session);
                                 } else {
@@ -872,9 +902,10 @@
                             });
 
                             function renderItem(session) {
-                                const badge = (session.status === 'completed' || session.status === 'selesai/completed')
-                                    ? '<span style="background:#10b981;color:#fff;font-size:11px;padding:2px 6px;border-radius:4px;">Selesai</span>'
-                                    : '<span style="background:#f59e0b;color:#fff;font-size:11px;padding:2px 6px;border-radius:4px;">Proses</span>';
+                                const badge = (session.status === 'completed' || session.status ===
+                                    'selesai/completed') ?
+                                    '<span style="background:#10b981;color:#fff;font-size:11px;padding:2px 6px;border-radius:4px;">Selesai</span>' :
+                                    '<span style="background:#f59e0b;color:#fff;font-size:11px;padding:2px 6px;border-radius:4px;">Proses</span>';
                                 return `
                             <div class="work-session-item">
                                 <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
@@ -886,8 +917,10 @@
                             </div>`;
                             }
 
-                            const inProgressHtml = inProgressSessions.map(renderItem).join('') || '<div style="font-size:12px;color:#9ca3af;">Tidak ada sesi yang sedang diproses pada halaman ini.</div>';
-                            const completedHtml = completedSessions.map(renderItem).join('') || '<div style="font-size:12px;color:#9ca3af;">Tidak ada sesi selesai pada halaman ini.</div>';
+                            const inProgressHtml = inProgressSessions.map(renderItem).join('') ||
+                                '<div style="font-size:12px;color:#9ca3af;">Tidak ada sesi yang sedang diproses pada halaman ini.</div>';
+                            const completedHtml = completedSessions.map(renderItem).join('') ||
+                                '<div style="font-size:12px;color:#9ca3af;">Tidak ada sesi selesai pada halaman ini.</div>';
 
                             const sessionsHtml = `
                                 <div class="sidebar-section">
