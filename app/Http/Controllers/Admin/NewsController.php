@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\News;
+use App\Models\NewsCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -24,7 +25,8 @@ class NewsController extends Controller
      */
     public function create()
     {
-        return view('admin.news.create');
+        $categories = NewsCategory::where('is_active', true)->orderBy('name')->get(['id', 'name']);
+        return view('admin.news.create', compact('categories'));
     }
 
     /**
@@ -35,13 +37,13 @@ class NewsController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'category' => 'required|in:alert,tips,news,update',
+            'category_id' => 'required|exists:news_categories,id',
             'excerpt' => 'nullable|string|max:500',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_published' => 'boolean'
         ]);
 
-        $data = $request->all();
+        $data = $request->only(['title', 'content', 'excerpt', 'category_id']);
         $data['is_published'] = $request->has('is_published');
 
         // Handle image upload
@@ -71,7 +73,8 @@ class NewsController extends Controller
      */
     public function edit(News $news)
     {
-        return view('admin.news.edit', compact('news'));
+        $categories = NewsCategory::where('is_active', true)->orderBy('name')->get(['id', 'name']);
+        return view('admin.news.edit', compact('news', 'categories'));
     }
 
     /**
@@ -82,13 +85,13 @@ class NewsController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'category' => 'required|in:alert,tips,news,update',
+            'category_id' => 'required|exists:news_categories,id',
             'excerpt' => 'nullable|string|max:500',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_published' => 'boolean'
         ]);
 
-        $data = $request->all();
+        $data = $request->only(['title', 'content', 'excerpt', 'category_id']);
         $data['is_published'] = $request->has('is_published');
 
         // Handle image upload

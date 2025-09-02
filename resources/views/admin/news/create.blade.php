@@ -62,16 +62,15 @@
 
                             <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label for="category" class="form-label">Kategori <span class="text-danger">*</span></label>
-                                    <select class="form-select @error('category') is-invalid @enderror" 
-                                            id="category" name="category" required>
+                                    <label for="category_id" class="form-label">Kategori <span class="text-danger">*</span></label>
+                                    <select class="form-select @error('category_id') is-invalid @enderror" 
+                                            id="category_id" name="category_id" required>
                                         <option value="">Pilih Kategori</option>
-                                        <option value="alert" {{ old('category') == 'alert' ? 'selected' : '' }}>Peringatan</option>
-                                        <option value="tips" {{ old('category') == 'tips' ? 'selected' : '' }}>Tips Keamanan</option>
-                                        <option value="news" {{ old('category') == 'news' ? 'selected' : '' }}>Berita</option>
-                                        <option value="update" {{ old('category') == 'update' ? 'selected' : '' }}>Update</option>
+                                        @foreach($categories as $cat)
+                                            <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                        @endforeach
                                     </select>
-                                    @error('category')
+                                    @error('category_id')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>

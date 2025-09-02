@@ -10,7 +10,8 @@ class Ticket extends Model
         'code_tracking', 'judul', 'nama_pelapor', 'email', 'no_hp',
         'description', 'status', 'resolved_at', 'resolution_category', 'resolved_by',
         'kabupaten_id', 'kecamatan_id', 'accepted_at', 'processing_started_at',
-        'assigned_to', 'resolution_notes', 'attachment_path',
+        'assigned_to', 'resolution_notes', 'attachment_path', 'layanan_id',
+        // legacy fields for backward compatibility
         'layanan_type', 'layanan_custom', 'rejection_reason'
     ];
 
@@ -25,6 +26,12 @@ class Ticket extends Model
     public function layanan()
     {
         return $this->hasMany(Layanan::class);
+    }
+
+    // New: selected master layanan for this ticket (admin-managed)
+    public function masterLayanan()
+    {
+        return $this->belongsTo(\App\Models\MasterLayanan::class, 'layanan_id');
     }
 
     public function workSessions()
