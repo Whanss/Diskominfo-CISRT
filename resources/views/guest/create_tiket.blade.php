@@ -649,7 +649,8 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('tickets.store') }}" method="POST" id="ticketForm">
+                    <form action="{{ route('tickets.store') }}" method="POST" id="ticketForm"
+                        enctype="multipart/form-data">
                         @csrf
 
                         <div class="form-group">
@@ -705,8 +706,7 @@
                                 Nomor Aktif <span class="required">*</span>
                             </label>
                             <input type="text" class="form-control" id="no_hp" name="no_hp"
-                                value="{{ old('no_hp') }}" required maxlength="15"
-                                pattern="[0-9]*" inputmode="numeric"
+                                value="{{ old('no_hp') }}" required maxlength="15" pattern="[0-9]*" inputmode="numeric"
                                 oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                 placeholder="Masukkan nomor telepon atau WhatsApp Anda">
                             <div class="character-count" id="no_hp-count">0/15</div>
@@ -749,15 +749,20 @@
                                     <input type="hidden" id="kecamatan" name="kecamatan_id" required>
                                     <div class="dropdown-input" id="kecamatan-input" tabindex="0">
                                         <span class="dropdown-placeholder">Pilih Kecamatan</span>
-                                        <svg class="dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        <svg class="dropdown-arrow" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 9l-7 7-7-7"></path>
                                         </svg>
                                     </div>
                                     <div class="dropdown-menu" id="kecamatan-menu">
                                         <div class="dropdown-search">
-                                            <input type="text" id="kecamatan-search" placeholder="Cari kecamatan..." autocomplete="off">
-                                            <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                            <input type="text" id="kecamatan-search" placeholder="Cari kecamatan..."
+                                                autocomplete="off">
+                                            <svg class="search-icon" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                             </svg>
                                         </div>
                                         <div class="dropdown-options" id="kecamatan-options">
@@ -785,6 +790,59 @@
                             <div class="character-count" id="description-count">0/500</div>
                         </div>
 
+                        <!-- Layanan (jenis insiden) -->
+                        <div class="form-group">
+                            <label for="layanan_type" class="form-label">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 6h16M4 12h16M4 18h16" />
+                                </svg>
+                                Jenis Insiden/Layanan <span class="required">*</span>
+                            </label>
+                            <select class="form-control" id="layanan_type" name="layanan_type" required>
+                                <option value="">Pilih jenis</option>
+                                <option value="phishing" {{ old('layanan_type') == 'phishing' ? 'selected' : '' }}>Phishing
+                                </option>
+                                <option value="malware" {{ old('layanan_type') == 'malware' ? 'selected' : '' }}>Malware
+                                </option>
+                                <option value="defacement" {{ old('layanan_type') == 'defacement' ? 'selected' : '' }}>
+                                    Defacement</option>
+                                <option value="ddos" {{ old('layanan_type') == 'ddos' ? 'selected' : '' }}>DDoS</option>
+                                <option value="data_breach" {{ old('layanan_type') == 'data_breach' ? 'selected' : '' }}>
+                                    Kebocoran Data</option>
+                                <option value="other" {{ old('layanan_type') == 'other' ? 'selected' : '' }}>Lainnya
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="layanan_custom_wrapper" style="display: none;">
+                            <label for="layanan_custom" class="form-label">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4v16m8-8H4" />
+                                </svg>
+                                Masukkan Jenis Lainnya
+                            </label>
+                            <input type="text" class="form-control" id="layanan_custom" name="layanan_custom"
+                                value="{{ old('layanan_custom') }}"
+                                placeholder="Contoh: Ransomware, Account Takeover, dll">
+                        </div>
+
+                        <!-- Attachment -->
+                        <div class="form-group">
+                            <label for="attachment" class="form-label">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 7v10a5 5 0 11-10 0V7a3 3 0 016 0v9a1 1 0 11-2 0V7" />
+                                </svg>
+                                Lampiran (opsional)
+                            </label>
+                            <input type="file" class="form-control" id="attachment" name="attachment"
+                                accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.txt">
+                            <small class="text-muted">Maks 5MB. Format: pdf, doc, docx, xls, xlsx, png, jpg, jpeg,
+                                txt</small>
+                        </div>
+
                         <button type="submit" class="btn" id="submitBtn">
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -793,6 +851,22 @@
                             <span id="submitText">Buat Tiket</span>
                         </button>
                     </form>
+
+                    <script>
+                        // Tampilkan input custom jika pilih "Lainnya"
+                        (function() {
+                            const typeSelect = document.getElementById('layanan_type');
+                            const customWrap = document.getElementById('layanan_custom_wrapper');
+
+                            function toggleCustom() {
+                                customWrap.style.display = typeSelect.value === 'other' ? 'block' : 'none';
+                            }
+                            if (typeSelect) {
+                                typeSelect.addEventListener('change', toggleCustom);
+                                toggleCustom();
+                            }
+                        })();
+                    </script>
                 </div>
                 <div class="tab-content" id="track-content">
                     <div class="section-header">
@@ -976,7 +1050,8 @@
             // Render kecamatan options
             function renderKecamatanOptions(kecamatanData) {
                 if (kecamatanData.length === 0) {
-                    kecamatanOptions.innerHTML = '<div class="dropdown-option disabled">Tidak ada kecamatan ditemukan</div>';
+                    kecamatanOptions.innerHTML =
+                        '<div class="dropdown-option disabled">Tidak ada kecamatan ditemukan</div>';
                     return;
                 }
 
@@ -1046,7 +1121,8 @@
                 kecamatanHidden.value = '';
                 kecamatanInput.querySelector('.dropdown-placeholder').textContent = 'Pilih Kecamatan';
                 kecamatanInput.classList.remove('has-value');
-                kecamatanOptions.innerHTML = '<div class="dropdown-option disabled">Pilih kabupaten terlebih dahulu</div>';
+                kecamatanOptions.innerHTML =
+                    '<div class="dropdown-option disabled">Pilih kabupaten terlebih dahulu</div>';
                 closeDropdown();
 
                 if (!kabupatenId) {
@@ -1079,7 +1155,8 @@
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        kecamatanOptions.innerHTML = '<div class="dropdown-option disabled">Error loading data</div>';
+                        kecamatanOptions.innerHTML =
+                            '<div class="dropdown-option disabled">Error loading data</div>';
                     })
                     .finally(() => {
                         kecamatanLoading.classList.remove('show');
