@@ -21,9 +21,13 @@ class TicketController extends Controller
         $countSent = \App\Models\Ticket::whereNotIn('status', ['ditolak/rejected'])->count();
         $countWorkedOn = \App\Models\Ticket::whereIn('status', ['diterima/approved', 'selesai/completed'])->count();
 
+        // Get latest news for portfolio section
+        $latestNews = \App\Models\News::published()->latest()->take(9)->get();
+
         return view('guest.guest_dashboard', [
             'countSent' => $countSent,
             'countWorkedOn' => $countWorkedOn,
+            'latestNews' => $latestNews,
         ]);
     }
 

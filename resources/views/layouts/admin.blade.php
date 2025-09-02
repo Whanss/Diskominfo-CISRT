@@ -769,6 +769,32 @@
                             <span class="nav-text">Layanan</span>
                         </a>
                     </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.news*') ? 'active' : '' }}"
+                            href="{{ route('admin.news.index') }}">
+                            <div class="nav-icon">
+                                <i class="fas fa-newspaper"></i>
+                            </div>
+                            <span class="nav-text">Kelola Berita</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Content Management Section -->
+            <div class="nav-section">
+                <div class="nav-heading">Content</div>
+                <ul class="nav-items">
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.news.create') ? 'active' : '' }}"
+                            href="{{ route('admin.news.create') }}">
+                            <div class="nav-icon">
+                                <i class="fas fa-plus-circle"></i>
+                            </div>
+                            <span class="nav-text">Tambah Berita</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
 
