@@ -79,6 +79,15 @@
             border-radius: 12px;
             box-shadow: 0 20px 40px rgba(26, 54, 93, 0.15);
             border: 1px solid #e5e7eb;
+            max-width: 700px;
+            /* shrink on large screens */
+            width: 100%;
+            /* responsive on small screens */
+            height: auto;
+            /* keep aspect ratio */
+            display: block;
+            margin: 0 auto;
+            /* center */
         }
 
         .related-news-card {
@@ -201,8 +210,8 @@
             <nav id="navmenu" class="navmenu">
                 <ul>
                     <li><a href="{{ route('guest.guest_dashboard') }}">Home</a></li>
-                    <li><a href="{{ route('guest.news.index') }}">Security Intelligence</a></li>
-                    <li><a href="{{ route('guest.create_tiket') }}">Report Incident</a></li>
+                    <li><a href="{{ route('guest.news.index') }}">Berita</a></li>
+                    <li><a href="{{ route('guest.create_tiket') }}">Kirim Aduan</a></li>
                 </ul>
             </nav>
         </div>
@@ -293,7 +302,7 @@
                             <div class="card mb-4">
                                 <div class="card-body text-center">
                                     <a href="{{ route('guest.news.index') }}" class="btn btn-outline-primary">
-                                        <i class="bi bi-arrow-left me-1"></i> Back to Intelligence
+                                        <i class="bi bi-arrow-left me-1"></i> kembali ke Berita
                                     </a>
                                 </div>
                             </div>
