@@ -21,8 +21,8 @@ class TicketController extends Controller
         $countSent = \App\Models\Ticket::whereNotIn('status', ['ditolak/rejected'])->count();
         $countWorkedOn = \App\Models\Ticket::whereIn('status', ['diterima/approved', 'selesai/completed'])->count();
 
-        // Get latest news for portfolio section
-        $latestNews = \App\Models\News::published()->latest()->take(9)->get();
+        // Get latest news for portfolio section, limit to 3
+        $latestNews = \App\Models\News::published()->latest()->take(3)->get();
 
         return view('guest.guest_dashboard', [
             'countSent' => $countSent,
@@ -101,7 +101,7 @@ class TicketController extends Controller
     // Admin: list all tickets with filtering
     public function adminIndex(Request $request)
     {
-        $query = Ticket::with(['kabupaten', 'kecamatan']);
+        $query = Ticket::with(['kabupaten', 'kecamatan', 'layanan']);
 
         // Filter by status
         if ($request->filled('status') && $request->status !== 'all') {
@@ -302,13 +302,30 @@ class TicketController extends Controller
         return view('admin.tickets.activity', compact('activities'));
     }
 
-    public function process()
+    public function process(Request $request)
     {
-        // Get accepted tickets (status = 'diterima/approved') - ready for processing
-        $acceptedTickets = Ticket::where('status', 'diterima/approved')
-            ->with(['layanan'])
-            ->orderBy('accepted_at', 'asc')
-            ->get();
+        // Build query for accepted tickets with search and pagination
+        $query = Ticket::where('status', 'diterima/approved')
+            ->with(['layanan', 'kabupaten', 'kecamatan']);
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('code_tracking', 'like', "%{$search}%")
+                    ->orWhere('nama_pelapor', 'like', "%{$search}%")
+                    ->orWhere('judul', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by layanan
+        if ($request->filled('layanan_id')) {
+            $query->where('layanan_id', $request->layanan_id);
+        }
+
+        // Get paginated accepted tickets
+        $acceptedTickets = $query->orderBy('accepted_at', 'asc')->paginate(10);
 
         // Get tickets completed today
         $completedToday = Ticket::where('status', 'selesai/completed')
@@ -323,10 +340,14 @@ class TicketController extends Controller
                 return $ticket->total_processing_time;
             });
 
+        // Get layanan list for filter dropdown
+        $layananList = \App\Models\MasterLayanan::orderBy('name')->get();
+
         return view('admin.tickets.process', compact(
             'acceptedTickets',
             'completedToday',
-            'totalWorkTimeToday'
+            'totalWorkTimeToday',
+            'layananList'
         ));
     }
 
