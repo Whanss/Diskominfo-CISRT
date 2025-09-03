@@ -188,7 +188,14 @@
                             <div class="mb-3">
                                 <strong>Jenis Layanan:</strong>
                                 <div class="mt-2 p-3" style="background-color: #f8f9fc; border-radius: 6px; border-left: 4px solid #4e73df;">
-                                    {{ $ticket->masterLayanan->name ?? '-' }}
+                                    @if ($ticket->layanan)
+                                        {{ $ticket->layanan->name }}
+                                        @if ($ticket->layanan->description)
+                                            <br><small style="color:#666; font-weight:400;">{{ $ticket->layanan->description }}</small>
+                                        @endif
+                                    @else
+                                        -
+                                    @endif
                                 </div>
                             </div>
 

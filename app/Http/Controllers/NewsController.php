@@ -39,7 +39,7 @@ class NewsController extends Controller
         }
 
         $news = $query->paginate(9)->withQueryString();
-        $categories = NewsCategory::where('is_active', true)->orderBy('name')->get(['id', 'name', 'slug']);
+        $categories = NewsCategory::where('is_active', true)->orderBy('name')->get(['id', 'name']);
 
         return view('guest.news.index', compact('news', 'categories'));
     }

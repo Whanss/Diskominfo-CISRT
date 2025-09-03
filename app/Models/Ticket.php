@@ -23,13 +23,8 @@ class Ticket extends Model
         'updated_at' => 'datetime',
     ];
 
+    // Fixed: selected master layanan for this ticket (admin-managed)
     public function layanan()
-    {
-        return $this->hasMany(Layanan::class);
-    }
-
-    // New: selected master layanan for this ticket (admin-managed)
-    public function masterLayanan()
     {
         return $this->belongsTo(\App\Models\MasterLayanan::class, 'layanan_id');
     }
