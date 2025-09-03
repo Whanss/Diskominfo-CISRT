@@ -499,6 +499,43 @@
             <div class="tab-content">
                 <!-- Tickets Tab -->
                 <div id="tickets-tab" class="tab-pane active">
+                    <!-- Search and Filter Bar -->
+                    <div class="search-bar">
+                        <form method="GET" action="{{ route('admin.tickets.process') }}" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-search" style="color: #64748b;"></i>
+                                <input type="text" name="search" class="search-input" placeholder="Cari tiket..."
+                                    value="{{ request('search') }}">
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <label for="layanan_filter" style="font-size: 14px; color: #64748b; margin: 0;">Layanan:</label>
+                                <select name="layanan_id" id="layanan_filter" class="search-input" style="width: 200px;">
+                                    <option value="">Semua Layanan</option>
+                                    @foreach ($layananList as $layanan)
+                                        <option value="{{ $layanan->id }}" {{ request('layanan_id') == $layanan->id ? 'selected' : '' }}>
+                                            {{ $layanan->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="padding: 8px 16px;">
+                                <i class="fas fa-search"></i> Cari
+                            </button>
+                            @if (request('search') || request('layanan_id'))
+                                <a href="{{ route('admin.tickets.process') }}" class="btn btn-secondary" style="padding: 8px 16px;">
+                                    <i class="fas fa-times"></i> Reset
+                                </a>
+                            @endif
+                        </form>
+                        <div style="font-size: 14px; color: #64748b;">
+                            @if ($acceptedTickets->total() > 0)
+                                Menampilkan {{ $acceptedTickets->firstItem() }} - {{ $acceptedTickets->lastItem() }} dari {{ $acceptedTickets->total() }} tiket
+                            @else
+                                Tidak ada tiket ditemukan
+                            @endif
+                        </div>
+                    </div>
+
                     <div class="ticket-list">
                         @if ($acceptedTickets->isEmpty())
                             <div class="empty-state">
@@ -514,6 +551,9 @@
                                         <div class="ticket-meta">
                                             <span><strong>ID:</strong> {{ $ticket->code_tracking }}</span> |
                                             <span><strong>Pelapor:</strong> {{ $ticket->nama_pelapor }}</span> |
+                                            @if ($ticket->layanan)
+                                                <span><strong>Layanan:</strong> {{ $ticket->layanan->name }}</span> |
+                                            @endif
                                             <span><strong>Diterima:</strong>
                                                 {{ $ticket->accepted_at->diffForHumans() }}</span>
                                         </div>
@@ -547,6 +587,49 @@
                             @endforeach
                         @endif
                     </div>
+
+                    <!-- Pagination -->
+                    @if ($acceptedTickets->hasPages())
+                        <div style="margin-top: 24px; padding: 20px; border-top: 1px solid #e2e8f0; background: #fafafa; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                            <div style="color: #64748b; font-size: 14px;">
+                                Menampilkan {{ $acceptedTickets->firstItem() }} sampai {{ $acceptedTickets->lastItem() }} dari {{ $acceptedTickets->total() }} tiket
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                {{-- Previous Page Link --}}
+                                @if ($acceptedTickets->onFirstPage())
+                                    <span class="btn" style="background: #e5e7eb; color: #9ca3af; cursor: not-allowed;">
+                                        <i class="fas fa-chevron-left"></i> Sebelumnya
+                                    </span>
+                                @else
+                                    <a href="{{ $acceptedTickets->appends(request()->query())->previousPageUrl() }}" class="btn" style="background: #3b82f6; color: white;">
+                                        <i class="fas fa-chevron-left"></i> Sebelumnya
+                                    </a>
+                                @endif
+
+                                {{-- Page Numbers --}}
+                                <div style="display: flex; align-items: center; gap: 4px;">
+                                    @foreach ($acceptedTickets->appends(request()->query())->getUrlRange(1, $acceptedTickets->lastPage()) as $page => $url)
+                                        @if ($page == $acceptedTickets->currentPage())
+                                            <span class="btn" style="background: #3b82f6; color: white; font-weight: 600;">{{ $page }}</span>
+                                        @else
+                                            <a href="{{ $url }}" class="btn" style="background: #e5e7eb; color: #374151;">{{ $page }}</a>
+                                        @endif
+                                    @endforeach
+                                </div>
+
+                                {{-- Next Page Link --}}
+                                @if ($acceptedTickets->hasMorePages())
+                                    <a href="{{ $acceptedTickets->appends(request()->query())->nextPageUrl() }}" class="btn" style="background: #3b82f6; color: white;">
+                                        Selanjutnya <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                @else
+                                    <span class="btn" style="background: #e5e7eb; color: #9ca3af; cursor: not-allowed;">
+                                        Selanjutnya <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
                 <!-- Calendar Tab -->

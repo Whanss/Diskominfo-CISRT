@@ -9,7 +9,7 @@ class KabupatenController extends Controller
 {
     public function index()
     {
-        $kabupatens = Kabupaten::orderBy('nama')->get();
+        $kabupatens = Kabupaten::orderBy('nama')->paginate(15);
         return view('admin.kabupaten.index', compact('kabupatens'));
     }
 
