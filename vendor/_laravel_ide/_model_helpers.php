@@ -2266,9 +2266,7 @@ namespace App\Models {
      * @property-read mixed $has_active_work_session
      * @property-read mixed $current_work_session
      * @property-read mixed $work_session_stats
-     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Layanan> $layanan
-     * @property-read int|null $layanan_count
-     * @property-read \App\Models\MasterLayanan $masterLayanan
+     * @property-read \App\Models\MasterLayanan $layanan
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\WorkSession> $workSessions
      * @property-read int|null $workSessions_count
      * @property-read \App\Models\WorkSession $activeWorkSession

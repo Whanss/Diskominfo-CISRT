@@ -16,7 +16,6 @@
                     <tr>
                         <th>#</th>
                         <th>Nama</th>
-                        <th>Slug</th>
                         <th>Aktif</th>
                         <th>Aksi</th>
                     </tr>
@@ -26,7 +25,6 @@
                     <tr>
                         <td>{{ $category->id }}</td>
                         <td>{{ $category->name }}</td>
-                        <td>{{ $category->slug }}</td>
                         <td>
                             <span class="badge {{ $category->is_active ? 'bg-success' : 'bg-secondary' }}">{{ $category->is_active ? 'Aktif' : 'Nonaktif' }}</span>
                         </td>

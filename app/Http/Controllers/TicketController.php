@@ -24,14 +24,10 @@ class TicketController extends Controller
         // Get latest news for portfolio section
         $latestNews = \App\Models\News::published()->latest()->take(9)->get();
 
-        // Get active services for services section
-        $services = \App\Models\MasterLayanan::where('is_active', true)->orderBy('name')->get();
-
         return view('guest.guest_dashboard', [
             'countSent' => $countSent,
             'countWorkedOn' => $countWorkedOn,
             'latestNews' => $latestNews,
-            'services' => $services,
         ]);
     }
 
