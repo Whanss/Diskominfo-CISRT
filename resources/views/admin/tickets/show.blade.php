@@ -186,13 +186,9 @@
                             </div>
 
                             <div class="mb-3">
-                                <strong>Jenis Layanan/Insiden:</strong>
+                                <strong>Jenis Layanan:</strong>
                                 <div class="mt-2 p-3" style="background-color: #f8f9fc; border-radius: 6px; border-left: 4px solid #4e73df;">
-                                    @if($ticket->layanan_type === 'other' && $ticket->layanan_custom)
-                                        {{ $ticket->layanan_custom }}
-                                    @else
-                                        {{ ucfirst(str_replace('_',' ', $ticket->layanan_type ?? '-')) }}
-                                    @endif
+                                    {{ $ticket->masterLayanan->name ?? '-' }}
                                 </div>
                             </div>
 

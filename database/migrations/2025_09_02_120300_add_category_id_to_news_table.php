@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::table('news', function (Blueprint $table) {
             if (!Schema::hasColumn('news', 'category_id')) {
-                $table->foreignId('category_id')->nullable()->after('category')->constrained('news_categories')->nullOnDelete();
+                $table->foreignId('category_id')->nullable()->constrained('news_categories')->onDelete('set null');
             }
         });
     }
@@ -18,7 +18,8 @@ return new class extends Migration {
     {
         Schema::table('news', function (Blueprint $table) {
             if (Schema::hasColumn('news', 'category_id')) {
-                $table->dropConstrainedForeignId('category_id');
+                $table->dropForeign(['category_id']);
+                $table->dropColumn('category_id');
             }
         });
     }

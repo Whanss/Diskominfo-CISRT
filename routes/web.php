@@ -6,8 +6,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\KabupatenController;
 use App\Http\Controllers\KecamatanController;
 use App\Http\Controllers\LayananController;
-use App\Http\Controllers\Admin\NewsController as AdminNewsController;
-use App\Http\Controllers\Guest\NewsController as GuestNewsController;
+use App\Http\Controllers\NewsController as AdminNewsController;
+use App\Http\Controllers\NewsController as GuestNewsController;
 use App\Models\Kabupaten;
 use App\Models\Kecamatan;
 use App\Models\Ticket;
@@ -25,7 +25,8 @@ Route::middleware(['prevent.admin.guest'])->group(function () {
 
     Route::get('guest/create_tiket', function () {
         $kabupatens = Kabupaten::all();
-        return view('guest.create_tiket', compact('kabupatens'));
+        $layanan = \App\Models\MasterLayanan::where('is_active', true)->orderBy('name')->get(['id', 'name']);
+        return view('guest.create_tiket', compact('kabupatens', 'layanan'));
     })->name('guest.create_tiket');
 
     Route::post('tickets', [TicketController::class, 'store'])->name('tickets.store');
@@ -35,8 +36,8 @@ Route::middleware(['prevent.admin.guest'])->group(function () {
     Route::get('guest/lihat_tiket/{code_tracking}', [TicketController::class, 'show'])->name('guest.liat_tiket');
 
     // News routes for guests
-    Route::get('berita', [GuestNewsController::class, 'index'])->name('guest.news.index');
-    Route::get('berita/{slug}', [GuestNewsController::class, 'show'])->name('guest.news.show');
+    Route::get('berita', [GuestNewsController::class, 'guestIndex'])->name('guest.news.index');
+    Route::get('berita/{slug}', [GuestNewsController::class, 'guestShow'])->name('guest.news.show');
 });
 
 // Admin Authentication Routes (not protected - admins need access when not logged in)
@@ -68,9 +69,9 @@ Route::middleware(['admin.auth', 'prevent.guest.admin'])->prefix('admin')->name(
     Route::resource('kecamatan', KecamatanController::class);
     // Route::resource('layanan', LayananController::class); // disabled: using Master Layanan module
     Route::resource('news', AdminNewsController::class);
-    // New master data resources
-    Route::resource('master-layanan', \App\Http\Controllers\Admin\MasterLayananController::class);
-    Route::resource('news-categories', \App\Http\Controllers\Admin\NewsCategoryController::class);
+    // Master data resources
+    Route::resource('layanan', \App\Http\Controllers\Admin\LayananController::class);
+    Route::resource('news-categories', \App\Http\Controllers\NewsCategoryController::class);
 
     // Tickets - static routes FIRST (specific routes before parameterized ones)
     Route::get('tickets', [TicketController::class, 'adminIndex'])->name('tickets.index');

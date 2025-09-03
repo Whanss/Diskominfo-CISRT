@@ -238,15 +238,13 @@
                                 </div>
                                 <div class="col-md-4">
                                     <select class="form-select form-select-lg" name="category">
-                                        <option value="">All Categories</option>
-                                        <option value="alert" {{ request('category') == 'alert' ? 'selected' : '' }}>
-                                            Security Alerts</option>
-                                        <option value="tips" {{ request('category') == 'tips' ? 'selected' : '' }}>
-                                            Security Guidelines</option>
-                                        <option value="news" {{ request('category') == 'news' ? 'selected' : '' }}>
-                                            Threat Intelligence</option>
-                                        <option value="update" {{ request('category') == 'update' ? 'selected' : '' }}>
-                                            System Updates</option>
+                                        <option value="">Semua Kategori</option>
+                                        @foreach ($categories as $cat)
+                                            <option value="{{ $cat->slug }}"
+                                                {{ request('category') == $cat->slug ? 'selected' : '' }}>
+                                                {{ $cat->name }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="col-md-2">
@@ -296,8 +294,7 @@
                                             class="card-img-top news-image" alt="{{ $item->title }}">
                                     @endif
 
-                                    <span
-                                        class="badge category-badge bg-{{ $item->category == 'alert' ? 'danger' : ($item->category == 'tips' ? 'info' : ($item->category == 'update' ? 'warning' : 'primary')) }}">
+                                    <span class="badge category-badge bg-{{ $item->category_badge_class }}">
                                         {{ $item->category_label }}
                                     </span>
                                 </div>

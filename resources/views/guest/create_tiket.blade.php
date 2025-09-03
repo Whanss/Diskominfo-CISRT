@@ -694,6 +694,24 @@
                             <input type="email" class="form-control" id="email" name="email"
                                 value="{{ old('email') }}" required placeholder="contoh@email.com">
                         </div>
+                        <!-- Layanan (jenis insiden) - berasal dari master layanan admin -->
+                        <div class="form-group">
+                            <label for="layanan_id" class="form-label">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 6h16M4 12h16M4 18h16" />
+                                </svg>
+                                Jenis Layanan <span class="required">*</span>
+                            </label>
+                            <select class="form-control" id="layanan_id" name="layanan_id" required>
+                                <option value="">Pilih layanan</option>
+                                @foreach ($layanan as $l)
+                                    <option value="{{ $l->id }}"
+                                        {{ old('layanan_id') == $l->id ? 'selected' : '' }}>{{ $l->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
 
                         <div class="form-group">
                             <label for="nomor_pelapor" class="form-label">
@@ -775,59 +793,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        <div class="form-group">
-                            <label for="description" class="form-label">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                                    </path>
-                                </svg>
-                                Deskripsi Masalah <span class="required">*</span>
-                            </label>
-                            <textarea class="form-control" id="description" name="description" rows="4" required maxlength="500"
-                                placeholder="Jelaskan masalah yang Anda alami secara detail...">{{ old('description') }}</textarea>
-                            <div class="character-count" id="description-count">0/500</div>
-                        </div>
-
-                        <!-- Layanan (jenis insiden) -->
-                        <div class="form-group">
-                            <label for="layanan_type" class="form-label">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 6h16M4 12h16M4 18h16" />
-                                </svg>
-                                Jenis Insiden/Layanan <span class="required">*</span>
-                            </label>
-                            <select class="form-control" id="layanan_type" name="layanan_type" required>
-                                <option value="">Pilih jenis</option>
-                                <option value="phishing" {{ old('layanan_type') == 'phishing' ? 'selected' : '' }}>Phishing
-                                </option>
-                                <option value="malware" {{ old('layanan_type') == 'malware' ? 'selected' : '' }}>Malware
-                                </option>
-                                <option value="defacement" {{ old('layanan_type') == 'defacement' ? 'selected' : '' }}>
-                                    Defacement</option>
-                                <option value="ddos" {{ old('layanan_type') == 'ddos' ? 'selected' : '' }}>DDoS</option>
-                                <option value="data_breach" {{ old('layanan_type') == 'data_breach' ? 'selected' : '' }}>
-                                    Kebocoran Data</option>
-                                <option value="other" {{ old('layanan_type') == 'other' ? 'selected' : '' }}>Lainnya
-                                </option>
-                            </select>
-                        </div>
-
-                        <div class="form-group" id="layanan_custom_wrapper" style="display: none;">
-                            <label for="layanan_custom" class="form-label">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 4v16m8-8H4" />
-                                </svg>
-                                Masukkan Jenis Lainnya
-                            </label>
-                            <input type="text" class="form-control" id="layanan_custom" name="layanan_custom"
-                                value="{{ old('layanan_custom') }}"
-                                placeholder="Contoh: Ransomware, Account Takeover, dll">
-                        </div>
-
                         <!-- Attachment -->
                         <div class="form-group">
                             <label for="attachment" class="form-label">
@@ -843,6 +808,19 @@
                                 txt</small>
                         </div>
 
+                        <div class="form-group">
+                            <label for="description" class="form-label">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                    </path>
+                                </svg>
+                                Deskripsi Masalah <span class="required">*</span>
+                            </label>
+                            <textarea class="form-control" id="description" name="description" rows="4" required maxlength="500"
+                                placeholder="Jelaskan masalah yang Anda alami secara detail...">{{ old('description') }}</textarea>
+                            <div class="character-count" id="description-count">0/500</div>
+                        </div>
                         <button type="submit" class="btn" id="submitBtn">
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

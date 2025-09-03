@@ -11,8 +11,7 @@ class News extends Model
         'title',
         'content',
         'image',
-        'category',     // legacy string category
-        'category_id',  // new FK to news_categories
+        'category_id',  // FK to news_categories
         'is_published',
         'slug',
         'excerpt'
@@ -54,19 +53,19 @@ class News extends Model
         return $this->belongsTo(\App\Models\NewsCategory::class, 'category_id');
     }
 
-    // Scope for category (accepts id or slug or legacy string)
+    // Scope for category (accepts id or slug)
     public function scopeByCategory($query, $category)
     {
         // If numeric, treat as category_id
         if (is_numeric($category)) {
             return $query->where('category_id', $category);
         }
-        // Try resolve slug to id, else fallback to legacy string
+        // Try resolve slug to id
         $cat = \App\Models\NewsCategory::where('slug', $category)->first();
         if ($cat) {
             return $query->where('category_id', $cat->id);
         }
-        return $query->where('category', $category);
+        return $query;
     }
 
     // Get excerpt or truncated content
@@ -79,16 +78,41 @@ class News extends Model
         return Str::limit(strip_tags($this->content), 150);
     }
 
-    // Get category label
+    // Get category label: prefer related category name
     public function getCategoryLabelAttribute()
     {
-        $labels = [
-            'alert' => 'SECURITY ALERT',
-            'tips' => 'SECURITY GUIDELINE',
-            'news' => 'THREAT INTEL',
-            'update' => 'SYSTEM UPDATE'
-        ];
+        if ($this->category_id && ($this->relationLoaded('category') ? $this->category : $this->category()->exists())) {
+            $related = $this->category ?? $this->category()->first();
+            if ($related && !empty($related->name)) {
+                return $related->name; // use admin-defined category name
+            }
+        }
 
-        return $labels[$this->category] ?? 'THREAT INTEL';
+        return 'Uncategorized';
+    }
+
+    // Derive a slug for category for styling (prefer related slug)
+    public function getCategorySlugAttribute()
+    {
+        if ($this->category_id && ($this->relationLoaded('category') ? $this->category : $this->category()->exists())) {
+            $related = $this->category ?? $this->category()->first();
+            if ($related && !empty($related->slug)) {
+                return $related->slug;
+            }
+        }
+        return 'uncategorized';
+    }
+
+    // Map category to badge class used in views
+    public function getCategoryBadgeClassAttribute()
+    {
+        $slug = $this->category_slug;
+        return match ($slug) {
+            'alert' => 'danger',
+            'tips' => 'info',
+            'update' => 'warning',
+            'news' => 'primary',
+            default => 'primary',
+        };
     }
 }

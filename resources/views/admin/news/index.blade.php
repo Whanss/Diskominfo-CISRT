@@ -53,8 +53,7 @@
                                                 <small class="text-muted">{{ Str::limit($item->excerpt, 80) }}</small>
                                             </td>
                                             <td>
-                                                <span
-                                                    class="badge bg-{{ $item->category == 'alert' ? 'danger' : ($item->category == 'tips' ? 'info' : ($item->category == 'update' ? 'warning' : 'primary')) }}">
+                                                <span class="badge bg-{{ $item->category_badge_class }}">
                                                     {{ $item->category_label }}
                                                 </span>
                                             </td>

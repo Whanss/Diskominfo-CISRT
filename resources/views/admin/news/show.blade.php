@@ -27,8 +27,7 @@
                                 <h2>{{ $news->title }}</h2>
 
                                 <div class="mb-3">
-                                    <span
-                                        class="badge bg-{{ $news->category == 'alert' ? 'danger' : ($news->category == 'tips' ? 'info' : ($news->category == 'update' ? 'warning' : 'primary')) }} me-2">
+                                    <span class="badge bg-{{ $news->category_badge_class }} me-2">
                                         {{ $news->category_label }}
                                     </span>
                                     @if ($news->is_published)

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\News;
@@ -12,12 +12,55 @@ use Illuminate\Support\Str;
 class NewsController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Admin: Display a listing of the resource.
      */
     public function index()
     {
-        $news = News::latest()->paginate(10);
+        $news = News::with('category')->latest()->paginate(10);
         return view('admin.news.index', compact('news'));
+    }
+
+    /**
+     * Guest: news listing with search and category filter
+     */
+    public function guestIndex(Request $request)
+    {
+        $query = News::with('category')->published()->latest();
+
+        if ($search = $request->get('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('content', 'like', "%{$search}%");
+            });
+        }
+
+        if ($category = $request->get('category')) {
+            $query->byCategory($category);
+        }
+
+        $news = $query->paginate(9)->withQueryString();
+        $categories = NewsCategory::where('is_active', true)->orderBy('name')->get(['id', 'name', 'slug']);
+
+        return view('guest.news.index', compact('news', 'categories'));
+    }
+
+    /**
+     * Guest: news detail by slug
+     */
+    public function guestShow(string $slug)
+    {
+        $news = News::with('category')->where('slug', $slug)->firstOrFail();
+
+        // related news: same category (FK preferred), exclude current
+        $relatedQuery = News::published()->where('id', '!=', $news->id)->latest();
+        if ($news->category_id) {
+            $relatedQuery->where('category_id', $news->category_id);
+        } elseif ($news->category) {
+            $relatedQuery->where('category', $news->category);
+        }
+        $relatedNews = $relatedQuery->take(5)->get();
+
+        return view('guest.news.show', compact('news', 'relatedNews'));
     }
 
     /**

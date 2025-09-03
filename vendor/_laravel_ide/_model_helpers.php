@@ -1600,19 +1600,19 @@ namespace App\Models {
      * @property string $slug
      * @property boolean $is_published
      * @property mixed $category_id
-     * @property mixed $category
      * @property string|null $image
      * @property string $content
      * @property string $title
      * @property int $id
      * @property-read mixed $excerpt
      * @property-read mixed $category_label
+     * @property-read mixed $category_slug
+     * @property-read mixed $category_badge_class
      * @property-read \App\Models\NewsCategory $category
      * @method static \Illuminate\Database\Eloquent\Builder<News>|News whereId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<News>|News whereTitle($value)
      * @method static \Illuminate\Database\Eloquent\Builder<News>|News whereContent($value)
      * @method static \Illuminate\Database\Eloquent\Builder<News>|News whereImage($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<News>|News whereCategory($value)
      * @method static \Illuminate\Database\Eloquent\Builder<News>|News whereCategoryId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<News>|News whereIsPublished($value)
      * @method static \Illuminate\Database\Eloquent\Builder<News>|News whereSlug($value)
@@ -1926,14 +1926,12 @@ namespace App\Models {
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property boolean $is_active
-     * @property string $slug
      * @property string $name
      * @property int $id
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\News> $news
      * @property-read int|null $news_count
      * @method static \Illuminate\Database\Eloquent\Builder<NewsCategory>|NewsCategory whereId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<NewsCategory>|NewsCategory whereName($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<NewsCategory>|NewsCategory whereSlug($value)
      * @method static \Illuminate\Database\Eloquent\Builder<NewsCategory>|NewsCategory whereIsActive($value)
      * @method static \Illuminate\Database\Eloquent\Builder<NewsCategory>|NewsCategory whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<NewsCategory>|NewsCategory whereUpdatedAt($value)
