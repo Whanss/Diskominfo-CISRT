@@ -530,14 +530,13 @@
                                         </div>
 
                                         <div class="action-buttons">
-                                            <form action="{{ route('admin.tickets.complete', $ticket) }}" method="POST"
-                                                style="display: inline;">
-                                                @csrf
-                                                <button type="submit" class="btn btn-complete"
-                                                    onclick="return confirm('Apakah Anda yakin ingin menandai tiket ini sebagai selesai?')">
-                                                    <i class="fas fa-check"></i> Selesai
-                                                </button>
-                                            </form>
+                                            <button type="button" class="btn btn-complete"
+                                                data-bs-toggle="modal" data-bs-target="#completeModal"
+                                                data-action="{{ route('admin.tickets.complete', $ticket) }}"
+                                                data-title="{{ $ticket->judul ?? 'Tanpa Judul' }}"
+                                                data-code="{{ $ticket->code_tracking }}">
+                                                <i class="fas fa-check"></i> Selesai
+                                            </button>
 
                                             <a href="{{ route('admin.tickets.show', $ticket) }}" class="btn btn-view">
                                                 <i class="fas fa-eye"></i> Lihat
@@ -615,8 +614,57 @@
         </div>
     </div>
 
+    <!-- Complete Ticket Modal -->
+    <div class="modal fade" id="completeModal" tabindex="-1" aria-labelledby="completeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="completeModalLabel">Selesaikan Ticket</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="completeForm" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <div style="margin-bottom: 10px; font-size: 14px; color: #64748b;">
+                            <div><strong>Ticket:</strong> <span id="complete-ticket-title">-</span></div>
+                            <div><strong>Kode:</strong> <span id="complete-ticket-code">-</span></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="resolution_notes"><strong>Catatan Penanganan</strong></label>
+                            <textarea class="form-control" id="resolution_notes" name="resolution_notes" rows="4" placeholder="Jelaskan tindakan dan hasil penanganan" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-complete"><i class="fas fa-check"></i> Tandai Selesai</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         let currentDate = new Date();
+
+        // Hook up modal with data attributes
+        document.addEventListener('click', function (e) {
+            const trigger = e.target.closest('[data-bs-target="#completeModal"]');
+            if (!trigger) return;
+            const action = trigger.getAttribute('data-action');
+            const title = trigger.getAttribute('data-title');
+            const code = trigger.getAttribute('data-code');
+
+            const form = document.getElementById('completeForm');
+            form.setAttribute('action', action);
+            document.getElementById('complete-ticket-title').textContent = title || '-';
+            document.getElementById('complete-ticket-code').textContent = code || '-';
+
+            // reset textarea on open
+            const textarea = document.getElementById('resolution_notes');
+            textarea.value = '';
+            textarea.focus({ preventScroll: true });
+        });
+
         let workData = {}; // Will store real work session data from API
 
         // Helper: format seconds to "Xj Ym Zs" or "Xm Ys" or "Xs"

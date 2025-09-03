@@ -24,10 +24,14 @@ class TicketController extends Controller
         // Get latest news for portfolio section
         $latestNews = \App\Models\News::published()->latest()->take(9)->get();
 
+        // Get active services for services section
+        $services = \App\Models\MasterLayanan::where('is_active', true)->orderBy('name')->get();
+
         return view('guest.guest_dashboard', [
             'countSent' => $countSent,
             'countWorkedOn' => $countWorkedOn,
             'latestNews' => $latestNews,
+            'services' => $services,
         ]);
     }
 
@@ -39,13 +43,13 @@ class TicketController extends Controller
             'email' => 'required|email|max:255',
             'no_hp' => 'nullable|string|max:20',
             'description' => 'required|string',
-            // layanan akan dipilih admin, bukan guest
+            'layanan_id' => 'required|exists:master_layanan,id',
             'attachment' => 'nullable|file|max:5120|mimes:pdf,doc,docx,xls,xlsx,png,jpg,jpeg,txt',
             'kabupaten_id' => 'required|exists:kabupaten,id',
             'kecamatan_id' => 'required|exists:kecamatan,id',
         ]);
 
-        // Hapus field layanan dari input guest (kompatibilitas lama)
+        // Bersihkan field legacy yang tidak dipakai lagi
         unset($validated['layanan_type'], $validated['layanan_custom']);
 
         // Generate unique code_tracking
@@ -195,6 +199,10 @@ class TicketController extends Controller
     public function reject(Ticket $ticket)
     {
         try {
+            request()->validate([
+                'rejection_reason' => 'required|string|min:5|max:2000',
+            ]);
+
             $rejectionReason = request()->input('rejection_reason');
             $ticket->status = 'ditolak/rejected';
             $ticket->rejection_reason = $rejectionReason;
@@ -328,6 +336,10 @@ class TicketController extends Controller
 
     public function complete(Ticket $ticket)
     {
+        request()->validate([
+            'resolution_notes' => 'required|string|min:5|max:3000',
+        ]);
+
         $oldStatus = $ticket->status;
         $resolutionNotes = request()->input('resolution_notes');
         $ticket->status = 'selesai/completed';

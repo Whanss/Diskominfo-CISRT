@@ -232,8 +232,7 @@
 
                 <div class="row">
                     <div class="col-lg-8">
-                        <span
-                            class="badge bg-{{ $news->category == 'alert' ? 'danger' : ($news->category == 'tips' ? 'info' : ($news->category == 'update' ? 'warning' : 'primary')) }} mb-3">
+                        <span class="badge bg-{{ $news->category_badge_class }} mb-3">
                             {{ $news->category_label }}
                         </span>
 
@@ -327,8 +326,7 @@
                                                 @endif
 
                                                 <div class="card-body p-3">
-                                                    <span
-                                                        class="badge bg-{{ $related->category == 'alert' ? 'danger' : ($related->category == 'tips' ? 'info' : ($related->category == 'update' ? 'warning' : 'primary')) }} mb-2">
+                                                    <span class="badge bg-{{ $related->category_badge_class }} mb-2">
                                                         {{ $related->category_label }}
                                                     </span>
                                                     <h6 class="card-title">

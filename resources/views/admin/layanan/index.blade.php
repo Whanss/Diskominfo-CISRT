@@ -1,14 +1,14 @@
 @extends('layouts.admin')
 
-@section('title', 'Master Layanan')
+@section('title', 'Layanan')
 
 @section('content')
 <div class="container-fluid px-4">
-    <h1 class="mt-4">Master Layanan</h1>
+    <h1 class="mt-4">Layanan</h1>
     <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
             <span><i class="fas fa-list-alt me-1"></i> Daftar Layanan</span>
-            <a href="{{ route('admin.master-layanan.create') }}" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Tambah</a>
+            <a href="{{ route('admin.layanan.create') }}" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Tambah</a>
         </div>
         <div class="card-body">
             <table class="table table-bordered table-striped">
@@ -31,8 +31,8 @@
                             <span class="badge {{ $item->is_active ? 'bg-success' : 'bg-secondary' }}">{{ $item->is_active ? 'Aktif' : 'Nonaktif' }}</span>
                         </td>
                         <td>
-                            <a href="{{ route('admin.master-layanan.edit', $item) }}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
-                            <form action="{{ route('admin.master-layanan.destroy', $item) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus layanan ini?')">
+                            <a href="{{ route('admin.layanan.edit', $item) }}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
+                            <form action="{{ route('admin.layanan.destroy', $item) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus layanan ini?')">
                                 @csrf
                                 @method('DELETE')
                                 <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>

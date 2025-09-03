@@ -217,7 +217,7 @@
             position: fixed;
             top: 64px;
             left: 0;
-            width: 280px;
+            width: 240px;
             height: calc(100vh - 64px);
             background: white;
             border-right: 1px solid var(--gray-200);
@@ -277,6 +277,10 @@
             transition: all 0.2s ease;
             position: relative;
             border-radius: 0;
+            border: 0;
+            /* remove default button border */
+            background: transparent;
+            /* keep same look as links */
         }
 
         .nav-link::before {
@@ -494,7 +498,7 @@
 
         /* Sidebar User Info */
         .sidebar-user {
-            padding: 1rem 1.5rem;
+            padding: 1rem 1.0rem;
             border-top: 1px solid var(--gray-200);
             margin-top: auto;
         }
@@ -730,8 +734,9 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.news*') || request()->routeIs('admin.news-categories*') ? 'active' : '' }} {{ request()->routeIs('admin.news*') || request()->routeIs('admin.news-categories*') ? '' : 'collapsed' }}"
-                            data-bs-toggle="collapse" href="#newsMenu" role="button"
+                        <button type="button"
+                            class="nav-link {{ request()->routeIs('admin.news*') || request()->routeIs('admin.news-categories*') ? 'active' : '' }} {{ request()->routeIs('admin.news*') || request()->routeIs('admin.news-categories*') ? '' : 'collapsed' }}"
+                            data-bs-toggle="collapse" data-bs-target="#newsMenu"
                             aria-expanded="{{ request()->routeIs('admin.news*') || request()->routeIs('admin.news-categories*') ? 'true' : 'false' }}"
                             aria-controls="newsMenu">
                             <div class="nav-icon">
@@ -739,7 +744,7 @@
                             </div>
                             <span class="nav-text">Kelola Berita</span>
                             <span class="nav-arrow"><i class="fas fa-chevron-right"></i></span>
-                        </a>
+                        </button>
                         <div class="collapse nav-collapse {{ request()->routeIs('admin.news*') || request()->routeIs('admin.news-categories*') ? 'show' : '' }}"
                             id="newsMenu">
                             <ul class="nav-items">
@@ -772,28 +777,41 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.kabupaten*') ? 'active' : '' }}"
-                            href="{{ route('admin.kabupaten.index') }}">
+                        <button type="button"
+                            class="nav-link {{ request()->routeIs('admin.kabupaten*') || request()->routeIs('admin.kecamatan*') ? 'active' : '' }} {{ request()->routeIs('admin.kabupaten*') || request()->routeIs('admin.kecamatan*') ? '' : 'collapsed' }}"
+                            data-bs-toggle="collapse" data-bs-target="#regionMenu"
+                            aria-expanded="{{ request()->routeIs('admin.kabupaten*') || request()->routeIs('admin.kecamatan*') ? 'true' : 'false' }}"
+                            aria-controls="regionMenu">
                             <div class="nav-icon">
-                                <i class="fas fa-map-marker-alt"></i>
+                                <i class="fas fa-map"></i>
                             </div>
-                            <span class="nav-text">Kabupaten</span>
-                        </a>
+                            <span class="nav-text">Kelola Daerah</span>
+                            <span class="nav-arrow"><i class="fas fa-chevron-right"></i></span>
+                        </button>
+                        <div class="collapse nav-collapse {{ request()->routeIs('admin.kabupaten*') || request()->routeIs('admin.kecamatan*') ? 'show' : '' }}"
+                            id="regionMenu">
+                            <ul class="nav-items">
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('admin.kabupaten*') ? 'active' : '' }}"
+                                        href="{{ route('admin.kabupaten.index') }}">
+                                        <div class="nav-icon"><i class="fas fa-map-marker-alt"></i></div>
+                                        <span class="nav-text">Kabupaten</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('admin.kecamatan*') ? 'active' : '' }}"
+                                        href="{{ route('admin.kecamatan.index') }}">
+                                        <div class="nav-icon"><i class="fas fa-map-pin"></i></div>
+                                        <span class="nav-text">Kecamatan</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.kecamatan*') ? 'active' : '' }}"
-                            href="{{ route('admin.kecamatan.index') }}">
-                            <div class="nav-icon">
-                                <i class="fas fa-map-pin"></i>
-                            </div>
-                            <span class="nav-text">Kecamatan</span>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.master-layanan*') ? 'active' : '' }}"
-                            href="{{ route('admin.master-layanan.index') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.layanan*') ? 'active' : '' }}"
+                            href="{{ route('admin.layanan.index') }}">
                             <div class="nav-icon">
                                 <i class="fas fa-concierge-bell"></i>
                             </div>

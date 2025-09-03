@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Layanan;
+use App\Models\MasterLayanan;
 use Illuminate\Http\Request;
 
 class LayananController extends Controller
 {
     public function index()
     {
-        $items = Layanan::orderBy('name')->paginate(15);
+        $items = MasterLayanan::orderBy('name')->paginate(15);
         return view('admin.layanan.index', compact('items'));
     }
 
@@ -27,30 +27,30 @@ class LayananController extends Controller
             'is_active' => 'sometimes|boolean',
         ]);
         $data['is_active'] = $request->boolean('is_active');
-        Layanan::create($data);
+        MasterLayanan::create($data);
         return redirect()->route('admin.layanan.index')->with('success', 'Layanan berhasil dibuat');
     }
 
-    public function edit(Layanan $master_layanan)
+    public function edit(MasterLayanan $layanan)
     {
-        return view('admin.layanan.edit', ['item' => $master_layanan]);
+        return view('admin.layanan.edit', ['item' => $layanan]);
     }
 
-    public function update(Request $request, Layanan $master_layanan)
+    public function update(Request $request, MasterLayanan $layanan)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:150|unique:master_layanan,name,' . $master_layanan->id,
+            'name' => 'required|string|max:150|unique:master_layanan,name,' . $layanan->id,
             'description' => 'nullable|string',
             'is_active' => 'sometimes|boolean',
         ]);
         $data['is_active'] = $request->boolean('is_active');
-        $master_layanan->update($data);
+        $layanan->update($data);
         return redirect()->route('admin.layanan.index')->with('success', 'Layanan berhasil diupdate');
     }
 
-    public function destroy(Layanan $master_layanan)
+    public function destroy(MasterLayanan $layanan)
     {
-        $master_layanan->delete();
+        $layanan->delete();
         return redirect()->route('admin.layanan.index')->with('success', 'Layanan dihapus');
     }
 }

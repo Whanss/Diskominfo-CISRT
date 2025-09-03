@@ -3,14 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 class NewsCategory extends Model
 {
     protected $fillable = [
         'name',
-        'slug',
-        'is_active'
+        'is_active',
     ];
 
     protected $casts = [
@@ -18,17 +16,6 @@ class NewsCategory extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::saving(function (NewsCategory $category) {
-            if (empty($category->slug)) {
-                $category->slug = Str::slug($category->name);
-            }
-        });
-    }
 
     public function news()
     {

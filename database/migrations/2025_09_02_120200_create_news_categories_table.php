@@ -10,7 +10,6 @@ return new class extends Migration {
         Schema::create('news_categories', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->string('slug')->unique();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
@@ -18,6 +17,7 @@ return new class extends Migration {
 
     public function down(): void
     {
+        Schema::dropIfExists('news');
         Schema::dropIfExists('news_categories');
     }
 };
