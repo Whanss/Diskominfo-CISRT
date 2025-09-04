@@ -765,17 +765,6 @@
                             </ul>
                         </div>
                     </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.tickets.export') ? 'active' : '' }}"
-                            href="{{ route('admin.tickets.export') }}">
-                            <div class="nav-icon">
-                                <i class="fas fa-download"></i>
-                            </div>
-                            <span class="nav-text">Export Tickets</span>
-                        </a>
-                    </li>
-
                     <li class="nav-item">
                         <button type="button"
                             class="nav-link {{ request()->routeIs('admin.kabupaten*') || request()->routeIs('admin.kecamatan*') ? 'active' : '' }} {{ request()->routeIs('admin.kabupaten*') || request()->routeIs('admin.kecamatan*') ? '' : 'collapsed' }}"
@@ -852,11 +841,6 @@
                     <span>© {{ date('Y') }} {{ e(config('app.name', 'CSIRT Admin')) }}. All rights
                         reserved.</span>
                 </div>
-                <div class="footer-links">
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Terms & Conditions</a>
-                    <a href="#">Support</a>
-                </div>
             </div>
         </footer>
     </div>
@@ -873,22 +857,6 @@
         <!-- Load old Chart.js for other pages that might need the demo charts -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
         <!-- Only load demo files if the canvas elements exist -->
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Only load chart demos if the canvas elements exist
-                if (document.getElementById('myAreaChart')) {
-                    const script1 = document.createElement('script');
-                    script1.src = "{{ asset('template/dashboard admin/assets/demo/chart-area-demo.js') }}";
-                    document.head.appendChild(script1);
-                }
-
-                if (document.getElementById('myBarChart')) {
-                    const script2 = document.createElement('script');
-                    script2.src = "{{ asset('template/dashboard admin/assets/demo/chart-bar-demo.js') }}";
-                    document.head.appendChild(script2);
-                }
-            });
-        </script>
     @endif
 
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"

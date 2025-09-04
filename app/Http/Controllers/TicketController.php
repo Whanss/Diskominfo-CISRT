@@ -137,7 +137,7 @@ class TicketController extends Controller
             });
         }
 
-        $tickets = $query->orderBy('created_at', 'desc')->paginate(6);
+        $tickets = $query->orderBy('created_at', 'desc')->paginate(2);
 
         // Get filter options
         $kabupatenList = \App\Models\Kabupaten::orderBy('nama')->get();
