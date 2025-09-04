@@ -640,7 +640,8 @@
                 </button>
                 <a class="topnav-brand" href="{{ route('admin.dashboard') }}">
                     <div class="brand-logo" style="background: transparent; padding: 0;">
-                        <img src="{{ asset('images/lomboktengah.png') }}" alt="Lombok Tengah" style="width:32px;height:32px;object-fit:contain;border-radius:8px;" />
+                        <img src="{{ asset('images/lomboktengah.png') }}" alt="Lombok Tengah"
+                            style="width:32px;height:32px;object-fit:contain;border-radius:8px;" />
                     </div>
                     <span>CSIRT Admin</span>
                 </a>
@@ -650,13 +651,26 @@
                 <div class="user-dropdown dropdown">
                     <a class="user-button dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                         <div class="user-avatar">
-                            {{ substr(Auth::user()->name ?? 'A', 0, 1) }}
+                            @php $admin = auth('admin')->user(); @endphp
+                            @if ($admin && $admin->avatar_path)
+                                <img src="{{ Storage::url($admin->avatar_path) }}" alt="Avatar"
+                                    style="width:32px;height:32px;object-fit:cover;border-radius:8px;" />
+                            @else
+                                {{ substr($admin->name ?? 'A', 0, 1) }}
+                            @endif
                         </div>
-                        <span style="font-size: 0.875rem; font-weight: 500;">{{ Auth::user()->name ?? 'Admin' }}</span>
+                        <span
+                            style="font-size: 0.875rem; font-weight: 500;">{{ $admin->username ?? ($admin->name ?? 'Admin') }}</span>
                         <i class="fas fa-chevron-down" style="font-size: 0.75rem;"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
 
+                        <li>
+                            <a class="dropdown-item" href="{{ route('admin.profile.edit') }}">
+                                <i class="fas fa-user-cog"></i>
+                                <span>Profil Saya</span>
+                            </a>
+                        </li>
                         <li>
                             <a class="dropdown-item" href="{{ route('admin.tickets.activity') }}">
                                 <i class="fas fa-history"></i>
@@ -809,7 +823,8 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.admins*') ? 'active' : '' }}" href="{{ route('admin.admins.index') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.admins*') ? 'active' : '' }}"
+                            href="{{ route('admin.admins.index') }}">
                             <div class="nav-icon">
                                 <i class="fas fa-users-cog"></i>
                             </div>
@@ -821,11 +836,17 @@
             <!-- Sidebar User Info -->
             <div class="sidebar-user">
                 <div class="sidebar-user-info">
-                    <div class="sidebar-user-avatar">
-                        {{ substr(Auth::user()->name ?? 'A', 0, 1) }}
+                    <div class="sidebar-user-avatar" style="overflow:hidden;">
+                        @php $admin = auth('admin')->user(); @endphp
+                        @if ($admin && $admin->avatar_path)
+                            <img src="{{ Storage::url($admin->avatar_path) }}" alt="Avatar"
+                                style="width:40px;height:40px;object-fit:cover;border-radius:10px;" />
+                        @else
+                            {{ substr($admin->name ?? 'A', 0, 1) }}
+                        @endif
                     </div>
                     <div class="sidebar-user-details">
-                        <p class="sidebar-user-name">{{ Auth::user()->name ?? 'Admin' }}</p>
+                        <p class="sidebar-user-name">{{ $admin->username ?? ($admin->name ?? 'Admin') }}</p>
                         <p class="sidebar-user-role">Administrator</p>
                     </div>
                 </div>

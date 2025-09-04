@@ -49,6 +49,11 @@ Route::middleware(['admin.auth', 'prevent.guest.admin'])->prefix('admin')->name(
     // Logout route
     Route::post('logout', [AdminController::class, 'logout'])->name('logout');
 
+    // Profile routes
+    Route::get('profile', [\App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
+    Route::post('profile/password', [\App\Http\Controllers\Admin\ProfileController::class, 'updatePassword'])->name('profile.password');
+
     // Dashboard
     Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
