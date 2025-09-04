@@ -26,13 +26,37 @@ class ProfileController extends Controller
             'avatar' => 'nullable|image|max:2048',
         ]);
 
-        if ($request->hasFile('avatar')) {
-            // delete old if exists (on public disk)
+        // Handle avatar removal
+        if ($request->boolean('remove_avatar')) {
             if ($admin->avatar_path) {
                 Storage::disk('public')->delete($admin->avatar_path);
             }
-            // store to public disk so it can be served via /storage
+            $data['avatar_path'] = null;
+        } elseif ($request->hasFile('avatar')) {
+            // Upload regular file
+            if ($admin->avatar_path) {
+                Storage::disk('public')->delete($admin->avatar_path);
+            }
             $data['avatar_path'] = $request->file('avatar')->store('avatars', 'public');
+        } elseif ($request->filled('avatar_cropped')) {
+            // Save cropped image sent as data URL (base64)
+            $dataUrl = $request->input('avatar_cropped');
+            if (preg_match('/^data:image\/(\w+);base64,/', $dataUrl, $type)) {
+                $type = strtolower($type[1]); // jpg, png, webp, etc.
+                if (in_array($type, ['jpg', 'jpeg', 'png', 'webp'])) {
+                    $dataBase64 = substr($dataUrl, strpos($dataUrl, ',') + 1);
+                    $imageData = base64_decode($dataBase64);
+                    if ($imageData !== false) {
+                        $filename = 'avatars/' . uniqid('admin_' . $admin->id . '_') . '.' . ($type === 'jpg' ? 'jpeg' : $type);
+                        // Delete old first
+                        if ($admin->avatar_path) {
+                            Storage::disk('public')->delete($admin->avatar_path);
+                        }
+                        Storage::disk('public')->put($filename, $imageData);
+                        $data['avatar_path'] = $filename;
+                    }
+                }
+            }
         }
 
         unset($data['avatar']);
