@@ -25,12 +25,14 @@ class AdminUserController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
+            'username' => 'nullable|string|max:50|unique:admins,username',
             'email' => 'required|email|max:255|unique:admins,email',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
         Admin::create([
             'name' => $data['name'],
+            'username' => $data['username'] ?? null,
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
@@ -47,12 +49,14 @@ class AdminUserController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
+            'username' => ['nullable','string','max:50', Rule::unique('admins', 'username')->ignore($admin->id)],
             'email' => ['required', 'email', 'max:255', Rule::unique('admins', 'email')->ignore($admin->id)],
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 
         $update = [
             'name' => $data['name'],
+            'username' => $data['username'] ?? $admin->username,
             'email' => $data['email'],
         ];
 
