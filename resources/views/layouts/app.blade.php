@@ -10,7 +10,7 @@
 
     <!-- Favicons -->
     <link href="{{ asset('template/Dashboard/assets/img/favicon.png') }}" rel="icon">
-    
+
 
     <!-- Fonts -->
     <link
@@ -127,6 +127,8 @@
 
                 </ul>
             </nav>
+
+            <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
 
         </div>
     </header>
