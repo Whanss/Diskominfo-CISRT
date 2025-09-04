@@ -1057,6 +1057,10 @@
                                         <div class="meta-label">Contact Email</div>
                                         <div class="meta-value">{{ Str::limit($ticket->email ?? 'No Email', 25) }}</div>
                                     </div>
+                                      <div class="meta-item">
+                                        <div class="meta-label">Contact Cell</div>
+                                        <div class="meta-value">{{ Str::limit($ticket->no_hp?? 'No Email', 25) }}</div>
+                                    </div>
                                     @if ($ticket->layanan)
                                         <div class="meta-item">
                                             <div class="meta-label">Layanan</div>
