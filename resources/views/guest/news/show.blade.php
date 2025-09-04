@@ -272,7 +272,7 @@
 
                             <!-- Share Buttons -->
                             <div class="mt-5 pt-4 border-top">
-                                <h5 class="mb-3">Share This Advisory:</h5>
+                            <h5 class="mb-3">Bagikan Berita Ini:</h5>
                                 <div class="share-buttons">
                                     <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->fullUrl()) }}"
                                         target="_blank" class="btn btn-primary">
@@ -287,7 +287,7 @@
                                         <i class="bi bi-whatsapp me-1"></i> WhatsApp
                                     </a>
                                     <button class="btn btn-secondary" onclick="copyToClipboard()">
-                                        <i class="bi bi-link-45deg me-1"></i> Copy Link
+                                        <i class="bi bi-link-45deg me-1"></i> Salin Tautan
                                     </button>
                                 </div>
                             </div>
@@ -309,9 +309,6 @@
                             <!-- Related News -->
                             @if ($relatedNews->count() > 0)
                                 <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="card-title mb-0">Related Intelligence</h5>
-                                    </div>
                                     <div class="card-body">
                                         @foreach ($relatedNews as $related)
                                             <div class="card related-news-card border-0 shadow-sm mb-3">

@@ -22,5 +22,19 @@ class DatabaseSeeder extends Seeder
                 'email' => 'test@example.com',
             ]);
         }
+
+        // Seed geographical data (kabupaten and kecamatan)
+        $this->call(kabKecSeeder::class);
+
+        // Seed news categories first
+        $this->call(NewsCategorySeeder::class);
+
+        // Seed services (layanan)
+        $this->call(MasterLayananSeeder::class);
+
+        // Seed news articles
+        $this->call(NewsSeeder::class);
+
+        $this->command->info('All seeders completed successfully!');
     }
 }
