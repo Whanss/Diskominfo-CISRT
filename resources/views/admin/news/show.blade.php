@@ -1,4 +1,4 @@
-@extends('admin.layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Detail Berita')
 
@@ -15,9 +15,6 @@
                             </a>
                             <a href="{{ route('admin.news.edit', $news) }}" class="btn btn-warning">
                                 <i class="fas fa-edit"></i> Edit
-                            </a>
-                            <a href="{{ route('guest.news.show', $news->slug) }}" class="btn btn-info" target="_blank">
-                                <i class="fas fa-eye"></i> Lihat di Website
                             </a>
                         </div>
                     </div>
@@ -110,10 +107,6 @@
                                         <div class="d-grid gap-2">
                                             <a href="{{ route('admin.news.edit', $news) }}" class="btn btn-warning">
                                                 <i class="fas fa-edit"></i> Edit Berita
-                                            </a>
-                                            <a href="{{ route('guest.news.show', $news->slug) }}" class="btn btn-info"
-                                                target="_blank">
-                                                <i class="fas fa-eye"></i> Lihat di Website
                                             </a>
                                             <form action="{{ route('admin.news.destroy', $news) }}" method="POST"
                                                 onsubmit="return confirm('Apakah Anda yakin ingin menghapus berita ini?')">

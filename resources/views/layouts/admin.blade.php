@@ -639,8 +639,8 @@
                     <i class="fas fa-bars"></i>
                 </button>
                 <a class="topnav-brand" href="{{ route('admin.dashboard') }}">
-                    <div class="brand-logo">
-                        <i class="fas fa-shield-alt"></i>
+                    <div class="brand-logo" style="background: transparent; padding: 0;">
+                        <img src="{{ asset('images/lomboktengah.png') }}" alt="Lombok Tengah" style="width:32px;height:32px;object-fit:contain;border-radius:8px;" />
                     </div>
                     <span>CSIRT Admin</span>
                 </a>
@@ -805,6 +805,15 @@
                                 <i class="fas fa-concierge-bell"></i>
                             </div>
                             <span class="nav-text">Layanan</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.admins*') ? 'active' : '' }}" href="{{ route('admin.admins.index') }}">
+                            <div class="nav-icon">
+                                <i class="fas fa-users-cog"></i>
+                            </div>
+                            <span class="nav-text">Kelola Admin</span>
                         </a>
                     </li>
                 </ul>
@@ -1047,8 +1056,12 @@
             // Add smooth scroll behavior for in-page navigation
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href === '#') {
+                        return; // Skip if href is just '#'
+                    }
                     e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
+                    const target = document.querySelector(href);
                     if (target) {
                         target.scrollIntoView({
                             behavior: 'smooth',

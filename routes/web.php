@@ -73,6 +73,9 @@ Route::middleware(['admin.auth', 'prevent.guest.admin'])->prefix('admin')->name(
     Route::resource('layanan', \App\Http\Controllers\Admin\LayananController::class);
     Route::resource('news-categories', \App\Http\Controllers\NewsCategoryController::class);
 
+    // Admin user management
+    Route::resource('admins', \App\Http\Controllers\Admin\AdminUserController::class)->except(['show']);
+
     // Tickets - static routes FIRST (specific routes before parameterized ones)
     Route::get('tickets', [TicketController::class, 'adminIndex'])->name('tickets.index');
     Route::get('tickets/export', [TicketController::class, 'export'])->name('tickets.export');
