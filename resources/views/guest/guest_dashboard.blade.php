@@ -28,104 +28,9 @@
     <!-- Main CSS File -->
     <link href="{{ asset('template/Dashboard/assets/css/main.css') }}" rel="stylesheet">
 
-    <!-- Custom Network Animation CSS -->
+    <!-- Custom Network Animation CSS (Enhanced, white background) -->
     <style>
-        /* Network Animation Background */
-        .network-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            overflow: hidden;
-        }
-
-        .network-bg::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image:
-                radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 60%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
-        }
-
-        .network-node {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: #3b82f6;
-            border-radius: 50%;
-            opacity: 0.6;
-            animation: pulse 2s infinite ease-in-out;
-        }
-
-        .network-line {
-            position: absolute;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #3b82f6, transparent);
-            opacity: 0.3;
-            animation: flow 3s infinite linear;
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-                opacity: 0.6;
-            }
-
-            50% {
-                transform: scale(1.5);
-                opacity: 1;
-            }
-        }
-
-        @keyframes flow {
-            0% {
-                transform: translateX(-100%);
-            }
-
-            100% {
-                transform: translateX(100vw);
-            }
-        }
-
-        /* Ensure content is above network background */
-        .main {
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Subtle overlay for better text readability */
-        .hero,
-        .about,
-        .services,
-        .features {
-            position: relative;
-        }
-
-        .hero::before,
-        .about::before,
-        .services::before,
-        .features::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.8);
-            z-index: -1;
-        }
-
-        /* CSIRT Professional Styling */
+        /* Base & Theme */
         :root {
             --csirt-primary: #1a365d;
             --csirt-secondary: #2d3748;
@@ -137,21 +42,204 @@
             --csirt-light: #f7fafc;
         }
 
-        /* Security Intelligence Section */
-        .recent-posts .post-item {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(26, 54, 93, 0.08);
+        body {
+            background-color: #ffffff;
+            /* Tetap putih */
+        }
+
+        /* Network Animation Background */
+        .network-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: #ffffff;
+            /* Putih bersih */
+            overflow: hidden;
+        }
+
+        /* Grid halus + glow lembut agar tidak mengganggu konten */
+        .network-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(26,54,93,0.04)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>') repeat,
+                radial-gradient(circle at 20% 20%, rgba(49, 130, 206, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(56, 161, 105, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 40% 60%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .network-node {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--csirt-primary);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: pulse 2.2s infinite ease-in-out;
+            box-shadow: 0 0 0 1px rgba(26, 54, 93, 0.1);
+        }
+
+        .network-line {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(26, 54, 93, 0.45), transparent);
+            opacity: 0.25;
+            animation: flow 4s infinite linear;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: scale(1.6);
+                opacity: 1;
+            }
+        }
+
+        @keyframes flow {
+            0% {
+                transform: translateX(-120%);
+            }
+
+            100% {
+                transform: translateX(120vw);
+            }
+        }
+
+        /* Konten di atas background animasi */
+        .main {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Layout polish */
+        .section {
+            scroll-margin-top: 80px;
+        }
+
+        /* Hero CTA lebih tegas */
+        .btn-get-started {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            background: linear-gradient(135deg, var(--csirt-primary), #2c5282);
+            color: #fff;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-weight: 700;
+            letter-spacing: .3px;
+            box-shadow: 0 10px 24px rgba(26, 54, 93, 0.25);
+            transition: transform .18s ease, box-shadow .18s ease;
+        }
+
+        .btn-get-started:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(26, 54, 93, 0.32);
+        }
+
+        /* Service item: kartu interaktif */
+        .service-item {
+            background: #fff;
             border: 1px solid #e2e8f0;
-            margin-bottom: 1.5rem;
-            transition: all 0.3s ease;
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 6px 20px rgba(26, 54, 93, 0.08);
+            transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-item::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(26, 54, 93, 0.06), rgba(49, 130, 206, 0.04));
+            opacity: 0;
+            transition: opacity .25s ease;
+        }
+
+        .service-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(26, 54, 93, 0.18);
+            border-color: rgba(26, 54, 93, 0.35);
+        }
+
+        .service-item:hover::after {
+            opacity: 1;
+        }
+
+        .service-item h3 {
+            font-weight: 700;
+            color: var(--csirt-dark);
+            margin-top: 12px;
+        }
+
+        .service-item p {
+            color: #64748b;
+        }
+
+        /* Stats: ringkas dan kuat */
+        .stats .stats-item {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 18px 16px;
+            box-shadow: 0 6px 18px rgba(26, 54, 93, 0.08);
+        }
+
+        .stats .stats-item i {
+            font-size: 28px;
+            color: var(--csirt-primary);
+        }
+
+        .stats .stats-item span {
+            color: var(--csirt-primary);
+            font-weight: 800;
+        }
+
+        /* Feature box */
+        .feature-box {
+            gap: 10px;
+            padding: 14px 12px;
+            border: 1px dashed #d1d5db;
+            border-radius: 12px;
+            transition: background-color .2s ease, transform .2s ease, border-color .2s ease;
+            background: #fff;
+        }
+
+        .feature-box i {
+            color: var(--csirt-primary);
+        }
+
+        .feature-box:hover {
+            background: #f8fafc;
+            transform: translateY(-2px);
+            border-color: rgba(26, 54, 93, 0.4);
+        }
+
+        /* Recent posts / intel siber */
+        .recent-posts .post-item {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(26, 54, 93, 0.08);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 1.25rem;
+            transition: all 0.25s ease;
             overflow: hidden;
         }
 
         .recent-posts .post-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(26, 54, 93, 0.15);
-            border-color: var(--csirt-primary);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(26, 54, 93, 0.15);
+            border-color: rgba(26, 54, 93, 0.35);
         }
 
         .recent-posts .post-img {
@@ -168,41 +256,41 @@
         }
 
         .recent-posts .post-content {
-            padding: 1.5rem;
+            padding: 1.25rem;
             flex: 1;
         }
 
         .recent-posts .post-meta {
-            margin-bottom: 0.75rem;
+            margin-bottom: .6rem;
         }
 
         .recent-posts .post-meta .badge {
-            font-size: 0.7rem;
-            font-weight: 600;
+            font-size: .7rem;
+            font-weight: 700;
             padding: 4px 8px;
             border-radius: 4px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-right: 0.5rem;
+            letter-spacing: .5px;
+            margin-right: .5rem;
         }
 
         .recent-posts .post-date {
             color: #64748b;
-            font-size: 0.85rem;
-            font-weight: 500;
+            font-size: .85rem;
+            font-weight: 600;
         }
 
         .recent-posts h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            line-height: 1.4;
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: .45rem;
+            line-height: 1.35;
         }
 
         .recent-posts h3 a {
             color: var(--csirt-dark);
             text-decoration: none;
-            transition: color 0.2s ease;
+            transition: color .18s ease;
         }
 
         .recent-posts h3 a:hover {
@@ -211,49 +299,49 @@
 
         .recent-posts p {
             color: #64748b;
-            font-size: 0.9rem;
+            font-size: .92rem;
             line-height: 1.6;
             margin-bottom: 1rem;
         }
 
-        /* Widgets */
+        /* Widget */
         .widget {
-            background: white;
+            background: #fff;
             border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 15px rgba(26, 54, 93, 0.08);
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 6px 18px rgba(26, 54, 93, 0.08);
             border: 1px solid #e2e8f0;
         }
 
         .widget h4 {
             color: var(--csirt-dark);
-            font-weight: 600;
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: .9rem;
+            font-size: 1.08rem;
         }
 
         .threat-level-widget .threat-indicator {
             text-align: center;
             padding: 1rem;
-            border-radius: 8px;
+            border-radius: 10px;
             background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            color: white;
-            margin-bottom: 0.5rem;
+            color: #fff;
+            margin-bottom: .5rem;
         }
 
         .threat-level-widget .level-text {
             display: block;
-            font-weight: 700;
-            font-size: 1.2rem;
-            letter-spacing: 1px;
+            font-weight: 800;
+            font-size: 1.12rem;
+            letter-spacing: .6px;
         }
 
         .threat-level-widget .level-description {
             display: block;
-            font-size: 0.85rem;
-            opacity: 0.9;
-            margin-top: 0.25rem;
+            font-size: .85rem;
+            opacity: .9;
+            margin-top: .25rem;
         }
 
         /* Color overrides */
@@ -275,6 +363,22 @@
 
         .bg-primary {
             background-color: var(--csirt-primary) !important;
+        }
+
+        /* Aksesibilitas: hormati preferensi reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+
+            .network-node,
+            .network-line {
+                animation: none !important;
+            }
+
+            .service-item,
+            .feature-box,
+            .recent-posts .post-item,
+            .btn-get-started {
+                transition: none !important;
+            }
         }
     </style>
 
