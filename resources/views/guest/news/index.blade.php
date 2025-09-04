@@ -21,6 +21,7 @@
     <link href="{{ asset('template/Dashboard/assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('template/Dashboard/assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
     <link href="{{ asset('template/Dashboard/assets/vendor/aos/aos.css') }}" rel="stylesheet">
+    <link href="{{ asset('template/Dashboard/assets/vendor/glightbox/css/glightbox.min.css') }}" rel="stylesheet">
 
     <!-- Main CSS File -->
     <link href="{{ asset('template/Dashboard/assets/css/main.css') }}" rel="stylesheet">
@@ -97,6 +98,84 @@
         .search-section .container {
             position: relative;
             z-index: 1;
+        }
+
+        /* Enhanced search form styling */
+        .search-section form .row.g-3 {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .search-section .form-control,
+        .search-section .form-select {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(255, 255, 255, 0.65);
+            color: #1f2937;
+            height: 54px;
+            border-radius: 10px;
+        }
+
+        .search-section .form-control::placeholder {
+            color: #6b7280;
+        }
+
+        .search-section .form-control:focus,
+        .search-section .form-select:focus {
+            border-color: var(--csirt-primary);
+            box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.18);
+            outline: none;
+        }
+
+        /* Custom select arrow */
+        .search-section .form-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23263b5e' viewBox='0 0 16 16'%3E%3Cpath d='M3.204 5.204a.5.5 0 0 1 .707 0L8 9.293l4.089-4.089a.5.5 0 1 1 .707.707l-4.442 4.442a.75.75 0 0 1-1.06 0L3.204 5.911a.5.5 0 0 1 0-.707z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 36px;
+        }
+
+        /* Search button */
+        .search-section .btn {
+            height: 54px;
+            border-radius: 10px;
+            font-weight: 700;
+            box-shadow: 0 8px 22px rgba(26, 54, 93, 0.25);
+        }
+
+        .search-section .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 26px rgba(26, 54, 93, 0.28);
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 576px) {
+            .search-section {
+                padding: 56px 0;
+            }
+
+            .search-section .form-control,
+            .search-section .form-select {
+                height: 48px;
+                font-size: 0.95rem;
+            }
+
+            .search-section .btn {
+                height: 48px;
+            }
+
+            .search-section form .row.g-3 {
+                padding: 12px;
+                border-radius: 12px;
+            }
         }
 
         .news-meta {
@@ -184,14 +263,242 @@
             margin-bottom: 1rem;
         }
 
+        /* ENHANCED PAGINATION STYLES */
+        .pagination-wrapper {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-top: 3rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .pagination-info {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            padding: 10px 20px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .pagination {
+            margin: 0;
+            justify-content: center;
+            gap: 0.375rem;
+            flex-wrap: wrap;
+        }
+
+        .pagination .page-item {
+            margin: 0;
+        }
+
         .pagination .page-link {
             color: var(--csirt-primary);
-            border-color: #e2e8f0;
+            background-color: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 48px;
+            min-height: 48px;
+            font-size: 0.95rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pagination .page-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .pagination .page-link:hover::before {
+            left: 100%;
+        }
+
+        .pagination .page-link:hover {
+            color: white;
+            background-color: var(--csirt-primary);
+            border-color: var(--csirt-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(26, 54, 93, 0.3);
         }
 
         .pagination .page-item.active .page-link {
-            background-color: var(--csirt-primary);
+            color: white;
+            background: linear-gradient(135deg, var(--csirt-primary) 0%, #2c5282 100%);
             border-color: var(--csirt-primary);
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(26, 54, 93, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .pagination .page-item.active .page-link:hover {
+            background: linear-gradient(135deg, #2c5282 0%, var(--csirt-primary) 100%);
+            border-color: #2c5282;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26, 54, 93, 0.5);
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #cbd5e0;
+            background-color: #f9fafb;
+            border-color: #e5e7eb;
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.6;
+        }
+
+        .pagination .page-item.disabled .page-link:hover {
+            color: #cbd5e0;
+            background-color: #f9fafb;
+            border-color: #e5e7eb;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Navigation arrows styling - keep compact with Bootstrap defaults */
+        .pagination .page-link[aria-label*="Previous"],
+        .pagination .page-link[aria-label*="Next"] {
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 10px 12px;
+            min-width: 44px;
+        }
+
+        /* Remove custom arrows; use default Bootstrap arrows */
+        .pagination .page-link[aria-label*="Previous"]::after,
+        .pagination .page-link[aria-label*="Next"]::after {
+            content: none;
+        }
+
+        /* Show default Laravel pagination text for accessibility */
+        .pagination .page-link[aria-label*="Previous"] span,
+        .pagination .page-link[aria-label*="Next"] span {
+            display: inline;
+        }
+
+        /* Three dots styling */
+        .pagination .page-item .page-link[aria-disabled="true"] {
+            background-color: transparent;
+            border-color: transparent;
+            color: #9ca3af;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .pagination .page-item .page-link[aria-disabled="true"]:hover {
+            background-color: transparent;
+            border-color: transparent;
+            color: #9ca3af;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Responsive pagination */
+        @media (max-width: 768px) {
+            .pagination-wrapper {
+                padding: 20px 15px;
+                margin-top: 2rem;
+            }
+
+            .pagination {
+                gap: 0.25rem;
+            }
+
+            .pagination .page-link {
+                padding: 10px 12px;
+                min-width: 42px;
+                min-height: 42px;
+                font-size: 0.9rem;
+            }
+
+            .pagination .page-link[aria-label*="Previous"],
+            .pagination .page-link[aria-label*="Next"] {
+                min-width: 46px;
+                padding: 10px 12px;
+            }
+
+            .pagination-info {
+                font-size: 0.85rem;
+                padding: 8px 16px;
+                margin-bottom: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .pagination {
+                gap: 0.125rem;
+            }
+
+            .pagination .page-link {
+                padding: 8px 10px;
+                min-width: 38px;
+                min-height: 38px;
+                font-size: 0.85rem;
+            }
+
+            /* Hide some page numbers on mobile, keep only essential ones */
+            .pagination .page-item:not(.active):not(:first-child):not(:last-child):not(.disabled) {
+                display: none;
+            }
+
+            /* Always show active, first, last, prev, next */
+            .pagination .page-item.active,
+            .pagination .page-item:first-child,
+            .pagination .page-item:last-child {
+                display: block;
+            }
+        }
+
+        /* Loading animation for pagination */
+        .pagination-loading {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+        }
+
+        .pagination-loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e2e8f0;
+            border-top: 2px solid var(--csirt-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Enhanced focus states for accessibility */
+        .pagination .page-link:focus {
+            outline: 3px solid rgba(26, 54, 93, 0.3);
+            outline-offset: 2px;
+            box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
         }
     </style>
 </head>
@@ -224,10 +531,9 @@
                 <div class="row justify-content-center">
                     <div class="col-lg-8">
                         <div class="text-center mb-4">
-                            <h1 class="fw-bold mb-3 text-white">Security Intelligence Center</h1>
-                            <p class="lead mb-0 text-white">Threat Intelligence, Security Advisories & Incident Response
-                                Updates</p>
-                            <p class="text-white-50">CSIRT Lombok Tengah - Protecting Digital Infrastructure</p>
+                            <h1 class="fw-bold mb-3 text-white">Pusat Informasi Keamanan</h1>
+                            <p class="lead mb-0 text-white">Intelijen Ancaman, Pemberitahuan Keamanan & Pembaruan Tanggap Insiden</p>
+                            <p class="text-white-50">CSIRT Lombok Tengah - Melindungi Infrastruktur Digital</p>
                         </div>
 
                         <form method="GET" action="{{ route('guest.news.index') }}">
@@ -240,8 +546,8 @@
                                     <select class="form-select form-select-lg" name="category">
                                         <option value="">Semua Kategori</option>
                                         @foreach ($categories as $cat)
-                                            <option value="{{ $cat->slug }}"
-                                                {{ request('category') == $cat->slug ? 'selected' : '' }}>
+                                            <option value="{{ $cat->id }}"
+                                                {{ (string) request('category') === (string) $cat->id ? 'selected' : '' }}>
                                                 {{ $cat->name }}
                                             </option>
                                         @endforeach
@@ -272,7 +578,10 @@
                                     <strong>"{{ request('search') }}"</strong>
                                 @endif
                                 @if (request('category'))
-                                    <strong>Kategori: {{ ucfirst(request('category')) }}</strong>
+                                    @php
+                                        $selectedCat = $categories->firstWhere('id', request('category'));
+                                    @endphp
+                                    <strong>Kategori: {{ $selectedCat->name ?? 'Tidak diketahui' }}</strong>
                                 @endif
                                 <a href="{{ route('guest.news.index') }}"
                                     class="btn btn-sm btn-outline-primary ms-2">Reset Filter</a>
@@ -318,17 +627,24 @@
                         <div class="col-12">
                             <div class="empty-state">
                                 <i class="bi bi-shield-exclamation"></i>
-                                <h3 class="mt-3 text-muted fw-semibold">No Security Intelligence Available</h3>
+                                <h3 class="mt-3 text-muted fw-semibold">Tidak Ada Informasi Keamanan Tersedia</h3>
                                 <p class="text-muted">
                                     @if (request('search') || request('category'))
-                                        No security advisories match your current search criteria.
+                                        Tidak ada pemberitahuan keamanan yang sesuai dengan kriteria pencarian Anda.
                                     @else
-                                        Security intelligence updates will be published here as they become available.
+                                        Pembaruan informasi keamanan akan diterbitkan di sini saat tersedia.
                                     @endif
                                 </p>
                                 @if (request('search') || request('category'))
-                                    <a href="{{ route('guest.news.index') }}" class="btn btn-primary">
-                                        <i class="bi bi-arrow-left me-2"></i>View All Intelligence
+                                    <style>
+                                        .btn-smaller {
+                                            padding: 6px 12px !important;
+                                            font-size: 0.85rem !important;
+                                            border-radius: 6px !important;
+                                        }
+                                    </style>
+                                    <a href="{{ route('guest.news.index') }}" class="btn btn-primary btn-smaller">
+                                        <i class="bi bi-arrow-left me-2"></i>Lihat Semua Informasi
                                     </a>
                                 @endif
                             </div>
@@ -336,12 +652,35 @@
                     @endforelse
                 </div>
 
-                <!-- Pagination -->
+                <!-- ENHANCED PAGINATION SECTION -->
                 @if ($news->hasPages())
-                    <div class="row mt-5">
+                    <div class="row">
                         <div class="col-12">
-                            <div class="d-flex justify-content-center">
-                                {{ $news->appends(request()->query())->links() }}
+                            <div class="pagination-wrapper">
+                                <!-- Pagination Info -->
+                                <div class="text-center mb-3">
+                                        <span class="pagination-info">
+                                            <i class="bi bi-info-circle me-2"></i>
+                                            Menampilkan {{ $news->firstItem() ?? 0 }} hingga {{ $news->lastItem() ?? 0 }} dari
+                                            {{ $news->total() }} hasil
+                                        </span>
+                                </div>
+
+                                <!-- Pagination Links -->
+                                <div class="d-flex justify-content-center pagination-simple">
+                                    {{ $news->appends(request()->query())->onEachSide(1)->links('pagination::bootstrap-5') }}
+                                </div>
+
+                                <!-- Additional Navigation Info -->
+                                <div class="text-center mt-3">
+                                    <small class="text-muted">
+                                        Page {{ $news->currentPage() }} of {{ $news->lastPage() }}
+                                        @if ($news->hasMorePages())
+                                            | <a href="{{ $news->appends(request()->query())->nextPageUrl() }}"
+                                                class="text-primary text-decoration-none">Halaman Berikutnya →</a>
+                                        @endif
+                                    </small>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -361,6 +700,7 @@
     <!-- Vendor JS Files -->
     <script src="{{ asset('template/Dashboard/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('template/Dashboard/assets/vendor/aos/aos.js') }}"></script>
+    <script src="{{ asset('template/Dashboard/assets/vendor/glightbox/js/glightbox.min.js') }}"></script>
 
     <!-- Main JS File -->
     <script src="{{ asset('template/Dashboard/assets/js/main.js') }}"></script>
@@ -372,6 +712,46 @@
             easing: 'ease-in-out',
             once: true,
             mirror: false
+        });
+
+        // Enhanced pagination functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add loading state for pagination clicks
+            const paginationLinks = document.querySelectorAll('.pagination .page-link');
+
+            paginationLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (!this.parentElement.classList.contains('active') &&
+                        !this.parentElement.classList.contains('disabled')) {
+
+                        // Add loading animation
+                        const wrapper = document.querySelector('.pagination-wrapper');
+                        wrapper.style.opacity = '0.7';
+
+                        // Create loading indicator
+                        const loading = document.createElement('div');
+                        loading.className = 'pagination-loading';
+                        loading.innerHTML = 'Loading...';
+                        wrapper.appendChild(loading);
+                    }
+                });
+            });
+
+            // Smooth scroll to top when pagination is clicked
+            const paginationContainer = document.querySelector('.pagination-wrapper');
+            if (paginationContainer) {
+                paginationContainer.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('page-link')) {
+                        setTimeout(() => {
+                            window.scrollTo({
+                                top: document.querySelector('.news-section, .py-5')
+                                    .offsetTop - 100,
+                                behavior: 'smooth'
+                            });
+                        }, 100);
+                    }
+                });
+            }
         });
     </script>
 </body>

@@ -10,7 +10,7 @@ class NewsCategoryController extends Controller
 {
     public function index()
     {
-        $categories = NewsCategory::orderBy('name')->paginate(15);
+        $categories = NewsCategory::orderBy('name')->paginate(5);
         return view('admin.news_categories.index', compact('categories'));
     }
 
