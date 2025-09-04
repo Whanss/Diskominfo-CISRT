@@ -317,6 +317,7 @@
 
                 </ul>
             </nav><!-- End Nav Menu -->
+            <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </div>
     </header>
 
@@ -349,9 +350,7 @@
         </section><!-- /Hero Section -->
 
         <!-- About Section -->
-        <br>
-        <br>
-        <br>
+
         <section id="about" class="about section">
             <div class="container section-title" data-aos="fade-up">
                 <h2>About Us</h2>
@@ -373,11 +372,7 @@
                                 terbaru, kami memastikan keamanan informasi Anda tetap terjaga.
                             </p>
                             <div class="text-center text-lg-start">
-                                <a href="#"
-                                    class="btn-read-more d-inline-flex align-items-center justify-content-center align-self-center">
-                                    <span>Read More</span>
-                                    <i class="bi bi-arrow-right"></i>
-                                </a>
+
                             </div>
                         </div>
                     </div>

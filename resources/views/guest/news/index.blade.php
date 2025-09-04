@@ -521,6 +521,8 @@
                     <li><a href="{{ route('guest.create_tiket') }}">Kirim Aduan</a></li>
                 </ul>
             </nav>
+
+            <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </div>
     </header>
 
