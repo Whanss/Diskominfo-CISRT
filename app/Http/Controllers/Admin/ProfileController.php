@@ -17,6 +17,7 @@ class ProfileController extends Controller
 
     public function update(Request $request)
     {
+        /** @var \App\Models\Admin $admin */
         $admin = auth('admin')->user();
 
         $data = $request->validate([

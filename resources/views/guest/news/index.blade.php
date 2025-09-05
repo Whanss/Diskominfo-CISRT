@@ -1,31 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app')
 
-<head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Berita Terkini - CSIRT LOMBOK TENGAH</title>
-    <meta name="description" content="Berita terkini seputar keamanan siber dari CSIRT Lombok Tengah">
-    <meta name="keywords" content="berita, keamanan siber, CSIRT, Lombok Tengah">
-
-    <!-- Favicons -->
-    <link href="{{ asset('template/Dashboard/assets/img/favicon.png') }}" rel="icon">
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com" rel="preconnect">
-    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
-
-    <!-- Vendor CSS Files -->
-    <link href="{{ asset('template/Dashboard/assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('template/Dashboard/assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-    <link href="{{ asset('template/Dashboard/assets/vendor/aos/aos.css') }}" rel="stylesheet">
-    <link href="{{ asset('template/Dashboard/assets/vendor/glightbox/css/glightbox.min.css') }}" rel="stylesheet">
-
-    <!-- Main CSS File -->
-    <link href="{{ asset('template/Dashboard/assets/css/main.css') }}" rel="stylesheet">
-
+@section('content')
     <style>
         :root {
             --csirt-primary: #1a365d;
@@ -371,7 +346,6 @@
             box-shadow: none;
         }
 
-        /* Navigation arrows styling - keep compact with Bootstrap defaults */
         .pagination .page-link[aria-label*="Previous"],
         .pagination .page-link[aria-label*="Next"] {
             font-size: 1rem;
@@ -380,19 +354,16 @@
             min-width: 44px;
         }
 
-        /* Remove custom arrows; use default Bootstrap arrows */
         .pagination .page-link[aria-label*="Previous"]::after,
         .pagination .page-link[aria-label*="Next"]::after {
             content: none;
         }
 
-        /* Show default Laravel pagination text for accessibility */
         .pagination .page-link[aria-label*="Previous"] span,
         .pagination .page-link[aria-label*="Next"] span {
             display: inline;
         }
 
-        /* Three dots styling */
         .pagination .page-item .page-link[aria-disabled="true"] {
             background-color: transparent;
             border-color: transparent;
@@ -409,7 +380,6 @@
             box-shadow: none;
         }
 
-        /* Responsive pagination */
         @media (max-width: 768px) {
             .pagination-wrapper {
                 padding: 20px 15px;
@@ -452,12 +422,10 @@
                 font-size: 0.85rem;
             }
 
-            /* Hide some page numbers on mobile, keep only essential ones */
             .pagination .page-item:not(.active):not(:first-child):not(:last-child):not(.disabled) {
                 display: none;
             }
 
-            /* Always show active, first, last, prev, next */
             .pagination .page-item.active,
             .pagination .page-item:first-child,
             .pagination .page-item:last-child {
@@ -465,7 +433,6 @@
             }
         }
 
-        /* Loading animation for pagination */
         .pagination-loading {
             text-align: center;
             padding: 20px;
@@ -494,268 +461,161 @@
             }
         }
 
-        /* Enhanced focus states for accessibility */
         .pagination .page-link:focus {
             outline: 3px solid rgba(26, 54, 93, 0.3);
             outline-offset: 2px;
             box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
         }
     </style>
-</head>
 
-<body>
-    <br>
-    <br>
-    <br>
-    <header id="header" class="header d-flex align-items-center fixed-top">
-        <div class="container-fluid container-xl position-relative d-flex align-items-center">
-            <a href="{{ route('guest.guest_dashboard') }}" class="logo d-flex align-items-center me-auto">
-                <img src="{{ asset('template/Dashboard/assets/img/logo.png') }}" alt="">
-                <h1 class="sitename"></h1>
-            </a>
-
-            <nav id="navmenu" class="navmenu">
-                <ul>
-                    <li><a href="{{ route('guest.guest_dashboard') }}">Home</a></li>
-                    <li><a href="{{ route('guest.news.index') }}" class="active">Berita</a></li>
-                    <li><a href="{{ route('guest.create_tiket') }}">Kirim Aduan</a></li>
-                </ul>
-            </nav>
-
-            <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-        </div>
-    </header>
-
-    <main class="main">
-        <!-- Search Section -->
-        <section class="search-section">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-lg-8">
-                        <div class="text-center mb-4">
-                            <h1 class="fw-bold mb-3 text-white">Pusat Informasi Keamanan</h1>
-                            <p class="lead mb-0 text-white">Intelijen Ancaman, Pemberitahuan Keamanan & Pembaruan Tanggap Insiden</p>
-                            <p class="text-white-50">CSIRT Lombok Tengah - Melindungi Infrastruktur Digital</p>
-                        </div>
-
-                        <form method="GET" action="{{ route('guest.news.index') }}">
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <input type="text" class="form-control form-control-lg" name="search"
-                                        value="{{ request('search') }}" placeholder="Cari berita...">
-                                </div>
-                                <div class="col-md-4">
-                                    <select class="form-select form-select-lg" name="category">
-                                        <option value="">Semua Kategori</option>
-                                        @foreach ($categories as $cat)
-                                            <option value="{{ $cat->id }}"
-                                                {{ (string) request('category') === (string) $cat->id ? 'selected' : '' }}>
-                                                {{ $cat->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <button type="submit" class="btn btn-light btn-lg w-100">
-                                        <i class="bi bi-search"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
+    <!-- Search Section -->
+    <section class="search-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="text-center mb-4">
+                        <h1 class="fw-bold mb-3 text-white">Pusat Informasi Keamanan</h1>
+                        <p class="lead mb-0 text-white">Intelijen Ancaman, Pemberitahuan Keamanan & Pembaruan Tanggap
+                            Insiden</p>
+                        <p class="text-white-50">CSIRT Lombok Tengah - Melindungi Infrastruktur Digital</p>
                     </div>
+
+                    <form method="GET" action="{{ route('guest.news.index') }}">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <input type="text" class="form-control form-control-lg" name="search"
+                                    value="{{ request('search') }}" placeholder="Cari berita...">
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-select form-select-lg" name="category">
+                                    <option value="">Semua Kategori</option>
+                                    @foreach ($categories as $cat)
+                                        <option value="{{ $cat->id }}"
+                                            {{ (string) request('category') === (string) $cat->id ? 'selected' : '' }}>
+                                            {{ $cat->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-light btn-lg w-100">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- News Section -->
-        <section class="py-5">
-            <div class="container">
-                @if (request('search') || request('category'))
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <div class="alert alert-info">
-                                <i class="bi bi-info-circle me-2"></i>
-                                Menampilkan hasil untuk:
-                                @if (request('search'))
-                                    <strong>"{{ request('search') }}"</strong>
+    <!-- News Section -->
+    <section class="py-5">
+        <div class="container">
+            @if (request('search') || request('category'))
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Menampilkan hasil untuk:
+                            @if (request('search'))
+                                <strong>"{{ request('search') }}"</strong>
+                            @endif
+                            @if (request('category'))
+                                @php $selectedCat = $categories->firstWhere('id', request('category')); @endphp
+                                <strong>Kategori: {{ $selectedCat->name ?? 'Tidak diketahui' }}</strong>
+                            @endif
+                            <a href="{{ route('guest.news.index') }}" class="btn btn-sm btn-outline-primary ms-2">Reset
+                                Filter</a>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            <div class="row gy-4">
+                @forelse($news as $item)
+                    <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
+                        <div class="card news-card border-0 shadow-sm">
+                            <div class="position-relative">
+                                @if ($item->image)
+                                    <img src="{{ asset('storage/' . $item->image) }}" class="card-img-top news-image"
+                                        alt="{{ $item->title }}">
+                                @else
+                                    <img src="{{ asset('template/Dashboard/assets/img/portfolio/app-1.jpg') }}"
+                                        class="card-img-top news-image" alt="{{ $item->title }}">
                                 @endif
-                                @if (request('category'))
-                                    @php
-                                        $selectedCat = $categories->firstWhere('id', request('category'));
-                                    @endphp
-                                    <strong>Kategori: {{ $selectedCat->name ?? 'Tidak diketahui' }}</strong>
-                                @endif
-                                <a href="{{ route('guest.news.index') }}"
-                                    class="btn btn-sm btn-outline-primary ms-2">Reset Filter</a>
+                                <span
+                                    class="badge category-badge bg-{{ $item->category_badge_class }}">{{ $item->category_label }}</span>
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ $item->title }}</h5>
+                                <p class="card-text text-muted flex-grow-1">{{ $item->excerpt }}</p>
+                                <div class="news-meta mb-3">
+                                    <i class="bi bi-calendar3 me-1"></i>
+                                    {{ $item->created_at->format('d M Y') }}
+                                </div>
+                                <a href="{{ route('guest.news.show', $item->slug) }}" class="btn btn-primary">
+                                    Lihat Berita <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
-                @endif
-
-                <div class="row gy-4">
-                    @forelse($news as $item)
-                        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
-                            <div class="card news-card border-0 shadow-sm">
-                                <div class="position-relative">
-                                    @if ($item->image)
-                                        <img src="{{ asset('storage/' . $item->image) }}"
-                                            class="card-img-top news-image" alt="{{ $item->title }}">
-                                    @else
-                                        <img src="{{ asset('template/Dashboard/assets/img/portfolio/app-1.jpg') }}"
-                                            class="card-img-top news-image" alt="{{ $item->title }}">
-                                    @endif
-
-                                    <span class="badge category-badge bg-{{ $item->category_badge_class }}">
-                                        {{ $item->category_label }}
-                                    </span>
-                                </div>
-
-                                <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title">{{ $item->title }}</h5>
-                                    <p class="card-text text-muted flex-grow-1">{{ $item->excerpt }}</p>
-
-                                    <div class="news-meta mb-3">
-                                        <i class="bi bi-calendar3 me-1"></i>
-                                        {{ $item->created_at->format('d M Y') }}
-                                    </div>
-
-                                    <a href="{{ route('guest.news.show', $item->slug) }}" class="btn btn-primary">
-                                        Lihat Berita <i class="bi bi-arrow-right ms-1"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="col-12">
-                            <div class="empty-state">
-                                <i class="bi bi-shield-exclamation"></i>
-                                <h3 class="mt-3 text-muted fw-semibold">Tidak Ada Informasi Keamanan Tersedia</h3>
-                                <p class="text-muted">
-                                    @if (request('search') || request('category'))
-                                        Tidak ada pemberitahuan keamanan yang sesuai dengan kriteria pencarian Anda.
-                                    @else
-                                        Pembaruan informasi keamanan akan diterbitkan di sini saat tersedia.
-                                    @endif
-                                </p>
+                @empty
+                    <div class="col-12">
+                        <div class="empty-state">
+                            <i class="bi bi-shield-exclamation"></i>
+                            <h3 class="mt-3 text-muted fw-semibold">Tidak Ada Informasi Keamanan Tersedia</h3>
+                            <p class="text-muted">
                                 @if (request('search') || request('category'))
-                                    <style>
-                                        .btn-smaller {
-                                            padding: 6px 12px !important;
-                                            font-size: 0.85rem !important;
-                                            border-radius: 6px !important;
-                                        }
-                                    </style>
-                                    <a href="{{ route('guest.news.index') }}" class="btn btn-primary btn-smaller">
-                                        <i class="bi bi-arrow-left me-2"></i>Lihat Semua Informasi
-                                    </a>
+                                    Tidak ada pemberitahuan keamanan yang sesuai dengan kriteria pencarian Anda.
+                                @else
+                                    Pembaruan informasi keamanan akan diterbitkan di sini saat tersedia.
                                 @endif
-                            </div>
+                            </p>
+                            @if (request('search') || request('category'))
+                                <style>
+                                    .btn-smaller {
+                                        padding: 6px 12px !important;
+                                        font-size: 0.85rem !important;
+                                        border-radius: 6px !important;
+                                    }
+                                </style>
+                                <a href="{{ route('guest.news.index') }}" class="btn btn-primary btn-smaller">
+                                    <i class="bi bi-arrow-left me-2"></i>Lihat Semua Informasi
+                                </a>
+                            @endif
                         </div>
-                    @endforelse
-                </div>
+                    </div>
+                @endforelse
+            </div>
 
-                <!-- ENHANCED PAGINATION SECTION -->
-                @if ($news->hasPages())
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="pagination-wrapper">
-                                <!-- Pagination Info -->
-                                <div class="text-center mb-3">
-                                        <span class="pagination-info">
-                                            <i class="bi bi-info-circle me-2"></i>
-                                            Menampilkan {{ $news->firstItem() ?? 0 }} hingga {{ $news->lastItem() ?? 0 }} dari
-                                            {{ $news->total() }} hasil
-                                        </span>
-                                </div>
-
-                                <!-- Pagination Links -->
-                                <div class="d-flex justify-content-center pagination-simple">
-                                    {{ $news->appends(request()->query())->onEachSide(1)->links('pagination::bootstrap-5') }}
-                                </div>
-
-                                <!-- Additional Navigation Info -->
-                                <div class="text-center mt-3">
-                                    <small class="text-muted">
-                                        Page {{ $news->currentPage() }} of {{ $news->lastPage() }}
-                                        @if ($news->hasMorePages())
-                                            | <a href="{{ $news->appends(request()->query())->nextPageUrl() }}"
-                                                class="text-primary text-decoration-none">Halaman Berikutnya →</a>
-                                        @endif
-                                    </small>
-                                </div>
+            @if ($news->hasPages())
+                <div class="row">
+                    <div class="col-12">
+                        <div class="pagination-wrapper">
+                            <div class="text-center mb-3">
+                                <span class="pagination-info">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    Menampilkan {{ $news->firstItem() ?? 0 }} hingga {{ $news->lastItem() ?? 0 }} dari
+                                    {{ $news->total() }} hasil
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-center pagination-simple">
+                                {{ $news->appends(request()->query())->onEachSide(1)->links('pagination::bootstrap-5') }}
+                            </div>
+                            <div class="text-center mt-3">
+                                <small class="text-muted">
+                                    Page {{ $news->currentPage() }} of {{ $news->lastPage() }}
+                                    @if ($news->hasMorePages())
+                                        | <a href="{{ $news->appends(request()->query())->nextPageUrl() }}"
+                                            class="text-primary text-decoration-none">Halaman Berikutnya →</a>
+                                    @endif
+                                </small>
                             </div>
                         </div>
                     </div>
-                @endif
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer id="footer" class="footer">
-        <div class="container copyright text-center mt-4">
-            <p>© <span>Copyright</span> <strong class="px-1 sitename">CSIRT Lombok Tengah</strong> <span>All Rights
-                    Reserved</span></p>
+                </div>
+            @endif
         </div>
-    </footer>
-
-    <!-- Vendor JS Files -->
-    <script src="{{ asset('template/Dashboard/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('template/Dashboard/assets/vendor/aos/aos.js') }}"></script>
-    <script src="{{ asset('template/Dashboard/assets/vendor/glightbox/js/glightbox.min.js') }}"></script>
-
-    <!-- Main JS File -->
-    <script src="{{ asset('template/Dashboard/assets/js/main.js') }}"></script>
-
-    <script>
-        // Initialize AOS
-        AOS.init({
-            duration: 600,
-            easing: 'ease-in-out',
-            once: true,
-            mirror: false
-        });
-
-        // Enhanced pagination functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add loading state for pagination clicks
-            const paginationLinks = document.querySelectorAll('.pagination .page-link');
-
-            paginationLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    if (!this.parentElement.classList.contains('active') &&
-                        !this.parentElement.classList.contains('disabled')) {
-
-                        // Add loading animation
-                        const wrapper = document.querySelector('.pagination-wrapper');
-                        wrapper.style.opacity = '0.7';
-
-                        // Create loading indicator
-                        const loading = document.createElement('div');
-                        loading.className = 'pagination-loading';
-                        loading.innerHTML = 'Loading...';
-                        wrapper.appendChild(loading);
-                    }
-                });
-            });
-
-            // Smooth scroll to top when pagination is clicked
-            const paginationContainer = document.querySelector('.pagination-wrapper');
-            if (paginationContainer) {
-                paginationContainer.addEventListener('click', function(e) {
-                    if (e.target.classList.contains('page-link')) {
-                        setTimeout(() => {
-                            window.scrollTo({
-                                top: document.querySelector('.news-section, .py-5')
-                                    .offsetTop - 100,
-                                behavior: 'smooth'
-                            });
-                        }, 100);
-                    }
-                });
-            }
-        });
-    </script>
-</body>
-
-</html>
+    </section>
+@endsection
