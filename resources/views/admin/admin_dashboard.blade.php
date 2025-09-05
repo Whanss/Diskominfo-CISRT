@@ -1728,9 +1728,10 @@
 
             // Create gradients
             const totalGradient = ctx.createLinearGradient(0, 0, 0, 400);
-            totalGradient.addColorStop(0, 'rgba(59, 130, 246, 0.8)');
-            totalGradient.addColorStop(0.5, 'rgba(59, 130, 246, 0.4)');
-            totalGradient.addColorStop(1, 'rgba(59, 130, 246, 0.1)');
+            // Changed to cyan for better contrast with 'Selesai' (indigo)
+            totalGradient.addColorStop(0, 'rgba(6, 182, 212, 0.8)'); // #06b6d4
+            totalGradient.addColorStop(0.5, 'rgba(6, 182, 212, 0.4)');
+            totalGradient.addColorStop(1, 'rgba(6, 182, 212, 0.1)');
 
             const acceptedGradient = ctx.createLinearGradient(0, 0, 0, 400);
             acceptedGradient.addColorStop(0, 'rgba(34, 197, 94, 0.8)');
@@ -1749,7 +1750,8 @@
                     datasets: [{
                             label: 'Total Tiket',
                             data: @json($totalCounts),
-                            borderColor: '#3b82f6',
+                            // Cyan to distinguish clearly from 'Selesai' (indigo)
+                            borderColor: '#06b6d4',
                             backgroundColor: totalGradient,
                             borderWidth: 3,
                             tension: 0.4,
@@ -2157,7 +2159,8 @@
             if (chartData.isDaily) {
                 filterChartByDayRange(currentDayRange);
             } else {
-                ticketChart.update('none');
+                // Use animated update so the chart transitions smoothly
+                ticketChart.update();
             }
 
             // Update subtitle after filtering
@@ -2361,7 +2364,8 @@
                 }));
             }
 
-            ticketChart.update('none');
+            // Use animated update to show transition
+            ticketChart.update();
         }
 
         function resetToCurrentMonth() {
@@ -2511,9 +2515,9 @@
                     <p>${ticket.deskripsi || 'Tidak ada deskripsi'}</p>
 
                     ${ticket.attachments && ticket.attachments.length > 0 ? `
-                                        <div class="ticket-attachments">
-                                            <h6><i class="fas fa-paperclip"></i> Lampiran</h6>
-                                            ${ticket.attachments.map(att => `
+                                                    <div class="ticket-attachments">
+                                                        <h6><i class="fas fa-paperclip"></i> Lampiran</h6>
+                                                        ${ticket.attachments.map(att => `
                                 <div class="attachment-item">
                                     <div class="attachment-icon">
                                         <i class="fas fa-file"></i>
@@ -2522,13 +2526,13 @@
                                         <div style="font-weight: 500;">${att.original_name}</div>
                                         <div style="font-size: 0.875rem; color: var(--gray-600);">${att.file_size || 'Unknown size'}</div>
                                     </div>
-                                    <a href="/storage/${att.file_path}" target="_blank" class="btn btn-sm btn-outline">
+                                    <a href="/admin/tickets/${ticket.id}/download" class="btn btn-sm btn-outline">
                                         <i class="fas fa-download"></i>
                                     </a>
                                 </div>
                             `).join('')}
-                                        </div>
-                                    ` : ''}
+                                                    </div>
+                                                ` : ''}
                 </div>
             `;
 

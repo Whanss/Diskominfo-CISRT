@@ -87,6 +87,9 @@ Route::middleware(['admin.auth', 'prevent.guest.admin'])->prefix('admin')->name(
     Route::get('tickets/activity', [TicketController::class, 'activity'])->name('tickets.activity');
     Route::get('tickets/process', [TicketController::class, 'process'])->name('tickets.process');
 
+    // Secure download routes (admin-only)
+    Route::get('tickets/{ticket}/download', [TicketController::class, 'downloadTicketAttachment'])->name('tickets.download');
+
     // Calendar API routes
     Route::get('tickets/calendar/data', [TicketController::class, 'getCalendarData'])->name('tickets.calendar.data');
     Route::get('tickets/calendar/day/{date}', [TicketController::class, 'getDayDetails'])->name('tickets.calendar.day');

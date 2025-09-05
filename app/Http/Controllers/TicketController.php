@@ -40,9 +40,25 @@ class TicketController extends Controller
             'no_hp' => 'nullable|string|max:20',
             'description' => 'required|string',
             'layanan_id' => 'required|exists:master_layanan,id',
-            'attachment' => 'nullable|file|max:5120|mimes:pdf,doc,docx,xls,xlsx,png,jpg,jpeg,txt',
+            'attachment' => [
+                'nullable',
+                'bail', // hentikan pada error pertama agar tidak dobel pesan
+                'file',
+                'max:5120',
+                'mimes:pdf,doc,docx,xls,xlsx,png,jpg,jpeg,txt',
+                'mimetypes:application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,image/png,image/jpeg,text/plain'
+            ],
             'kabupaten_id' => 'required|exists:kabupaten,id',
             'kecamatan_id' => 'required|exists:kecamatan,id',
+        ], [
+            // Pesan khusus berbahasa Indonesia yang ringkas
+            'attachment.file' => 'Lampiran harus berupa file.',
+            'attachment.max' => 'Ukuran file maksimal 5 MB.',
+            'attachment.mimes' => 'File yang anda masukkan tidak valid.',
+            'attachment.mimetypes' => 'File yang anda masukkan tidak valid.',
+        ], [
+            // Ubah label attribute
+            'attachment' => 'Lampiran',
         ]);
 
         // Bersihkan field legacy yang tidak dipakai lagi
@@ -56,9 +72,18 @@ class TicketController extends Controller
         $validated['code_tracking'] = $code_tracking;
         $validated['status'] = 'pending'; // default status
 
-        // Handle file upload
+        // Handle file upload securely: validate, block dangerous extensions, and store in private disk
         if ($request->hasFile('attachment')) {
-            $path = $request->file('attachment')->store('ticket_attachments', 'public');
+            $file = $request->file('attachment');
+
+            // Extra guard: block potentially dangerous double extensions or executable types
+            $originalName = $file->getClientOriginalName();
+            if (preg_match('/\.(php|phtml|phar|js|html|svg|exe|cmd|bat|sh)(\.|$)/i', $originalName)) {
+                return back()->withErrors(['attachment' => 'Tipe file tidak diperbolehkan.']);
+            }
+
+            // Store into private storage, not publicly accessible
+            $path = $file->store('ticket_attachments', 'private');
             $validated['attachment_path'] = $path;
         }
 
@@ -169,6 +194,13 @@ class TicketController extends Controller
             $ticket->accepted_at = now();
             $ticket->save();
 
+            // Log activity: accepted
+            \App\Models\TicketActivityLog::create([
+                'ticket_id' => $ticket->id,
+                'action' => 'accepted',
+                'description' => 'Tiket disetujui untuk diproses',
+            ]);
+
             if (request()->ajax() || request()->wantsJson()) {
                 return response()->json([
                     'success' => true,
@@ -205,6 +237,13 @@ class TicketController extends Controller
             $ticket->resolved_at = now();
             $ticket->save();
 
+            // Log activity: rejected
+            \App\Models\TicketActivityLog::create([
+                'ticket_id' => $ticket->id,
+                'action' => 'rejected',
+                'description' => 'Tiket ditolak: ' . $rejectionReason,
+            ]);
+
             if (request()->ajax() || request()->wantsJson()) {
                 return response()->json([
                     'success' => true,
@@ -230,11 +269,39 @@ class TicketController extends Controller
     // Get ticket details for modal
     public function getDetails(Ticket $ticket)
     {
-        $ticket->load(['kabupaten', 'kecamatan', 'layanan', 'attachments']);
+        $ticket->load(['kabupaten', 'kecamatan', 'layanan']);
 
         return response()->json([
             'success' => true,
             'ticket' => $ticket
+        ]);
+    }
+
+    // Securely download attachment for a ticket (admin side)
+    public function downloadTicketAttachment(Ticket $ticket)
+    {
+        if (!$ticket->attachment_path) {
+            abort(404);
+        }
+
+        $disk = \Illuminate\Support\Facades\Storage::disk('private');
+        if (!$disk->exists($ticket->attachment_path)) {
+            abort(404);
+        }
+
+        $ext = pathinfo($ticket->attachment_path, PATHINFO_EXTENSION);
+        $downloadName = 'lampiran_' . $ticket->code_tracking . '.' . $ext;
+
+        $stream = $disk->readStream($ticket->attachment_path);
+
+        return response()->streamDownload(function () use ($stream) {
+            fpassthru($stream);
+        }, $downloadName, [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $downloadName . '"',
+            'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+            'Pragma' => 'no-cache',
         ]);
     }
 
@@ -599,19 +666,19 @@ class TicketController extends Controller
             ];
 
             $formattedSessions = $workSessions->map(function ($session) {
-                $startTime = $session->started_at?->format('H:i') ?? '-';
-                $endTime = $session->completed_at ? $session->completed_at->format('H:i') : 'Ongoing';
+                $startAt = $session->started_at ? $session->started_at->locale('id')->translatedFormat('d M Y H:i') : '-';
+                $endAt = $session->completed_at ? $session->completed_at->locale('id')->translatedFormat('d M Y H:i') : null;
 
                 return [
                     'id' => $session->id,
                     'ticket_code' => optional($session->ticket)->code_tracking ?? '-',
                     'ticket_title' => optional($session->ticket)->judul ?? 'No Title',
                     'admin_name' => optional($session->admin)->name ?? 'Unknown Admin',
-                    'started_at' => $startTime,
-                    'completed_at' => $endTime,
+                    'started_at' => $startAt,
+                    'completed_at' => $endAt ?? 'Sedang diproses',
                     'duration' => $this->formatDuration($session->status === 'active' ? ($session->duration ?? 0) + now()->diffInSeconds($session->started_at) : ($session->duration ?? 0)),
                     'status' => $session->status,
-                    'time_range' => $session->completed_at ? "{$startTime} - {$endTime}" : "Started at {$startTime}"
+                    'time_range' => $endAt ? "{$startAt} — {$endAt}" : "Mulai {$startAt} — Sedang diproses"
                 ];
             });
         } else {
@@ -649,11 +716,11 @@ class TicketController extends Controller
                     'ticket_code' => $ticket->code_tracking,
                     'ticket_title' => $ticket->judul ?? 'No Title',
                     'admin_name' => 'System',
-                    'started_at' => $startTime,
-                    'completed_at' => $endTime,
+                    'started_at' => $ticket->accepted_at?->locale('id')->translatedFormat('d M Y H:i') ?? '-',
+                    'completed_at' => $ticket->resolved_at ? $ticket->resolved_at->locale('id')->translatedFormat('d M Y H:i') : 'Sedang diproses',
                     'duration' => $this->formatDuration($duration),
                     'status' => $ticket->status,
-                    'time_range' => $ticket->resolved_at ? "{$startTime} - {$endTime}" : "Started at {$startTime}"
+                    'time_range' => $ticket->resolved_at ? $ticket->accepted_at->locale('id')->translatedFormat('d M Y H:i') . ' — ' . $ticket->resolved_at->locale('id')->translatedFormat('d M Y H:i') : 'Mulai ' . ($ticket->accepted_at?->locale('id')->translatedFormat('d M Y H:i') ?? '-') . ' — Sedang diproses'
                 ]);
             }
 
@@ -675,8 +742,8 @@ class TicketController extends Controller
         }
 
         return response()->json([
-            'date' => $date->format('d F Y'),
-            'day_name' => $date->format('l'),
+            'date' => $date->locale('id')->translatedFormat('d F Y'),
+            'day_name' => $date->locale('id')->translatedFormat('l'),
             'stats' => $dailyStats,
             'sessions' => $formattedSessions
         ]);
