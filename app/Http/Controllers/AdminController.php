@@ -106,16 +106,27 @@ class AdminController extends Controller
             $startDate = $selectedDate->copy()->startOfMonth();
             $endDate = $selectedDate->copy()->endOfMonth();
 
-            // Get daily tickets for the selected month
+            // Get daily tickets for the selected month (by created_at)
             $dailyTickets = \App\Models\Ticket::select(
                 DB::raw('DAY(created_at) as day'),
                 DB::raw('count(*) as total'),
-                DB::raw('sum(case when status = "selesai/completed" then 1 else 0 end) as resolved'),
                 DB::raw('sum(case when status = "pending" then 1 else 0 end) as pending'),
                 DB::raw('sum(case when status = "diterima/approved" then 1 else 0 end) as accepted'),
                 DB::raw('sum(case when status = "ditolak/rejected" then 1 else 0 end) as rejected')
             )
                 ->whereBetween('created_at', [$startDate, $endDate])
+                ->groupBy('day')
+                ->orderBy('day')
+                ->get();
+
+            // Get daily resolved tickets for the selected month (by resolved_at date)
+            $dailyResolved = \App\Models\Ticket::select(
+                DB::raw('DAY(resolved_at) as day'),
+                DB::raw('COUNT(*) as resolved')
+            )
+                ->where('status', 'selesai/completed')
+                ->whereNotNull('resolved_at')
+                ->whereBetween('resolved_at', [$startDate, $endDate])
                 ->groupBy('day')
                 ->orderBy('day')
                 ->get();
@@ -134,7 +145,11 @@ class AdminController extends Controller
 
                 $data = $dailyTickets->firstWhere('day', $i);
                 $totalCounts[] = $data ? $data->total : 0;
-                $resolvedCounts[] = $data ? $data->resolved : 0;
+
+                // Use resolved_at for resolved counts so they appear on the actual day of completion
+                $resolvedData = $dailyResolved->firstWhere('day', $i);
+                $resolvedCounts[] = $resolvedData ? $resolvedData->resolved : 0;
+
                 $pendingCounts[] = $data ? $data->pending : 0;
                 $acceptedCounts[] = $data ? $data->accepted : 0;
                 $rejectedCounts[] = $data ? $data->rejected : 0;
@@ -155,15 +170,27 @@ class AdminController extends Controller
             $startDate = Carbon::now()->subMonths($monthsToShow - 1)->startOfMonth();
             $endDate = Carbon::now()->endOfMonth();
 
-            $monthlyTickets = \App\Models\Ticket::select(
+            // Created-based monthly aggregates (totals and non-resolved statuses)
+            $monthlyCreated = \App\Models\Ticket::select(
                 DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
                 DB::raw('count(*) as total'),
-                DB::raw('sum(case when status = "selesai/completed" then 1 else 0 end) as resolved'),
                 DB::raw('sum(case when status = "pending" then 1 else 0 end) as pending'),
                 DB::raw('sum(case when status = "diterima/approved" then 1 else 0 end) as accepted'),
                 DB::raw('sum(case when status = "ditolak/rejected" then 1 else 0 end) as rejected')
             )
                 ->whereBetween('created_at', [$startDate, $endDate])
+                ->groupBy('month')
+                ->orderBy('month')
+                ->get();
+
+            // Resolved-based monthly aggregates (completed tickets counted by resolved_at)
+            $monthlyResolved = \App\Models\Ticket::select(
+                DB::raw('DATE_FORMAT(resolved_at, "%Y-%m") as month'),
+                DB::raw('COUNT(*) as resolved')
+            )
+                ->where('status', 'selesai/completed')
+                ->whereNotNull('resolved_at')
+                ->whereBetween('resolved_at', [$startDate, $endDate])
                 ->groupBy('month')
                 ->orderBy('month')
                 ->get();
@@ -177,16 +204,19 @@ class AdminController extends Controller
             $rejectedCounts = [];
 
             for ($i = 0; $i < $monthsToShow; $i++) {
-                $month = $startDate->copy()->addMonths($i)->format('M Y');
-                $monthKey = $startDate->copy()->addMonths($i)->format('Y-m');
+                $monthDate = $startDate->copy()->addMonths($i);
+                $month = $monthDate->format('M Y');
+                $monthKey = $monthDate->format('Y-m');
                 $months[] = $month;
 
-                $data = $monthlyTickets->firstWhere('month', $monthKey);
-                $totalCounts[] = $data ? $data->total : 0;
-                $resolvedCounts[] = $data ? $data->resolved : 0;
-                $pendingCounts[] = $data ? $data->pending : 0;
-                $acceptedCounts[] = $data ? $data->accepted : 0;
-                $rejectedCounts[] = $data ? $data->rejected : 0;
+                $createdData = $monthlyCreated->firstWhere('month', $monthKey);
+                $resolvedData = $monthlyResolved->firstWhere('month', $monthKey);
+
+                $totalCounts[] = $createdData ? $createdData->total : 0;
+                $resolvedCounts[] = $resolvedData ? $resolvedData->resolved : 0;
+                $pendingCounts[] = $createdData ? $createdData->pending : 0;
+                $acceptedCounts[] = $createdData ? $createdData->accepted : 0;
+                $rejectedCounts[] = $createdData ? $createdData->rejected : 0;
             }
 
             return [

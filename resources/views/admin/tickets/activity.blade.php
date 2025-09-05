@@ -25,6 +25,8 @@
                                         </th>
                                         <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                             Deskripsi</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Waktu Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -61,6 +63,22 @@
                                             </td>
                                             <td>
                                                 <p class="text-xs font-weight-bold mb-0">{{ $activity->description }}</p>
+                                            </td>
+                                            <td>
+                                                <div class="text-xs">
+                                                    @if ($activity->action === 'accepted')
+                                                        Disetujui pada:
+                                                        {{ optional($activity->ticket->accepted_at)->format('d/m/Y H:i') ?? '-' }}
+                                                    @elseif($activity->action === 'rejected')
+                                                        Ditolak pada:
+                                                        {{ optional($activity->ticket->resolved_at)->format('d/m/Y H:i') ?? '-' }}
+                                                    @elseif($activity->action === 'completed')
+                                                        Selesai pada:
+                                                        {{ optional($activity->ticket->resolved_at)->format('d/m/Y H:i') ?? '-' }}
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </div>
                                             </td>
                                         </tr>
                                     @empty

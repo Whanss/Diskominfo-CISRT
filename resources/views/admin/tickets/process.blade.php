@@ -209,7 +209,8 @@
         /* Calendar Styles */
         .calendar-container {
             display: grid;
-            grid-template-columns: 1fr 300px;
+            /* Widen sidebar to avoid cramped cards */
+            grid-template-columns: 2fr 310px;
             gap: 24px;
             min-height: 600px;
         }
@@ -375,11 +376,41 @@
 
         .work-session-item {
             background: #f8fafc;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 8px;
+            padding: 12px 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
             font-size: 13px;
-            border-left: 3px solid #10b981;
+            border-left: 4px solid #10b981;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 6px 12px;
+        }
+
+        .work-session-item .session-time {
+            grid-column: 1 / 2;
+        }
+
+        .work-session-item .badge-status {
+            grid-column: 2 / 3;
+            justify-self: end;
+            white-space: nowrap;
+        }
+
+        .work-session-item .session-ticket {
+            grid-column: 1 / -1;
+            word-break: break-word;
+        }
+
+        .work-session-item .session-duration {
+            grid-column: 1 / -1;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .work-session-item .session-subtime {
+            grid-column: 1 / -1;
+            font-size: 12px;
+            color: #0000006f;
         }
 
         .session-time {
@@ -501,18 +532,21 @@
                 <div id="tickets-tab" class="tab-pane active">
                     <!-- Search and Filter Bar -->
                     <div class="search-bar">
-                        <form method="GET" action="{{ route('admin.tickets.process') }}" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                        <form method="GET" action="{{ route('admin.tickets.process') }}"
+                            style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
                             <div style="display: flex; align-items: center; gap: 8px;">
                                 <i class="fas fa-search" style="color: #64748b;"></i>
                                 <input type="text" name="search" class="search-input" placeholder="Cari tiket..."
                                     value="{{ request('search') }}">
                             </div>
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <label for="layanan_filter" style="font-size: 14px; color: #64748b; margin: 0;">Layanan:</label>
+                                <label for="layanan_filter"
+                                    style="font-size: 14px; color: #64748b; margin: 0;">Layanan:</label>
                                 <select name="layanan_id" id="layanan_filter" class="search-input" style="width: 200px;">
                                     <option value="">Semua Layanan</option>
                                     @foreach ($layananList as $layanan)
-                                        <option value="{{ $layanan->id }}" {{ request('layanan_id') == $layanan->id ? 'selected' : '' }}>
+                                        <option value="{{ $layanan->id }}"
+                                            {{ request('layanan_id') == $layanan->id ? 'selected' : '' }}>
                                             {{ $layanan->name }}
                                         </option>
                                     @endforeach
@@ -522,14 +556,16 @@
                                 <i class="fas fa-search"></i> Cari
                             </button>
                             @if (request('search') || request('layanan_id'))
-                                <a href="{{ route('admin.tickets.process') }}" class="btn btn-secondary" style="padding: 8px 16px;">
+                                <a href="{{ route('admin.tickets.process') }}" class="btn btn-secondary"
+                                    style="padding: 8px 16px;">
                                     <i class="fas fa-times"></i> Reset
                                 </a>
                             @endif
                         </form>
                         <div style="font-size: 14px; color: #64748b;">
                             @if ($acceptedTickets->total() > 0)
-                                Menampilkan {{ $acceptedTickets->firstItem() }} - {{ $acceptedTickets->lastItem() }} dari {{ $acceptedTickets->total() }} tiket
+                                Menampilkan {{ $acceptedTickets->firstItem() }} - {{ $acceptedTickets->lastItem() }} dari
+                                {{ $acceptedTickets->total() }} tiket
                             @else
                                 Tidak ada tiket ditemukan
                             @endif
@@ -558,7 +594,16 @@
                                                 {{ $ticket->accepted_at->diffForHumans() }}</span>
                                         </div>
                                         <div class="work-session-info">
-                                            <strong>Waktu Pengerjaan:</strong> {{ $ticket->formatted_processing_time }}
+                                            <div><strong>Rentang Waktu:</strong>
+                                                {{ optional($ticket->accepted_at)->locale('id')->translatedFormat('d M Y H:i') }}
+                                                —
+                                                @if (!empty($ticket->resolved_at))
+                                                    {{ optional($ticket->resolved_at)->locale('id')->translatedFormat('d M Y H:i') }}
+                                                @else
+                                                    <em>Sedang diproses</em>
+                                                @endif
+                                            </div>
+                                            <div><strong>Durasi:</strong> {{ $ticket->formatted_processing_time }}</div>
                                         </div>
                                     </div>
 
@@ -570,8 +615,8 @@
                                         </div>
 
                                         <div class="action-buttons">
-                                            <button type="button" class="btn btn-complete"
-                                                data-bs-toggle="modal" data-bs-target="#completeModal"
+                                            <button type="button" class="btn btn-complete" data-bs-toggle="modal"
+                                                data-bs-target="#completeModal"
                                                 data-action="{{ route('admin.tickets.complete', $ticket) }}"
                                                 data-title="{{ $ticket->judul ?? 'Tanpa Judul' }}"
                                                 data-code="{{ $ticket->code_tracking }}">
@@ -590,9 +635,11 @@
 
                     <!-- Pagination -->
                     @if ($acceptedTickets->hasPages())
-                        <div style="margin-top: 24px; padding: 20px; border-top: 1px solid #e2e8f0; background: #fafafa; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                        <div
+                            style="margin-top: 24px; padding: 20px; border-top: 1px solid #e2e8f0; background: #fafafa; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
                             <div style="color: #64748b; font-size: 14px;">
-                                Menampilkan {{ $acceptedTickets->firstItem() }} sampai {{ $acceptedTickets->lastItem() }} dari {{ $acceptedTickets->total() }} tiket
+                                Menampilkan {{ $acceptedTickets->firstItem() }} sampai {{ $acceptedTickets->lastItem() }}
+                                dari {{ $acceptedTickets->total() }} tiket
                             </div>
                             <div style="display: flex; align-items: center; gap: 8px;">
                                 {{-- Previous Page Link --}}
@@ -601,7 +648,8 @@
                                         <i class="fas fa-chevron-left"></i> Sebelumnya
                                     </span>
                                 @else
-                                    <a href="{{ $acceptedTickets->appends(request()->query())->previousPageUrl() }}" class="btn" style="background: #3b82f6; color: white;">
+                                    <a href="{{ $acceptedTickets->appends(request()->query())->previousPageUrl() }}"
+                                        class="btn" style="background: #3b82f6; color: white;">
                                         <i class="fas fa-chevron-left"></i> Sebelumnya
                                     </a>
                                 @endif
@@ -610,20 +658,24 @@
                                 <div style="display: flex; align-items: center; gap: 4px;">
                                     @foreach ($acceptedTickets->appends(request()->query())->getUrlRange(1, $acceptedTickets->lastPage()) as $page => $url)
                                         @if ($page == $acceptedTickets->currentPage())
-                                            <span class="btn" style="background: #3b82f6; color: white; font-weight: 600;">{{ $page }}</span>
+                                            <span class="btn"
+                                                style="background: #3b82f6; color: white; font-weight: 600;">{{ $page }}</span>
                                         @else
-                                            <a href="{{ $url }}" class="btn" style="background: #e5e7eb; color: #374151;">{{ $page }}</a>
+                                            <a href="{{ $url }}" class="btn"
+                                                style="background: #e5e7eb; color: #374151;">{{ $page }}</a>
                                         @endif
                                     @endforeach
                                 </div>
 
                                 {{-- Next Page Link --}}
                                 @if ($acceptedTickets->hasMorePages())
-                                    <a href="{{ $acceptedTickets->appends(request()->query())->nextPageUrl() }}" class="btn" style="background: #3b82f6; color: white;">
+                                    <a href="{{ $acceptedTickets->appends(request()->query())->nextPageUrl() }}"
+                                        class="btn" style="background: #3b82f6; color: white;">
                                         Selanjutnya <i class="fas fa-chevron-right"></i>
                                     </a>
                                 @else
-                                    <span class="btn" style="background: #e5e7eb; color: #9ca3af; cursor: not-allowed;">
+                                    <span class="btn"
+                                        style="background: #e5e7eb; color: #9ca3af; cursor: not-allowed;">
                                         Selanjutnya <i class="fas fa-chevron-right"></i>
                                     </span>
                                 @endif
@@ -649,10 +701,12 @@
                                 <div style="display:flex; gap:12px; align-items:center;">
                                     <div id="calendar-loading" class="calendar-loading"><i
                                             class="fas fa-spinner fa-spin"></i> Memuat data kalender...</div>
-                                    <div id="calendar-range" style="font-size: 12px; color: #64748b; white-space: nowrap;">
+                                    <div id="calendar-range"
+                                        style="font-size: 12px; color: #64748b; white-space: nowrap;">
                                         Rentang: -
                                     </div>
-                                    <button onclick="goToToday()" class="btn" style="background: #10b981; color: white;">
+                                    <button onclick="goToToday()" class="btn"
+                                        style="background: #10b981; color: white;">
                                         <i class="fas fa-calendar-day"></i> Hari Ini
                                     </button>
                                 </div>
@@ -714,12 +768,14 @@
                         </div>
                         <div class="form-group">
                             <label for="resolution_notes"><strong>Catatan Penanganan</strong></label>
-                            <textarea class="form-control" id="resolution_notes" name="resolution_notes" rows="4" placeholder="Jelaskan tindakan dan hasil penanganan" required></textarea>
+                            <textarea class="form-control" id="resolution_notes" name="resolution_notes" rows="4"
+                                placeholder="Jelaskan tindakan dan hasil penanganan" required></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-complete"><i class="fas fa-check"></i> Tandai Selesai</button>
+                        <button type="submit" class="btn btn-complete"><i class="fas fa-check"></i> Tandai
+                            Selesai</button>
                     </div>
                 </form>
             </div>
@@ -730,7 +786,7 @@
         let currentDate = new Date();
 
         // Hook up modal with data attributes
-        document.addEventListener('click', function (e) {
+        document.addEventListener('click', function(e) {
             const trigger = e.target.closest('[data-bs-target="#completeModal"]');
             if (!trigger) return;
             const action = trigger.getAttribute('data-action');
@@ -745,7 +801,9 @@
             // reset textarea on open
             const textarea = document.getElementById('resolution_notes');
             textarea.value = '';
-            textarea.focus({ preventScroll: true });
+            textarea.focus({
+                preventScroll: true
+            });
         });
 
         let workData = {}; // Will store real work session data from API
@@ -1033,18 +1091,50 @@
                             });
 
                             function renderItem(session) {
-                                const badge = (session.status === 'completed' || session.status ===
-                                    'selesai/completed') ?
-                                    '<span style="background:#10b981;color:#fff;font-size:11px;padding:2px 6px;border-radius:4px;">Selesai</span>' :
-                                    '<span style="background:#f59e0b;color:#fff;font-size:11px;padding:2px 6px;border-radius:4px;">Proses</span>';
+                                const isCompleted = (session.status === 'completed' || session.status ===
+                                    'selesai/completed');
+                                const badge = isCompleted ?
+                                    '<span class="badge-status" style="background:#10b981;color:#fff;font-size:11px;padding:2px 6px;border-radius:4px;">Selesai</span>' :
+                                    '<span class="badge-status" style="background:#f59e0b;color:#fff;font-size:11px;padding:2px 6px;border-radius:4px;">Proses</span>';
+
+                                // Pisahkan tanggal dan jam hanya untuk sesi selesai: baris pertama tanggal, baris kedua jam kecil
+                                let timeMain = session.time_range;
+                                let timeSub = '';
+                                if (isCompleted && typeof session.time_range === 'string') {
+                                    // Robust: normalisasi pemisah (hyphen, en dash, em dash)
+                                    const normalized = session.time_range.replace(/\s*[—–-]\s*/, ' — ');
+                                    // Pola: dd MMM yyyy HH:mm(:ss)? — dd MMM yyyy HH:mm(:ss)?
+                                    const m = normalized.match(
+                                        /^(\d{1,2}\s+\p{L}+\s+\d{4})\s+(\d{2}:\d{2}(?::\d{2})?)\s+—\s+(\d{1,2}\s+\p{L}+\s+\d{4})\s+(\d{2}:\d{2}(?::\d{2})?)$/u
+                                        );
+                                    if (m) {
+                                        timeMain = `${m[1]} — ${m[3]}`;
+                                        timeSub = `${m[2]} — ${m[4]}`;
+                                    } else {
+                                        // Fallback generic split
+                                        const parts = session.time_range.split(/\s*[—–-]\s*/);
+                                        if (parts.length === 2) {
+                                            const leftTokens = parts[0].trim().split(/\s+/);
+                                            const rightTokens = parts[1].trim().split(/\s+/);
+                                            const leftDate = leftTokens.slice(0, 3).join(' ');
+                                            const rightDate = rightTokens.slice(0, 3).join(' ');
+                                            timeMain = `${leftDate} — ${rightDate}`;
+                                            const leftTime = leftTokens.slice(3).join(' ');
+                                            const rightTime = rightTokens.slice(3).join(' ');
+                                            if (leftTime || rightTime) {
+                                                timeSub = `${leftTime} — ${rightTime}`.trim();
+                                            }
+                                        }
+                                    }
+                                }
+
                                 return `
                             <div class="work-session-item">
-                                <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-                                    <div class="session-time">${session.time_range}</div>
-                                    ${badge}
-                                </div>
+                                <div class="session-time">${timeMain}</div>
+                                ${badge}
+                                ${timeSub ? `<div class="session-subtime">${timeSub}</div>` : ''}
                                 <div class="session-ticket">${session.ticket_code} - ${session.ticket_title}</div>
-                                <div style="font-size: 12px; color: #9ca3af;">Durasi: ${session.duration} </div>
+                                <div class="session-duration">Durasi: ${session.duration}</div>
                             </div>`;
                             }
 
