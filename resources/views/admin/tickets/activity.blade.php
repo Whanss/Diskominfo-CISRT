@@ -44,8 +44,7 @@
                                                 <div class="d-flex px-2 py-1">
                                                     <div class="d-flex flex-column justify-content-center">
                                                         <h6 class="mb-0 text-sm">
-                                                            <a
-                                                                href="{{ route('admin.tickets.index', ['code_tracking' => $activity->ticket->code_tracking]) }}">
+                                                            <a href="{{ route('admin.tickets.show', $activity->ticket) }}">
                                                                 {{ $activity->ticket->code_tracking }}
                                                             </a>
                                                         </h6>
@@ -83,7 +82,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="4" class="text-center">
+                                            <td colspan="5" class="text-center">
                                                 <p class="text-muted">Tidak ada aktivitas yang ditemukan</p>
                                             </td>
                                         </tr>

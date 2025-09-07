@@ -121,7 +121,7 @@
 
         .btn:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         /* Responsive table for ticket info */
@@ -142,152 +142,158 @@
             </a>
         </div>
 
-            <div class="row">
-                <div class="col-lg-8 col-md-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="ticket-title">Ticket Information</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p><strong>Code Tracking:</strong> <span
-                                            class="text-primary">{{ $ticket->code_tracking }}</span></p>
-                                    <p><strong>Title:</strong> {{ $ticket->judul }}</p>
-                                    <p><strong>Reporter Name:</strong> {{ $ticket->nama_pelapor }}</p>
-                                    <p><strong>Email:</strong> {{ $ticket->email }}</p>
-                                    <p><strong>Phone:</strong> {{ $ticket->no_hp ?? 'N/A' }}</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p><strong>Status:</strong>
-                                        <span
-                                            class="badge
+        <div class="row">
+            <div class="col-lg-8 col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="ticket-title">Ticket Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Code Tracking:</strong> <span
+                                        class="text-primary">{{ $ticket->code_tracking }}</span></p>
+                                <p><strong>Title:</strong> {{ $ticket->judul }}</p>
+                                <p><strong>Reporter Name:</strong> {{ $ticket->nama_pelapor }}</p>
+                                <p><strong>Email:</strong> {{ $ticket->email }}</p>
+                                <p><strong>Phone:</strong> {{ $ticket->no_hp ?? 'N/A' }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Status:</strong>
+                                    <span
+                                        class="badge
                                             @if ($ticket->status == 'pending') bg-gradient-warning
                                             @elseif($ticket->status == 'diterima/approved') bg-gradient-success
                                             @elseif($ticket->status == 'ditolak/rejected') bg-gradient-danger
                                             @else bg-gradient-secondary @endif">
-                                            {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}
-                                        </span>
-                                    </p>
-                                    <p><strong>Created:</strong> {{ $ticket->created_at->format('d M Y H:i') }}</p>
-                                    <p><strong>Last Updated:</strong> {{ $ticket->updated_at->format('d M Y H:i') }}</p>
-                                    <p><strong>Kabupaten:</strong> {{ $ticket->kabupaten->nama ?? 'N/A' }}</p>
-                                    <p><strong>Kecamatan:</strong> {{ $ticket->kecamatan->nama ?? 'N/A' }}</p>
-                                </div>
+                                        {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}
+                                    </span>
+                                </p>
+                                <p><strong>Created:</strong> {{ $ticket->created_at->format('d M Y H:i') }}</p>
+                                <p><strong>Last Updated:</strong> {{ $ticket->updated_at->format('d M Y H:i') }}</p>
+                                <p><strong>Kabupaten:</strong> {{ $ticket->kabupaten->nama ?? 'N/A' }}</p>
+                                <p><strong>Kecamatan:</strong> {{ $ticket->kecamatan->nama ?? 'N/A' }}</p>
                             </div>
-
-                            <hr>
-
-                            <div class="mb-3">
-                                <strong>Description:</strong>
-                                <div class="mt-2 p-3" style="background-color: #f8f9fc; border-radius: 6px; border-left: 4px solid #4e73df;">
-                                    {{ $ticket->description }}
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <strong>Jenis Layanan:</strong>
-                                <div class="mt-2 p-3" style="background-color: #f8f9fc; border-radius: 6px; border-left: 4px solid #4e73df;">
-                                    @if ($ticket->layanan)
-                                        {{ $ticket->layanan->name }}
-                                        @if ($ticket->layanan->description)
-                                            <br><small style="color:#666; font-weight:400;">{{ $ticket->layanan->description }}</small>
-                                        @endif
-                                    @else
-                                        -
-                                    @endif
-                                </div>
-                            </div>
-
-                            @if ($ticket->attachment_path)
-                                <div class="mb-3">
-                                    <strong>Attachment dari Guest:</strong>
-                                    <br>
-                                    <a href="{{ Storage::url($ticket->attachment_path) }}" target="_blank"
-                                        class="btn btn-outline-primary btn-sm mt-2">
-                                        <i class="fas fa-file"></i> Lihat/Download Lampiran
-                                    </a>
-                                </div>
-                            @endif
-
-                            @if ($ticket->status === 'ditolak/rejected' && $ticket->rejection_reason)
-                                <div class="mb-3">
-                                    <strong>Alasan Penolakan:</strong>
-                                    <div class="mt-2 p-3" style="background-color: #fff5f5; border-radius: 6px; border-left: 4px solid #e74a3b;">
-                                        {{ $ticket->rejection_reason }}
-                                    </div>
-                                </div>
-                            @endif
-
-                            @if ($ticket->status === 'selesai/completed' && $ticket->resolution_notes)
-                                <div class="mb-3">
-                                    <strong>Catatan Penyelesaian:</strong>
-                                    <div class="mt-2 p-3" style="background-color: #ecfff4; border-radius: 6px; border-left: 4px solid #1cc88a;">
-                                        {{ $ticket->resolution_notes }}
-                                    </div>
-                                </div>
-                            @endif
                         </div>
+
+                        <hr>
+
+                        <div class="mb-3">
+                            <strong>Description:</strong>
+                            <div class="mt-2 p-3"
+                                style="background-color: #f8f9fc; border-radius: 6px; border-left: 4px solid #4e73df;">
+                                {{ $ticket->description }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <strong>Jenis Layanan:</strong>
+                            <div class="mt-2 p-3"
+                                style="background-color: #f8f9fc; border-radius: 6px; border-left: 4px solid #4e73df;">
+                                @if ($ticket->layanan)
+                                    {{ $ticket->layanan->name }}
+                                    @if ($ticket->layanan->description)
+                                        <br><small
+                                            style="color:#666; font-weight:400;">{{ $ticket->layanan->description }}</small>
+                                    @endif
+                                @else
+                                    -
+                                @endif
+                            </div>
+                        </div>
+
+                        @if ($ticket->attachment_path)
+                            <div class="mb-3">
+                                <strong>Attachment dari Guest:</strong>
+                                <br>
+                                <a href="{{ route('admin.tickets.download', $ticket) }}"
+                                    class="btn btn-outline-primary btn-sm mt-2">
+                                    <i class="fas fa-file"></i> Lihat/Download Lampiran
+                                </a>
+                            </div>
+                        @endif
+
+                        @if ($ticket->status === 'ditolak/rejected' && $ticket->rejection_reason)
+                            <div class="mb-3">
+                                <strong>Alasan Penolakan:</strong>
+                                <div class="mt-2 p-3"
+                                    style="background-color: #fff5f5; border-radius: 6px; border-left: 4px solid #e74a3b;">
+                                    {{ $ticket->rejection_reason }}
+                                </div>
+                            </div>
+                        @endif
+
+                        @if ($ticket->status === 'selesai/completed' && $ticket->resolution_notes)
+                            <div class="mb-3">
+                                <strong>Catatan Penyelesaian:</strong>
+                                <div class="mt-2 p-3"
+                                    style="background-color: #ecfff4; border-radius: 6px; border-left: 4px solid #1cc88a;">
+                                    {{ $ticket->resolution_notes }}
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="ticket-title">Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        @if ($ticket->status == 'pending')
+                            <form action="{{ route('admin.tickets.accept', $ticket) }}" method="POST" class="mb-2">
+                                @csrf
+                                <button type="submit" class="btn btn-success btn-block">
+                                    <i class="fas fa-check"></i> Accept Ticket
+                                </button>
+                            </form>
+                            <form action="{{ route('admin.tickets.reject', $ticket) }}" method="POST">
+                                @csrf
+                                <div class="form-group mb-2">
+                                    <label for="rejection_reason"><strong>Alasan Penolakan</strong></label>
+                                    <textarea name="rejection_reason" id="rejection_reason" class="form-control" rows="3"
+                                        placeholder="Tuliskan alasan penolakan..." required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-danger btn-block">
+                                    <i class="fas fa-times"></i> Reject Ticket
+                                </button>
+                            </form>
+                        @else
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> Tiket ini telah diproses.
+                            </div>
+                        @endif
                     </div>
                 </div>
 
-                <div class="col-lg-4 col-md-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="ticket-title">Actions</h5>
-                        </div>
-                        <div class="card-body">
-                            @if ($ticket->status == 'pending')
-                                <form action="{{ route('admin.tickets.accept', $ticket) }}" method="POST" class="mb-2">
-                                    @csrf
-                                    <button type="submit" class="btn btn-success btn-block">
-                                        <i class="fas fa-check"></i> Accept Ticket
-                                    </button>
-                                </form>
-                                <form action="{{ route('admin.tickets.reject', $ticket) }}" method="POST">
-                                    @csrf
-                                    <div class="form-group mb-2">
-                                        <label for="rejection_reason"><strong>Alasan Penolakan</strong></label>
-                                        <textarea name="rejection_reason" id="rejection_reason" class="form-control" rows="3" placeholder="Tuliskan alasan penolakan..." required></textarea>
-                                    </div>
-                                    <button type="submit" class="btn btn-danger btn-block">
-                                        <i class="fas fa-times"></i> Reject Ticket
-                                    </button>
-                                </form>
-                            @else
-                                <div class="alert alert-info">
-                                    <i class="fas fa-info-circle"></i> Tiket ini telah diproses.
-                                </div>
-                            @endif
-                        </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="ticket-title">Activity Log</h5>
                     </div>
-
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="ticket-title">Activity Log</h5>
-                        </div>
-                        <div class="card-body">
-                            @if ($ticket->activityLogs->count() > 0)
-                                <ul class="list-unstyled">
-                                    @foreach ($ticket->activityLogs as $log)
-                                        <li>
-                                            <div>
-                                                <strong class="text-primary">{{ ucfirst($log->action) }}</strong>
-                                                <span class="text-muted float-right">
-                                                    {{ $log->created_at->format('d M Y H:i') }}
-                                                </span>
-                                            </div>
-                                            <small class="text-muted">{{ $log->description }}</small>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            @else
-                                <p class="text-muted mb-0">No activity recorded yet.</p>
-                            @endif
-                        </div>
+                    <div class="card-body">
+                        @if ($ticket->activityLogs->count() > 0)
+                            <ul class="list-unstyled">
+                                @foreach ($ticket->activityLogs as $log)
+                                    <li>
+                                        <div>
+                                            <strong class="text-primary">{{ ucfirst($log->action) }}</strong>
+                                            <span class="text-muted float-right">
+                                                {{ $log->created_at->format('d M Y H:i') }}
+                                            </span>
+                                        </div>
+                                        <small class="text-muted">{{ $log->description }}</small>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <p class="text-muted mb-0">No activity recorded yet.</p>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 @endsection

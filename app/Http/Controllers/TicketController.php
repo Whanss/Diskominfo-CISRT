@@ -292,17 +292,81 @@ class TicketController extends Controller
         $ext = pathinfo($ticket->attachment_path, PATHINFO_EXTENSION);
         $downloadName = 'lampiran_' . $ticket->code_tracking . '.' . $ext;
 
-        $stream = $disk->readStream($ticket->attachment_path);
+        try {
+            // Resolve absolute path from private disk and send as download
+            $absolutePath = $disk->path($ticket->attachment_path);
 
-        return response()->streamDownload(function () use ($stream) {
-            fpassthru($stream);
-        }, $downloadName, [
-            'Content-Type' => 'application/octet-stream',
-            'Content-Disposition' => 'attachment; filename="' . $downloadName . '"',
-            'X-Content-Type-Options' => 'nosniff',
-            'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
-            'Pragma' => 'no-cache',
-        ]);
+            // Basic extension-to-MIME mapping (avoids calling mimeType on the adapter)
+            $extLower = strtolower($ext);
+            $mimeMap = [
+                'pdf'  => 'application/pdf',
+                'doc'  => 'application/msword',
+                'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'xls'  => 'application/vnd.ms-excel',
+                'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'png'  => 'image/png',
+                'jpg'  => 'image/jpeg',
+                'jpeg' => 'image/jpeg',
+                'txt'  => 'text/plain',
+            ];
+            $mime = $mimeMap[$extLower] ?? 'application/octet-stream';
+
+            return response()->download($absolutePath, $downloadName, [
+                'Content-Type' => $mime,
+                'X-Content-Type-Options' => 'nosniff',
+                'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+                'Pragma' => 'no-cache',
+            ], 'attachment');
+        } catch (\Throwable $e) {
+            Log::error('Attachment download error for ticket ' . $ticket->id . ': ' . $e->getMessage());
+            abort(500, 'Gagal mengunduh lampiran.');
+        }
+    }
+
+    // Guest: securely download attachment by code_tracking without requiring admin auth
+    public function downloadGuestAttachment(string $code_tracking)
+    {
+        $ticket = Ticket::where('code_tracking', $code_tracking)->firstOrFail();
+
+        if (!$ticket->attachment_path) {
+            abort(404);
+        }
+
+        $disk = \Illuminate\Support\Facades\Storage::disk('private');
+        if (!$disk->exists($ticket->attachment_path)) {
+            abort(404);
+        }
+
+        $ext = pathinfo($ticket->attachment_path, PATHINFO_EXTENSION);
+        $downloadName = 'lampiran_' . $ticket->code_tracking . '.' . $ext;
+
+        try {
+            $absolutePath = $disk->path($ticket->attachment_path);
+
+            $extLower = strtolower($ext);
+            $mimeMap = [
+                'pdf'  => 'application/pdf',
+                'doc'  => 'application/msword',
+                'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'xls'  => 'application/vnd.ms-excel',
+                'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'png'  => 'image/png',
+                'jpg'  => 'image/jpeg',
+                'jpeg' => 'image/jpeg',
+                'txt'  => 'text/plain',
+            ];
+            $mime = $mimeMap[$extLower] ?? 'application/octet-stream';
+
+            return response()->download($absolutePath, $downloadName, [
+                'Content-Type' => $mime,
+                'X-Content-Type-Options' => 'nosniff',
+                'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+                'Pragma' => 'no-cache',
+            ], 'attachment');
+        } catch (\Throwable $e) {
+            Log::error('Guest attachment download error for code ' . $code_tracking . ': ' . $e->getMessage());
+            abort(500, 'Gagal mengunduh lampiran.');
+        }
     }
 
     public function export(Request $request)
