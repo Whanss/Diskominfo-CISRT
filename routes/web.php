@@ -35,6 +35,9 @@ Route::middleware(['prevent.admin.guest'])->group(function () {
 
     Route::get('guest/lihat_tiket/{code_tracking}', [TicketController::class, 'show'])->name('guest.liat_tiket');
 
+    // Guest download attachment securely by code_tracking
+    Route::get('guest/lihat_tiket/{code_tracking}/download', [TicketController::class, 'downloadGuestAttachment'])->name('guest.tickets.download');
+
     // News routes for guests
     Route::get('berita', [GuestNewsController::class, 'guestIndex'])->name('guest.news.index');
     Route::get('berita/{slug}', [GuestNewsController::class, 'guestShow'])->name('guest.news.show');

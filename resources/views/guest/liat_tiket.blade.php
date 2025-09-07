@@ -884,7 +884,7 @@
                                 @if ($ticket->attachment_path)
                                     <div>
                                         <div style="font-weight:600; color:#4a148c; margin-bottom:6px;">Lampiran</div>
-                                        <a href="{{ Storage::url($ticket->attachment_path) }}" target="_blank"
+                                        <a href="{{ route('guest.tickets.download', ['code_tracking' => $ticket->code_tracking]) }}"
                                             class="btn btn-primary" style="display:inline-block;">
                                             Lihat/Download Lampiran
                                         </a>
@@ -1105,23 +1105,7 @@
                             </div>
 
                             <!-- Step 2: Sedang Diproses -->
-                            @if ($ticket->status === 'pending')
-                                <div class="timeline-item active">
-                                    <div class="timeline-dot active"><i class="bi bi-hourglass-split"></i></div>
-                                    <div class="timeline-content">
-                                        <div class="timeline-title">Sedang Diproses</div>
-                                        <div class="timeline-time">Belum diproses</div>
-                                    </div>
-                                </div>
-                            @elseif (in_array($ticket->status, ['diterima/approved', 'selesai/completed']))
-                                <div class="timeline-item completed">
-                                    <div class="timeline-dot completed">✓</div>
-                                    <div class="timeline-content">
-                                        <div class="timeline-title">Sedang Diproses</div>
-                                        <div class="timeline-time">Tiket Sedang diproses oleh tim</div>
-                                    </div>
-                                </div>
-                            @elseif ($ticket->status === 'ditolak/rejected')
+                            @if ($ticket->status === 'ditolak/rejected')
                                 <div class="timeline-item rejected">
                                     <div class="timeline-dot rejected">✗</div>
                                     <div class="timeline-content">
@@ -1129,23 +1113,61 @@
                                         <div class="timeline-time">Tiket tidak memenuhi syarat</div>
                                     </div>
                                 </div>
+                            @elseif ($ticket->status === 'selesai/completed')
+                                <div class="timeline-item completed">
+                                    <div class="timeline-dot completed">✓</div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-title">Sedang Diproses</div>
+                                        <div class="timeline-time">Selesai diproses oleh tim</div>
+                                    </div>
+                                </div>
+                            @elseif ($ticket->is_processing)
+                                <div class="timeline-item active">
+                                    <div class="timeline-dot active"><i class="bi bi-hourglass-split"></i></div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-title">Sedang Diproses</div>
+                                        <div class="timeline-time">
+                                            @if ($ticket->has_active_work_session)
+                                                Sedang dikerjakan oleh tim
+                                            @elseif ($ticket->accepted_at)
+                                                @php
+                                                    $acceptedTime = \Carbon\Carbon::parse(
+                                                        $ticket->accepted_at,
+                                                    )->setTimezone('Asia/Makassar');
+                                                @endphp
+                                                Disetujui pada {{ $acceptedTime->format('d M Y, H:i') }} WITA — menunggu
+                                                penanganan
+                                            @else
+                                                Menunggu penanganan
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            @elseif ($ticket->status === 'pending')
+                                <div class="timeline-item pending">
+                                    <div class="timeline-dot">2</div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-title">Sedang Diproses</div>
+                                        <div class="timeline-time">Menunggu review admin</div>
+                                    </div>
+                                </div>
                             @else
                                 <div class="timeline-item pending">
                                     <div class="timeline-dot">2</div>
                                     <div class="timeline-content">
                                         <div class="timeline-title">Sedang Diproses</div>
-                                        <div class="timeline-time">Belum diproses</div>
+                                        <div class="timeline-time">Menunggu update</div>
                                     </div>
                                 </div>
                             @endif
 
-                            <!-- Step 3: Keputusan Final (Only if not rejected at step 2) -->
+                            <!-- Step 3: Keputusan Akhir (skip jika ditolak di step 2) -->
                             @if ($ticket->status !== 'ditolak/rejected')
                                 @if ($ticket->status === 'selesai/completed')
                                     <div class="timeline-item completed">
                                         <div class="timeline-dot completed">✓</div>
                                         <div class="timeline-content">
-                                            <div class="timeline-title">Menunggu Keputusan</div>
+                                            <div class="timeline-title">Selesai</div>
                                             <div class="timeline-time">
                                                 @if ($ticket->resolved_at)
                                                     @php
@@ -1160,19 +1182,19 @@
                                             </div>
                                         </div>
                                     </div>
-                                @elseif ($ticket->status === 'diterima/approved')
+                                @elseif ($ticket->is_processing)
                                     <div class="timeline-item active">
                                         <div class="timeline-dot active"><i class="bi bi-hourglass-split"></i></div>
                                         <div class="timeline-content">
-                                            <div class="timeline-title">Menunggu Keputusan</div>
-                                            <div class="timeline-time">Menunggu penyelesaian akhir</div>
+                                            <div class="timeline-title">Keputusan Akhir</div>
+                                            <div class="timeline-time">Dalam proses penyelesaian</div>
                                         </div>
                                     </div>
                                 @else
                                     <div class="timeline-item pending">
                                         <div class="timeline-dot">3</div>
                                         <div class="timeline-content">
-                                            <div class="timeline-title">Menunggu Keputusan</div>
+                                            <div class="timeline-title">Keputusan Akhir</div>
                                             <div class="timeline-time">Menunggu review dan keputusan admin</div>
                                         </div>
                                     </div>
