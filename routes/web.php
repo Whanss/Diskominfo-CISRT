@@ -3,19 +3,16 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\KabupatenController;
+// use App\Http\Controllers\KabupatenController;
 use App\Http\Controllers\KecamatanController;
 use App\Http\Controllers\LayananController;
 use App\Http\Controllers\NewsController as AdminNewsController;
 use App\Http\Controllers\NewsController as GuestNewsController;
-use App\Models\Kabupaten;
+// use App\Models\Kabupaten;
 use App\Models\Kecamatan;
 use App\Models\Ticket;
 
-// API endpoint for kecamatan data (must be outside middleware to avoid redirects)
-Route::get('/api/kecamatan/{kabupatenId}', function ($kabupatenId) {
-    return Kecamatan::where('kabupaten_id', $kabupatenId)->get();
-});
+// API endpoint untuk kecamatan berdasarkan kabupaten dihapus karena tidak lagi digunakan
 
 // Guest routes - protected from admin access
 Route::middleware(['prevent.admin.guest'])->group(function () {
@@ -24,9 +21,9 @@ Route::middleware(['prevent.admin.guest'])->group(function () {
     Route::get('/guest/guest_dashboard', [TicketController::class, 'guestDashboard'])->name('guest.guest_dashboard');
 
     Route::get('guest/create_tiket', function () {
-        $kabupatens = Kabupaten::all();
+        $kecamatans = \App\Models\Kecamatan::orderBy('nama')->get(['id', 'nama']);
         $layanan = \App\Models\MasterLayanan::where('is_active', true)->orderBy('name')->get(['id', 'name']);
-        return view('guest.create_tiket', compact('kabupatens', 'layanan'));
+        return view('guest.create_tiket', compact('kecamatans', 'layanan'));
     })->name('guest.create_tiket');
 
     Route::post('tickets', [TicketController::class, 'store'])->name('tickets.store');
@@ -73,7 +70,7 @@ Route::middleware(['admin.auth', 'prevent.guest.admin'])->prefix('admin')->name(
     Route::post('dashboard/navigate/next', [AdminController::class, 'navigateNextMonth'])->name('dashboard.navigate.next');
 
     // Resource routes
-    Route::resource('kabupaten', KabupatenController::class);
+    // Route::resource('kabupaten', KabupatenController::class);
     Route::resource('kecamatan', KecamatanController::class);
     // Route::resource('layanan', LayananController::class); // disabled: using Master Layanan module
     Route::resource('news', AdminNewsController::class);
