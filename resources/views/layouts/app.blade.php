@@ -8,9 +8,6 @@
     <meta name="description" content="">
     <meta name="keywords" content="">
 
-    <!-- Favicons -->
-    <link href="{{ asset('template/Dashboard/assets/img/favicon.png') }}" rel="icon">
-
 
     <!-- Fonts -->
     <link
@@ -250,7 +247,7 @@
                 <ul>
                     <li><a href="{{ Route('guest.guest_dashboard') }}">Home</a></li>
                     <li class="dropdown">
-                        <a href="#"><span>Menu</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                        <a href="#"><span>Layanan</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
                         <ul>
                             <li class="dropdown">
                                 <a href="{{ Route('guest.create_tiket') }}"><span>KIRIM ADUAN SIBER </span> <i
@@ -258,9 +255,8 @@
                             </li>
                         </ul>
                     </li>
-                    <li><a href="{{ route('guest.guest_dashboard') }}#about">Tentang Kami</a></li>
-                    <li><a href="{{ route('guest.guest_dashboard') }}#services">layanan</a></li>
                     <li><a href="{{ route('guest.news.index') }}">Berita Terkini</a></li>
+                      <li><a href="{{ route('guest.guest_dashboard') }}#about">Tentang Kami</a></li>
 
 
                 </ul>

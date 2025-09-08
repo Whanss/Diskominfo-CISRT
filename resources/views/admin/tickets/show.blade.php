@@ -202,6 +202,16 @@
                             </div>
                         </div>
 
+                        @if ($ticket->layananCategory)
+                            <div class="mb-3">
+                                <strong>Kategori Layanan:</strong>
+                                <div class="mt-2 p-3"
+                                    style="background-color: #f8f9fc; border-radius: 6px; border-left: 4px solid #0ea5e9;">
+                                    {{ $ticket->layananCategory->name }}
+                                </div>
+                            </div>
+                        @endif
+
                         @if ($ticket->attachment_path)
                             <div class="mb-3">
                                 <strong>Attachment dari Guest:</strong>

@@ -279,6 +279,7 @@
             background-color: var(--gray-50);
             color: var(--gray-400);
             cursor: not-allowed;
+            opacity: 0.6;
         }
 
         .character-count {
@@ -438,6 +439,14 @@
 
         .dropdown-input:hover:not(:focus) {
             border-color: var(--gray-300);
+        }
+
+        .dropdown-input.blurred {
+            background-color: var(--gray-100);
+            color: var(--gray-400);
+            opacity: 0.7;
+            pointer-events: none;
+            cursor: not-allowed;
         }
 
         .dropdown-placeholder {
@@ -707,6 +716,27 @@
                                         {{ old('layanan_id') == $l->id ? 'selected' : '' }}>{{ $l->name }}</option>
                                 @endforeach
                             </select>
+                            <div id="kategori-inline" style="margin-top:.5rem; color:#6b7280; display:none;">
+                                Kategori: <span id="kategori-inline-name"></span>
+                            </div>
+                        </div>
+
+                        <!-- Kategori Layanan (dinamis berdasarkan layanan) -->
+                        <div class="form-group" id="kategori-wrapper">
+                            <label for="layanan_category_id" class="form-label">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 6h16M7 12h10M10 18h4" />
+                                </svg>
+                                Kategori Layanan <span class="required" id="kategori-required"
+                                    style="display:none;">*</span>
+                            </label>
+                            <select class="form-control" id="layanan_category_id" name="layanan_category_id" disabled style="background-color: #f9fafb; color: #6b7280; opacity: 0.6;">
+                                <option value="">Pilih jenis layanan terlebih dahulu</option>
+                            </select>
+                            @error('layanan_category_id')
+                                <div class="alert alert-danger" style="margin-top:.5rem;">{{ $message }}</div>
+                            @enderror
                         </div>
 
 
@@ -963,6 +993,9 @@
             let allKecamatanData = [];
             let isDropdownOpen = false;
 
+            // Initially blur the kecamatan dropdown
+            kecamatanInput.classList.add('blurred');
+
             // Character counters
             const setupCharacterCounter = (fieldId, maxLength) => {
                 const field = document.getElementById(fieldId);
@@ -1100,8 +1133,12 @@
                     '<div class="dropdown-option disabled">Pilih kabupaten terlebih dahulu</div>';
                 closeDropdown();
 
+                // Blur kecamatan dropdown if no kabupaten selected
                 if (!kabupatenId) {
+                    kecamatanInput.classList.add('blurred');
                     return;
+                } else {
+                    kecamatanInput.classList.remove('blurred');
                 }
 
                 // Show loading
@@ -1154,6 +1191,113 @@
             document.getElementById(`${tabName}-tab`).classList.add('active');
             document.getElementById(`${tabName}-content`).classList.add('active');
         }
+        // Dynamic Layanan Category dropdown
+        document.addEventListener('DOMContentLoaded', function() {
+            const layananSelect = document.getElementById('layanan_id');
+            const kategoriWrapper = document.getElementById('kategori-wrapper');
+            const kategoriSelect = document.getElementById('layanan_category_id');
+            const kategoriRequiredMark = document.getElementById('kategori-required');
+            const kategoriInline = document.getElementById('kategori-inline');
+            const kategoriInlineName = document.getElementById('kategori-inline-name');
+
+            function resetKategori() {
+                kategoriSelect.innerHTML = '<option value="">Pilih jenis layanan terlebih dahulu</option>';
+                kategoriSelect.value = '';
+                kategoriSelect.disabled = true;
+                kategoriSelect.style.backgroundColor = '#f9fafb';
+                kategoriSelect.style.color = '#6b7280';
+                kategoriSelect.style.opacity = '0.6'; // Visual indication of disabled state
+                kategoriRequiredMark.style.display = 'none';
+                kategoriInline.style.display = 'none';
+                kategoriInlineName.textContent = '';
+            }
+
+            function loadCategories(layananId) {
+                resetKategori();
+                if (!layananId) return;
+
+                // Show loading state
+                kategoriSelect.innerHTML = '<option value="">Memuat kategori...</option>';
+                kategoriSelect.disabled = true;
+
+                fetch(`{{ route('api.layanan.categories', ['layanan' => '___ID___']) }}`.replace('___ID___',
+                        layananId))
+                    .then(res => {
+                        if (!res.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return res.json();
+                    })
+                    .then(list => {
+                        if (!Array.isArray(list) || list.length === 0) {
+                            kategoriSelect.innerHTML =
+                                '<option value="">Tidak ada kategori untuk layanan ini</option>';
+                            kategoriSelect.disabled = true;
+                            kategoriRequiredMark.style.display = 'none';
+                            kategoriInline.style.display = 'none';
+                            kategoriInlineName.textContent = '';
+                            return;
+                        }
+
+                        // Enable the select and populate options
+                        kategoriSelect.disabled = false;
+                        kategoriSelect.style.backgroundColor = '#ffffff'; // Set background to white when enabled
+                        kategoriSelect.style.color = '#000000'; // Set text color to black when enabled
+                        kategoriSelect.style.opacity = '1'; // Make it fully visible when enabled
+                        kategoriSelect.innerHTML = '<option value="">Pilih kategori</option>';
+                        kategoriRequiredMark.style.display = 'inline';
+
+                        for (const item of list) {
+                            const opt = document.createElement('option');
+                            opt.value = item.id;
+                            opt.textContent = item.name;
+                            kategoriSelect.appendChild(opt);
+                        }
+
+                        // Restore old value if exists
+                        const oldVal = "{{ old('layanan_category_id') }}";
+                        if (oldVal) {
+                            kategoriSelect.value = oldVal;
+                            const selectedOption = Array.from(kategoriSelect.options).find(o => o.value == oldVal);
+                            if (selectedOption) {
+                                kategoriInline.style.display = 'block';
+                                kategoriInlineName.textContent = selectedOption.textContent;
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading categories:', error);
+                        kategoriSelect.innerHTML = '<option value="">Error memuat kategori</option>';
+                        kategoriSelect.disabled = true;
+                        kategoriSelect.style.backgroundColor = '#f9fafb';
+                        kategoriSelect.style.color = '#6b7280';
+                        kategoriSelect.style.opacity = '0.6';
+                        kategoriRequiredMark.style.display = 'none';
+                        kategoriInline.style.display = 'none';
+                        kategoriInlineName.textContent = '';
+                    });
+            }
+
+            layananSelect.addEventListener('change', function() {
+                loadCategories(this.value);
+            });
+
+            kategoriSelect.addEventListener('change', function() {
+                const selected = this.options[this.selectedIndex];
+                if (this.value) {
+                    kategoriInline.style.display = '';
+                    kategoriInlineName.textContent = selected.textContent;
+                } else {
+                    kategoriInline.style.display = 'none';
+                    kategoriInlineName.textContent = '';
+                }
+            });
+
+            // init on page load if layanan already selected
+            if (layananSelect.value) {
+                loadCategories(layananSelect.value);
+            }
+        });
     </script>
 
 @endsection

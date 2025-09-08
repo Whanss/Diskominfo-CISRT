@@ -24,4 +24,9 @@ class MasterLayanan extends Model
     {
         return $this->hasMany(Ticket::class, 'layanan_id');
     }
+
+    public function categories()
+    {
+        return $this->hasMany(\App\Models\LayananCategory::class, 'layanan_id');
+    }
 }

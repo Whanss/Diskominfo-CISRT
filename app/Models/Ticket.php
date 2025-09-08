@@ -10,7 +10,7 @@ class Ticket extends Model
         'code_tracking', 'judul', 'nama_pelapor', 'email', 'no_hp',
         'description', 'status', 'resolved_at', 'resolution_category', 'resolved_by',
         'kabupaten_id', 'kecamatan_id', 'accepted_at', 'processing_started_at',
-        'assigned_to', 'resolution_notes', 'attachment_path', 'layanan_id',
+        'assigned_to', 'resolution_notes', 'attachment_path', 'layanan_id', 'layanan_category_id',
         // legacy fields for backward compatibility
         'layanan_type', 'layanan_custom', 'rejection_reason'
     ];
@@ -27,6 +27,11 @@ class Ticket extends Model
     public function layanan()
     {
         return $this->belongsTo(\App\Models\MasterLayanan::class, 'layanan_id');
+    }
+
+    public function layananCategory()
+    {
+        return $this->belongsTo(\App\Models\LayananCategory::class, 'layanan_category_id');
     }
 
     public function workSessions()

@@ -813,13 +813,33 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.layanan*') ? 'active' : '' }}"
-                            href="{{ route('admin.layanan.index') }}">
-                            <div class="nav-icon">
-                                <i class="fas fa-concierge-bell"></i>
-                            </div>
-                            <span class="nav-text">Layanan</span>
-                        </a>
+                        <button
+                            class="nav-link {{ request()->routeIs('admin.layanan*') || request()->routeIs('admin.layanan-categories.*') ? '' : 'collapsed' }}"
+                            data-bs-toggle="collapse" data-bs-target="#menuKelolaLayanan"
+                            aria-expanded="{{ request()->routeIs('admin.layanan*') || request()->routeIs('admin.layanan-categories.*') ? 'true' : 'false' }}">
+                            <div class="nav-icon"><i class="fas fa-concierge-bell"></i></div>
+                            <span class="nav-text">Kelola Layanan</span>
+                            <span class="nav-arrow"><i class="fas fa-chevron-right"></i></span>
+                        </button>
+                        <div id="menuKelolaLayanan"
+                            class="collapse {{ request()->routeIs('admin.layanan*') || request()->routeIs('admin.layanan-categories.*') ? 'show' : '' }} nav-collapse">
+                            <ul class="nav-items">
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('admin.layanan*') ? 'active' : '' }}"
+                                        href="{{ route('admin.layanan.index') }}">
+                                        <div class="nav-icon"><i class="fas fa-list"></i></div>
+                                        <span class="nav-text">Daftar Layanan</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('admin.layanan-categories.*') ? 'active' : '' }}"
+                                        href="{{ route('admin.layanan-categories.index') }}">
+                                        <div class="nav-icon"><i class="fas fa-layer-group"></i></div>
+                                        <span class="nav-text">Kategori Layanan</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
 
                     <li class="nav-item">

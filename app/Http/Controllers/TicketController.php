@@ -40,6 +40,11 @@ class TicketController extends Controller
             'no_hp' => 'nullable|string|max:20',
             'description' => 'required|string',
             'layanan_id' => 'required|exists:master_layanan,id',
+            // kategori wajib hanya jika layanan tsb punya kategori aktif
+            'layanan_category_id' => [
+                'nullable',
+                'exists:layanan_categories,id'
+            ],
             'attachment' => [
                 'nullable',
                 'bail', // hentikan pada error pertama agar tidak dobel pesan
@@ -60,6 +65,16 @@ class TicketController extends Controller
             // Ubah label attribute
             'attachment' => 'Lampiran',
         ]);
+
+        // Jika layanan punya kategori aktif, maka kategori wajib
+        if ($request->filled('layanan_id')) {
+            $hasActiveCategories = \App\Models\LayananCategory::where('layanan_id', $request->layanan_id)
+                ->where('is_active', true)
+                ->exists();
+            if ($hasActiveCategories && !$request->filled('layanan_category_id')) {
+                return back()->withErrors(['layanan_category_id' => 'Silakan pilih kategori untuk layanan tersebut.'])->withInput();
+            }
+        }
 
         // Bersihkan field legacy yang tidak dipakai lagi
         unset($validated['layanan_type'], $validated['layanan_custom']);
