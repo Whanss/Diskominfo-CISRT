@@ -10,7 +10,9 @@ class LayananController extends Controller
 {
     public function index()
     {
-        $items = MasterLayanan::orderBy('name')->paginate(15);
+        $items = MasterLayanan::withCount(['categories' => function($q){ $q->where('is_active', true); }])
+            ->orderBy('name')
+            ->paginate(15);
         return view('admin.layanan.index', compact('items'));
     }
 

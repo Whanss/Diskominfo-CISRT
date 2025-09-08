@@ -1057,14 +1057,20 @@
                                         <div class="meta-label">Contact Email</div>
                                         <div class="meta-value">{{ Str::limit($ticket->email ?? 'No Email', 25) }}</div>
                                     </div>
-                                      <div class="meta-item">
+                                    <div class="meta-item">
                                         <div class="meta-label">Contact Cell</div>
-                                        <div class="meta-value">{{ Str::limit($ticket->no_hp?? 'No Email', 25) }}</div>
+                                        <div class="meta-value">{{ Str::limit($ticket->no_hp ?? 'No Email', 25) }}</div>
                                     </div>
                                     @if ($ticket->layanan)
                                         <div class="meta-item">
                                             <div class="meta-label">Layanan</div>
-                                            <div class="meta-value">{{ $ticket->layanan->name }}</div>
+                                            <div class="meta-value">
+                                                {{ $ticket->layanan->name }}
+                                                @if ($ticket->layananCategory)
+                                                    <br><small style="color:#444; font-weight:600;">Kategori:
+                                                        {{ $ticket->layananCategory->name }}</small>
+                                                @endif
+                                            </div>
                                         </div>
                                     @endif
                                     @if ($ticket->kabupaten)

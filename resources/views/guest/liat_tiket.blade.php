@@ -870,9 +870,11 @@
                                     <div>
                                         @if ($ticket->layanan)
                                             {{ $ticket->layanan->name }}
+                                            @if ($ticket->layananCategory)
+                                                <br><small style="color:#444; font-weight:600;">Kategori: {{ $ticket->layananCategory->name }}</small>
+                                            @endif
                                             @if ($ticket->layanan->description)
-                                                <br><small
-                                                    style="color:#666; font-weight:400;">{{ $ticket->layanan->description }}</small>
+                                                <br><small style="color:#666; font-weight:400;">{{ $ticket->layanan->description }}</small>
                                             @endif
                                         @elseif ($ticket->layanan_type === 'other' && $ticket->layanan_custom)
                                             {{ $ticket->layanan_custom }}

@@ -8,8 +8,7 @@
     <meta name="description" content="">
     <meta name="keywords" content="">
 
-    <!-- Favicons -->
-    <link href="{{ asset('template/Dashboard/assets/img/favicon.png') }}" rel="icon">
+
 
 
     <!-- Fonts -->
@@ -543,7 +542,7 @@
             <nav id="navmenu" class="navmenu">
                 <ul>
                     <li><a href="#hero" class="active">Home<br></a></li>
-                    <li class="dropdown"><a href="#"><span>Menu</span> <i
+                    <li class="dropdown"><a href="#"><span>Layanan</span> <i
                                 class="bi bi-chevron-down toggle-dropdown"></i></a>
                         <ul>
                             <li class="dropdown"><a href="{{ Route('guest.create_tiket') }}"><span>KIRIM ADUAN SIBER
@@ -551,9 +550,10 @@
                             </li>
                         </ul>
                     </li>
-                    <li><a href="#about">Tentang Kami</a></li>
-                    <li><a href="#services">layanan</a></li>
-                    <li><a href="{{ route('guest.news.index') }}">Berita Terkini</a></li>
+                    <li> <li><a href="{{ route('guest.news.index') }}">Berita Terkini</a></li>
+                        <a href="#about">Tentang Kami</a></li>
+
+
 
                 </ul>
             </nav><!-- End Nav Menu -->
@@ -605,51 +605,137 @@
                     </div>
                     <div class="col-lg-6 order-1 order-lg-2 hero-img position-relative" data-aos="zoom-out"
                         style="position: relative;">
-                        <img src="{{ asset('template/Dashboard/assets/img/hero-img.png') }}"
-                            class="img-fluid animated" alt="" style="position: relative; z-index: 2;">
+                        <img src="{{ asset('template/Dashboard/assets/img/hero-img.png') }}" class="img-fluid animated"
+                            alt="" style="position: relative; z-index: 2;">
                     </div>
                 </div>
             </div>
 
         </section><!-- /Hero Section -->
 
-        <!-- About Section -->
+        <!-- Security Intelligence Section -->
+        <section id="security-intelligence" class="section bg-light">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <!-- Section Title -->
+                        <div class="section-title" data-aos="fade-up">
+                            <p>Halaman berita</p>
+                            <br>
+                            <h2>BERITA TERKINI</h2>
+                        </div>
 
-        <section id="about" class="about section">
-            <div class="container section-title" data-aos="fade-up">
-                <h2>About Us</h2>
-                <p>Tentang Kami<br></p>
-            </div>
+                        <!-- Recent Posts -->
+                        <div class="recent-posts" data-aos="fade-up" data-aos-delay="100">
 
+                            @forelse($latestNews as $news)
+                                <article class="post-item d-flex">
+                                    <div class="post-img">
+                                        @if ($news->image)
+                                            <img src="{{ asset('storage/' . $news->image) }}"
+                                                alt="{{ $news->title }}">
+                                        @else
+                                            <img src="{{ asset('template/Dashboard/assets/img/blog/blog-1.jpg') }}"
+                                                alt="{{ $news->title }}">
+                                        @endif
+                                    </div>
+                                    <div class="post-content">
+                                        <div class="post-meta">
+                                            <span class="post-date">{{ $news->created_at->format('d M Y') }}</span>
+                                        </div>
+                                        <h3><a
+                                                href="{{ route('guest.news.show', $news->slug) }}">{{ $news->title }}</a>
+                                        </h3>
+                                        <p>{{ $news->excerpt }}</p>
+                                        <a href="{{ route('guest.news.show', $news->slug) }}"
+                                            class="btn btn-sm btn-outline-primary">
+                                            Baca Selengkapnya <i class="bi bi-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </article>
+                            @empty
+                                <div class="text-center py-5">
+                                    <i class="bi bi-shield-exclamation" style="font-size: 3rem; color: #6c757d;"></i>
+                                    <h4 class="mt-3 text-muted">Belum Ada Informasi Keamanan</h4>
+                                    <p class="text-muted">Peringatan keamanan siber akan dipublikasikan di sini ketika
+                                        tersedia.</p>
+                                </div>
+                            @endforelse
 
-            <div class="container" data-aos="fade-up">
-                <div class="row gx-0">
-
-                    <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up"
-                        data-aos-delay="200">
-                        <div class="content">
-                            <h3>Who We Are</h3>
-                            <h2>Tim Keamanan Siber Andal untuk Melindungi Data Anda.</h2>
-                            <p>
-                                Kami adalah tim respon insiden keamanan siber yang siap membantu instansi dan masyarakat
-                                dalam mencegah, mendeteksi, dan menangani ancaman siber. Dengan pengalaman dan teknologi
-                                terbaru, kami memastikan keamanan informasi Anda tetap terjaga.
-                            </p>
-                            <div class="text-center text-lg-start">
-
-                            </div>
+                            @if ($latestNews->count() > 0)
+                                <div class="text-center mt-4">
+                                    <a href="{{ route('guest.news.index') }}" class="btn btn-primary">
+                                        Lihat Semua Berita <i class="bi bi-arrow-right ms-1"></i>
+                                    </a>
+                                </div>
+                            @endif
                         </div>
                     </div>
 
-                    <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
-                        <img src="{{ asset('template/Dashboard/assets/img/about.jpeg') }}" class="img-fluid"
-                            alt="">
+                    <!-- Sidebar -->
+                    <div class="col-lg-4">
+                        <!-- Quick Actions -->
+                        <div class="widget quick-actions-widget" data-aos="fade-up" data-aos-delay="300">
+                            <h4>Aksi Cepat</h4>
+                            <div class="d-grid gap-2">
+                                <a href="{{ route('guest.create_tiket') }}" class="btn btn-danger">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>Laporkan Insiden Keamanan
+                                </a>
+                                <a href="{{ route('guest.news.index') }}" class="btn btn-outline-primary">
+                                    <i class="bi bi-newspaper-me-2"></i>Lihat Semua Berita
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Contact Info -->
+                        <div class="widget contact-widget" data-aos="fade-up" data-aos-delay="400">
+                            <h4>Kontak Darurat</h4>
+                            <div class="contact-info">
+                                <p><strong>Respon Insiden 24/7</strong></p>
+                                <p><i class="bi bi-telephone me-2"></i>+62 370 XXX-XXXX</p>
+                                <p><i class="bi bi-envelope me-2"></i>incident@csirt-loteng.go.id</p>
+                                <p class="small text-muted">Untuk insiden keamanan kritis yang memerlukan respon segera
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Stats Section -->
+                        <section id="stats" class="stats section">
+
+                            <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+                                <div class="row gy-4">
+
+                                    <div class="col-lg-3 col-md-6">
+                                        <div class="stats-item d-flex align-items-center w-100 h-100">
+                                            <i class="bi bi-emoji-smile color-blue flex-shrink-0"></i>
+                                            <div>
+                                                <span data-purecounter-start="0"
+                                                    data-purecounter-end="{{ $countSent }}"
+                                                    data-purecounter-duration="1"
+                                                    class="purecounter">{{ $countSent }}</span>
+                                                <p>Tiket yang sudah terkirim</p>
+                                            </div>
+                                        </div>
+                                    </div><!-- End Stats Item -->
+
+                                    <div class="col-lg-3 col-md-6">
+                                        <div class="stats-item d-flex align-items-center w-100 h-100">
+                                            <i class="bi bi-journal-richtext color-orange flex-shrink-0"
+                                                style="color: #ee6c20;"></i>
+                                            <div>
+                                                <span data-purecounter-start="0"
+                                                    data-purecounter-end="{{ $countWorkedOn }}"
+                                                    data-purecounter-duration="1"
+                                                    class="purecounter">{{ $countWorkedOn }}</span>
+                                                <p>Tiket yang sudah dikerjakan</p>
+                                            </div>
+                                        </div>
+                                    </div><!-- End Stats Item -->
+                                </div>
+                            </div>
                     </div>
-
-                </div>
-            </div>
-
-        </section><!-- /About Section -->
+        </section>
 
         <!-- Services Section -->
         <section id="services" class="services section">
@@ -698,39 +784,50 @@
 
         </section><!-- /Services Section -->
 
-        <!-- Stats Section -->
-        <section id="stats" class="stats section">
 
-            <div class="container" data-aos="fade-up" data-aos-delay="100">
+        <!-- About Section -->
 
-                <div class="row gy-4">
+        <section id="about" class="about section">
+            <div class="container section-title" data-aos="fade-up">
+                <h2>About Us</h2>
+                <p>Tentang Kami<br></p>
+            </div>
 
-                    <div class="col-lg-3 col-md-6">
-                        <div class="stats-item d-flex align-items-center w-100 h-100">
-                            <i class="bi bi-emoji-smile color-blue flex-shrink-0"></i>
-                            <div>
-                                <span data-purecounter-start="0" data-purecounter-end="{{ $countSent }}"
-                                    data-purecounter-duration="1" class="purecounter">{{ $countSent }}</span>
-                                <p>Tiket yang sudah terkirim</p>
+
+            <div class="container" data-aos="fade-up">
+                <div class="row gx-0">
+
+                    <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up"
+                        data-aos-delay="200">
+                        <div class="content">
+                            <h3>Who We Are</h3>
+                            <h2>Tim Keamanan Siber Andal untuk Melindungi Data Anda.</h2>
+                            <p>
+                                Kami adalah tim respon insiden keamanan siber yang siap membantu instansi dan masyarakat
+                                dalam mencegah, mendeteksi, dan menangani ancaman siber. Dengan pengalaman dan teknologi
+                                terbaru, kami memastikan keamanan informasi Anda tetap terjaga.
+                            </p>
+                            <div class="text-center text-lg-start">
+
                             </div>
                         </div>
-                    </div><!-- End Stats Item -->
+                    </div>
 
-                    <div class="col-lg-3 col-md-6">
-                        <div class="stats-item d-flex align-items-center w-100 h-100">
-                            <i class="bi bi-journal-richtext color-orange flex-shrink-0" style="color: #ee6c20;"></i>
-                            <div>
-                                <span data-purecounter-start="0" data-purecounter-end="{{ $countWorkedOn }}"
-                                    data-purecounter-duration="1" class="purecounter">{{ $countWorkedOn }}</span>
-                                <p>Tiket yang sudah dikerjakan</p>
-                            </div>
-                        </div>
-                    </div><!-- End Stats Item -->
-
+                    <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
+                        <img src="{{ asset('template/Dashboard/assets/img/about.jpeg') }}" class="img-fluid"
+                            alt="">
+                    </div>
 
                 </div>
-
             </div>
+
+        </section><!-- /About Section -->
+
+
+
+        </div>
+
+        </div>
 
         </section><!-- /Stats Section -->
 
@@ -986,94 +1083,6 @@
             </div>
 
         </section><!-- /Faq Section -->
-
-        <!-- Security Intelligence Section -->
-        <section id="security-intelligence" class="section bg-light">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-8">
-                        <!-- Section Title -->
-                        <div class="section-title" data-aos="fade-up">
-                            <h2>BERITA TERKINI</h2>
-                        </div>
-
-                        <!-- Recent Posts -->
-                        <div class="recent-posts" data-aos="fade-up" data-aos-delay="100">
-
-                            @forelse($latestNews as $news)
-                                <article class="post-item d-flex">
-                                    <div class="post-img">
-                                        @if ($news->image)
-                                            <img src="{{ asset('storage/' . $news->image) }}"
-                                                alt="{{ $news->title }}">
-                                        @else
-                                            <img src="{{ asset('template/Dashboard/assets/img/blog/blog-1.jpg') }}"
-                                                alt="{{ $news->title }}">
-                                        @endif
-                                    </div>
-                                    <div class="post-content">
-                                        <div class="post-meta">
-                                            <span class="post-date">{{ $news->created_at->format('d M Y') }}</span>
-                                        </div>
-                                        <h3><a
-                                                href="{{ route('guest.news.show', $news->slug) }}">{{ $news->title }}</a>
-                                        </h3>
-                                        <p>{{ $news->excerpt }}</p>
-                                        <a href="{{ route('guest.news.show', $news->slug) }}"
-                                            class="btn btn-sm btn-outline-primary">
-                                            Baca Selengkapnya <i class="bi bi-arrow-right"></i>
-                                        </a>
-                                    </div>
-                                </article>
-                            @empty
-                                <div class="text-center py-5">
-                                    <i class="bi bi-shield-exclamation" style="font-size: 3rem; color: #6c757d;"></i>
-                                    <h4 class="mt-3 text-muted">Belum Ada Informasi Keamanan</h4>
-                                    <p class="text-muted">Peringatan keamanan siber akan dipublikasikan di sini ketika
-                                        tersedia.</p>
-                                </div>
-                            @endforelse
-
-                            @if ($latestNews->count() > 0)
-                                <div class="text-center mt-4">
-                                    <a href="{{ route('guest.news.index') }}" class="btn btn-primary">
-                                        Lihat Semua Berita <i class="bi bi-arrow-right ms-1"></i>
-                                    </a>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-
-                    <!-- Sidebar -->
-                    <div class="col-lg-4">
-                        <!-- Quick Actions -->
-                        <div class="widget quick-actions-widget" data-aos="fade-up" data-aos-delay="300">
-                            <h4>Aksi Cepat</h4>
-                            <div class="d-grid gap-2">
-                                <a href="{{ route('guest.create_tiket') }}" class="btn btn-danger">
-                                    <i class="bi bi-exclamation-triangle me-2"></i>Laporkan Insiden Keamanan
-                                </a>
-                                <a href="{{ route('guest.news.index') }}" class="btn btn-outline-primary">
-                                    <i class="bi bi-newspaper-me-2"></i>Lihat Semua Berita
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Contact Info -->
-                        <div class="widget contact-widget" data-aos="fade-up" data-aos-delay="400">
-                            <h4>Kontak Darurat</h4>
-                            <div class="contact-info">
-                                <p><strong>Respon Insiden 24/7</strong></p>
-                                <p><i class="bi bi-telephone me-2"></i>+62 370 XXX-XXXX</p>
-                                <p><i class="bi bi-envelope me-2"></i>incident@csirt-loteng.go.id</p>
-                                <p class="small text-muted">Untuk insiden keamanan kritis yang memerlukan respon segera
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
 
 
 

@@ -80,6 +80,21 @@ Route::middleware(['admin.auth', 'prevent.guest.admin'])->prefix('admin')->name(
     // Master data resources
     Route::resource('layanan', \App\Http\Controllers\Admin\LayananController::class);
     Route::resource('news-categories', \App\Http\Controllers\NewsCategoryController::class);
+    Route::resource('layanan-categories', \App\Http\Controllers\Admin\LayananCategoryController::class);
+
+    // API: categories by layanan (for dynamic dropdown on guest page) - moved outside admin middleware
+});
+
+// API routes accessible to guests (for dynamic dropdowns)
+Route::get('api/layanan/{layanan}/categories', function (\App\Models\MasterLayanan $layanan) {
+    return \App\Models\LayananCategory::where('layanan_id', $layanan->id)
+        ->where('is_active', true)
+        ->orderBy('name')
+        ->get(['id', 'name']);
+})->name('api.layanan.categories');
+
+// Continue admin routes
+Route::middleware(['admin.auth', 'prevent.guest.admin'])->prefix('admin')->name('admin.')->group(function () {
 
     // Admin user management
     Route::resource('admins', \App\Http\Controllers\Admin\AdminUserController::class)->except(['show']);
