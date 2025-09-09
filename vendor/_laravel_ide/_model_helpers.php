@@ -328,20 +328,10 @@ namespace App\Models {
     /**
      * App\Models\Kabupaten
      *
-     * @property \Illuminate\Support\Carbon|null $updated_at
-     * @property \Illuminate\Support\Carbon|null $created_at
-     * @property string|null $kategori
-     * @property string $nama
-     * @property int $id
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Kecamatan> $kecamatans
      * @property-read int|null $kecamatans_count
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Ticket> $tickets
      * @property-read int|null $tickets_count
-     * @method static \Illuminate\Database\Eloquent\Builder<Kabupaten>|Kabupaten whereId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Kabupaten>|Kabupaten whereNama($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Kabupaten>|Kabupaten whereKategori($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Kabupaten>|Kabupaten whereCreatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Kabupaten>|Kabupaten whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Kabupaten>|Kabupaten newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Kabupaten>|Kabupaten newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<Kabupaten>|Kabupaten query()
@@ -647,15 +637,12 @@ namespace App\Models {
      *
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
-     * @property mixed $kabupaten_id
      * @property string $nama
      * @property int $id
-     * @property-read \App\Models\Kabupaten $kabupaten
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Ticket> $tickets
      * @property-read int|null $tickets_count
      * @method static \Illuminate\Database\Eloquent\Builder<Kecamatan>|Kecamatan whereId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Kecamatan>|Kecamatan whereNama($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Kecamatan>|Kecamatan whereKabupatenId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Kecamatan>|Kecamatan whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Kecamatan>|Kecamatan whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Kecamatan>|Kecamatan newModelQuery()
@@ -2572,7 +2559,6 @@ namespace App\Models {
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property string|null $attachment_path
      * @property mixed $kecamatan_id
-     * @property mixed $kabupaten_id
      * @property \Illuminate\Support\Carbon|null $accepted_at
      * @property string|null $rejection_reason
      * @property mixed $status
@@ -2600,7 +2586,6 @@ namespace App\Models {
      * @property-read \App\Models\WorkSession $activeWorkSession
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TicketActivityLog> $activityLogs
      * @property-read int|null $activityLogs_count
-     * @property-read \App\Models\Kabupaten $kabupaten
      * @property-read \App\Models\Kecamatan $kecamatan
      * @method static \Illuminate\Database\Eloquent\Builder<Ticket>|Ticket whereId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Ticket>|Ticket whereJudul($value)
@@ -2616,7 +2601,6 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<Ticket>|Ticket whereStatus($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Ticket>|Ticket whereRejectionReason($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Ticket>|Ticket whereAcceptedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Ticket>|Ticket whereKabupatenId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Ticket>|Ticket whereKecamatanId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Ticket>|Ticket whereAttachmentPath($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Ticket>|Ticket whereCreatedAt($value)

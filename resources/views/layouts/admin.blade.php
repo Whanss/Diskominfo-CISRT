@@ -795,13 +795,6 @@
                             id="regionMenu">
                             <ul class="nav-items">
                                 <li class="nav-item">
-                                    <a class="nav-link {{ request()->routeIs('admin.kabupaten*') ? 'active' : '' }}"
-                                        href="{{ route('admin.kabupaten.index') }}">
-                                        <div class="nav-icon"><i class="fas fa-map-marker-alt"></i></div>
-                                        <span class="nav-text">Kabupaten</span>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
                                     <a class="nav-link {{ request()->routeIs('admin.kecamatan*') ? 'active' : '' }}"
                                         href="{{ route('admin.kecamatan.index') }}">
                                         <div class="nav-icon"><i class="fas fa-map-pin"></i></div>

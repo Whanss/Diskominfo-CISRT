@@ -18,7 +18,7 @@
         <thead>
             <tr>
                 <th>Nama Kecamatan</th>
-                <th>Kabupaten</th>
+
                 <th>Aksi</th>
             </tr>
         </thead>
@@ -26,7 +26,6 @@
             @foreach($kecamatans as $kecamatan)
             <tr>
                 <td>{{ $kecamatan->nama }}</td>
-                <td>{{ $kecamatan->kabupaten->nama }}</td>
                 <td>
                     <a href="{{ route('admin.kecamatan.edit', $kecamatan) }}" class="btn btn-sm btn-warning">Edit</a>
                     <form action="{{ route('admin.kecamatan.destroy', $kecamatan) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus kecamatan ini?');">

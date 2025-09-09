@@ -53,7 +53,6 @@ class TicketController extends Controller
                 'mimes:pdf,doc,docx,xls,xlsx,png,jpg,jpeg,txt',
                 'mimetypes:application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,image/png,image/jpeg,text/plain'
             ],
-            'kabupaten_id' => 'required|exists:kabupaten,id',
             'kecamatan_id' => 'required|exists:kecamatan,id',
         ], [
             // Pesan khusus berbahasa Indonesia yang ringkas
@@ -110,7 +109,7 @@ class TicketController extends Controller
 
     public function show($code_tracking)
     {
-        $ticket = Ticket::with(['layanan', 'kabupaten', 'kecamatan'])
+        $ticket = Ticket::with(['layanan', 'kecamatan'])
             ->where('code_tracking', $code_tracking)
             ->firstOrFail();
 
@@ -157,11 +156,6 @@ class TicketController extends Controller
             $query->whereDate('created_at', '<=', $request->end_date);
         }
 
-        // Filter by kabupaten
-        if ($request->filled('kabupaten_id')) {
-            $query->where('kabupaten_id', $request->kabupaten_id);
-        }
-
         // Filter by kecamatan
         if ($request->filled('kecamatan_id')) {
             $query->where('kecamatan_id', $request->kecamatan_id);
@@ -180,7 +174,6 @@ class TicketController extends Controller
         $tickets = $query->orderBy('created_at', 'desc')->paginate(2);
 
         // Get filter options
-        $kabupatenList = \App\Models\Kabupaten::orderBy('nama')->get();
         $kecamatanList = \App\Models\Kecamatan::orderBy('nama')->get();
 
         // Get statistics for each status
@@ -192,7 +185,7 @@ class TicketController extends Controller
             'completed' => Ticket::where('status', 'selesai/completed')->count(),
         ];
 
-        return view('admin.tickets.index', compact('tickets', 'kabupatenList', 'kecamatanList', 'stats'));
+        return view('admin.tickets.index', compact('tickets', 'kecamatanList', 'stats'));
     }
 
     // Admin: show individual ticket details
@@ -284,7 +277,7 @@ class TicketController extends Controller
     // Get ticket details for modal
     public function getDetails(Ticket $ticket)
     {
-        $ticket->load(['kabupaten', 'kecamatan', 'layanan']);
+        $ticket->load(['kecamatan', 'layanan']);
 
         return response()->json([
             'success' => true,

@@ -9,7 +9,7 @@ class Ticket extends Model
     protected $fillable = [
         'code_tracking', 'judul', 'nama_pelapor', 'email', 'no_hp',
         'description', 'status', 'resolved_at', 'resolution_category', 'resolved_by',
-        'kabupaten_id', 'kecamatan_id', 'accepted_at', 'processing_started_at',
+        'kecamatan_id', 'accepted_at', 'processing_started_at',
         'assigned_to', 'resolution_notes', 'attachment_path', 'layanan_id', 'layanan_category_id',
         // legacy fields for backward compatibility
         'layanan_type', 'layanan_custom', 'rejection_reason'
@@ -103,10 +103,7 @@ class Ticket extends Model
         ];
     }
 
-    public function kabupaten()
-    {
-        return $this->belongsTo(Kabupaten::class, 'kabupaten_id');
-    }
+
 
     public function kecamatan()
     {

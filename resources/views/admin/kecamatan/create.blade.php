@@ -23,15 +23,7 @@
             <label for="nama" class="form-label">Nama Kecamatan</label>
             <input type="text" class="form-control" id="nama" name="nama" value="{{ old('nama') }}" required>
         </div>
-        <div class="mb-3">
-            <label for="kabupaten_id" class="form-label">Kabupaten</label>
-            <select class="form-control" id="kabupaten_id" name="kabupaten_id" required>
-                <option value="">Pilih Kabupaten</option>
-                @foreach($kabupatens as $kabupaten)
-                    <option value="{{ $kabupaten->id }}" {{ old('kabupaten_id') == $kabupaten->id ? 'selected' : '' }}>{{ $kabupaten->nama }}</option>
-                @endforeach
-            </select>
-        </div>
+
         <button type="submit" class="btn btn-primary">Simpan</button>
         <a href="{{ route('admin.kecamatan.index') }}" class="btn btn-secondary">Batal</a>
     </form>

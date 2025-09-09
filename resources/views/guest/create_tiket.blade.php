@@ -757,27 +757,7 @@
                             <div class="character-count" id="no_hp-count">0/15</div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="kabupaten" class="form-label">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
-                                    </path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
-                                Kabupaten/Kota <span class="required">*</span>
-                            </label>
-                            <select class="form-control" id="kabupaten" name="kabupaten_id" required>
-                                <option value="">Pilih Kabupaten/Kota</option>
-                                @foreach ($kabupatens as $kabupaten)
-                                    <option value="{{ $kabupaten->id }}"
-                                        {{ old('kabupaten_id') == $kabupaten->id ? 'selected' : '' }}>
-                                        {{ $kabupaten->nama }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+
 
                         <div class="form-group">
                             <label for="kecamatan" class="form-label">
@@ -811,7 +791,9 @@
                                             </svg>
                                         </div>
                                         <div class="dropdown-options" id="kecamatan-options">
-                                            <div class="dropdown-option disabled">Pilih kabupaten terlebih dahulu</div>
+                                            @foreach($kecamatans as $kec)
+                                                <div class="dropdown-option {{ old('kecamatan_id') == $kec->id ? 'selected' : '' }}" data-value="{{ $kec->id }}">{{ $kec->nama }}</div>
+                                            @endforeach
                                         </div>
                                     </div>
                                 </div>
@@ -1120,65 +1102,21 @@
                 }
             });
 
-            // Kabupaten change handler
-            kabupatenSelect.addEventListener('change', function() {
-                const kabupatenId = this.value;
+            // Initialize kecamatan options from server-rendered list
+            allKecamatanData = Array.from(document.querySelectorAll('#kecamatan-options .dropdown-option'))
+                .map(opt => ({ id: opt.dataset.value, nama: opt.textContent.trim() }));
+            kecamatanInput.classList.remove('blurred');
 
-                // Reset kecamatan
-                allKecamatanData = [];
-                kecamatanHidden.value = '';
-                kecamatanInput.querySelector('.dropdown-placeholder').textContent = 'Pilih Kecamatan';
-                kecamatanInput.classList.remove('has-value');
-                kecamatanOptions.innerHTML =
-                    '<div class="dropdown-option disabled">Pilih kabupaten terlebih dahulu</div>';
-                closeDropdown();
-
-                // Blur kecamatan dropdown if no kabupaten selected
-                if (!kabupatenId) {
-                    kecamatanInput.classList.add('blurred');
-                    return;
-                } else {
-                    kecamatanInput.classList.remove('blurred');
+            // Restore old value if exists
+            (function() {
+                const oldValue = "{{ old('kecamatan_id') }}";
+                if (oldValue) {
+                    const selected = allKecamatanData.find(k => k.id == oldValue);
+                    if (selected) {
+                        selectKecamatan(selected.id, selected.nama);
+                    }
                 }
-
-                // Show loading
-                kecamatanLoading.classList.add('show');
-                kecamatanOptions.innerHTML = '<div class="dropdown-option disabled">Loading...</div>';
-
-                fetch(`/api/kecamatan/${kabupatenId}`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        allKecamatanData = data;
-                        renderKecamatanOptions(data);
-
-                        // Auto-select if there's an old value
-                        const oldValue = "{{ old('kecamatan_id') }}";
-                        if (oldValue) {
-                            const selectedKecamatan = data.find(k => k.id == oldValue);
-                            if (selectedKecamatan) {
-                                selectKecamatan(selectedKecamatan.id, selectedKecamatan.nama);
-                            }
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        kecamatanOptions.innerHTML =
-                            '<div class="dropdown-option disabled">Error loading data</div>';
-                    })
-                    .finally(() => {
-                        kecamatanLoading.classList.remove('show');
-                    });
-            });
-
-            // Initialize kecamatan if kabupaten is already selected (for old input)
-            if (kabupatenSelect.value) {
-                kabupatenSelect.dispatchEvent(new Event('change'));
-            }
+            })();
         });
 
         // Tab switching functionality

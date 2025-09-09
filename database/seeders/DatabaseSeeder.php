@@ -23,8 +23,8 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // Seed geographical data (kabupaten and kecamatan)
-        $this->call(kabKecSeeder::class);
+        // Seed kecamatan data only, remove kabupaten seeder call
+        $this->call(Kecamatanseeder::class);
 
         // Seed news categories first
         $this->call(NewsCategorySeeder::class);
