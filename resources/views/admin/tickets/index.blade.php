@@ -958,18 +958,7 @@
                             </select>
                         </div>
 
-                        <div class="filter-group">
-                            <label class="filter-label">Kabupaten</label>
-                            <select name="kabupaten_id" class="filter-select">
-                                <option value="">All Kabupaten</option>
-                                @foreach ($kabupatenList as $kabupaten)
-                                    <option value="{{ $kabupaten->id }}"
-                                        {{ request('kabupaten_id') == $kabupaten->id ? 'selected' : '' }}>
-                                        {{ $kabupaten->nama }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+
 
                         <div class="filter-group">
                             <label class="filter-label">Kecamatan</label>

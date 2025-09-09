@@ -171,7 +171,6 @@
                                 </p>
                                 <p><strong>Created:</strong> {{ $ticket->created_at->format('d M Y H:i') }}</p>
                                 <p><strong>Last Updated:</strong> {{ $ticket->updated_at->format('d M Y H:i') }}</p>
-                                <p><strong>Kabupaten:</strong> {{ $ticket->kabupaten->nama ?? 'N/A' }}</p>
                                 <p><strong>Kecamatan:</strong> {{ $ticket->kecamatan->nama ?? 'N/A' }}</p>
                             </div>
                         </div>

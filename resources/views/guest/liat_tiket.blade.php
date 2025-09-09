@@ -807,15 +807,7 @@
                                             <span>{{ $ticket->no_hp }}</span>
                                         </div>
                                     @endif
-                                    @if ($ticket->kabupaten)
-                                        <div class="reporter-meta-item">
-                                            <svg fill="currentColor" viewBox="0 0 24 24">
-                                                <path
-                                                    d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-                                            </svg>
-                                            <span>{{ $ticket->kabupaten->nama }}</span>
-                                        </div>
-                                    @endif
+
                                     @if ($ticket->kecamatan)
                                         <div class="reporter-meta-item">
                                             <svg fill="currentColor" viewBox="0 0 24 24">
@@ -861,7 +853,7 @@
                         <div class="description-content">
                             <div style="display:grid; gap:14px;">
                                 <div>
-                                    <div style="font-weight:600; color:#4a148c; margin-bottom:6px;">Deskripsi Masalah</div>
+                                    <div style="font-weight:600; color:#4a148c; margin-bottom:1px;">Deskripsi Masalah</div>
                                     <div>{{ $ticket->description }}</div>
                                 </div>
                                 <div>
@@ -872,9 +864,12 @@
                                             {{ $ticket->layanan->name }}
                                             @if ($ticket->layananCategory)
                                                 <br><small style="color:#444; font-weight:600;">Kategori: {{ $ticket->layananCategory->name }}</small>
+                                                @if ($ticket->layananCategory->description)
+                                                    <br><small style="color:#666; font-weight:400;">Keterangan: {{ $ticket->layananCategory->description }}</small>
+                                                @endif
                                             @endif
                                             @if ($ticket->layanan->description)
-                                                <br><small style="color:#666; font-weight:400;">{{ $ticket->layanan->description }}</small>
+                                                {{-- Removed layanan description as per user request --}}
                                             @endif
                                         @elseif ($ticket->layanan_type === 'other' && $ticket->layanan_custom)
                                             {{ $ticket->layanan_custom }}
