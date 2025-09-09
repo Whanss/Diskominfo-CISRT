@@ -87,7 +87,7 @@ Route::get('api/layanan/{layanan}/categories', function (\App\Models\MasterLayan
     return \App\Models\LayananCategory::where('layanan_id', $layanan->id)
         ->where('is_active', true)
         ->orderBy('name')
-        ->get(['id', 'name']);
+        ->get(['id', 'name', 'description']);
 })->name('api.layanan.categories');
 
 // Continue admin routes

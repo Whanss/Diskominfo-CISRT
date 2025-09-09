@@ -47,7 +47,7 @@
 
         .main-container {
             width: 100%;
-            max-width: 600px;
+            max-width: 1100px;
             margin: 0 auto;
         }
 
@@ -214,6 +214,24 @@
 
         .form-group {
             margin-bottom: 1.5rem;
+        }
+
+        /* Grid 2 kolom untuk form */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1.25rem 1.25rem;
+            /* row gap, column gap */
+        }
+
+        .col-span-2 {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .form-label {
@@ -659,184 +677,194 @@
                         enctype="multipart/form-data">
                         @csrf
 
-                        <div class="form-group">
-                            <label for="judul" class="form-label">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">
-                                    </path>
-                                </svg>
-                                Judul Tiket <span class="required">*</span>
-                            </label>
-                            <input type="text" class="form-control" id="judul" name="judul"
-                                value="{{ old('judul') }}" required maxlength="100"
-                                placeholder="Contoh: Masalah login aplikasi">
-                            <div class="character-count" id="judul-count">0/100</div>
-                        </div>
+                        <div class="form-grid">
 
-                        <div class="form-group">
-                            <label for="nama_pelapor" class="form-label">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                </svg>
-                                Nama Lengkap <span class="required">*</span>
-                            </label>
-                            <input type="text" class="form-control" id="nama_pelapor" name="nama_pelapor"
-                                value="{{ old('nama_pelapor') }}" required maxlength="50"
-                                placeholder="Masukkan nama lengkap Anda">
-                            <div class="character-count" id="nama_pelapor-count">0/50</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="email" class="form-label">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
-                                    </path>
-                                </svg>
-                                Email <span class="required">*</span>
-                            </label>
-                            <input type="email" class="form-control" id="email" name="email"
-                                value="{{ old('email') }}" required placeholder="contoh@email.com">
-                        </div>
-                        <!-- Layanan (jenis insiden) - berasal dari master layanan admin -->
-                        <div class="form-group">
-                            <label for="layanan_id" class="form-label">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 6h16M4 12h16M4 18h16" />
-                                </svg>
-                                Jenis Layanan <span class="required">*</span>
-                            </label>
-                            <select class="form-control" id="layanan_id" name="layanan_id" required>
-                                <option value="">Pilih layanan</option>
-                                @foreach ($layanan as $l)
-                                    <option value="{{ $l->id }}"
-                                        {{ old('layanan_id') == $l->id ? 'selected' : '' }}>{{ $l->name }}</option>
-                                @endforeach
-                            </select>
-                            <div id="kategori-inline" style="margin-top:.5rem; color:#6b7280; display:none;">
-                                Kategori: <span id="kategori-inline-name"></span>
+                            <div class="form-group col-span-2">
+                                <label for="judul" class="form-label">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">
+                                        </path>
+                                    </svg>
+                                    Judul Tiket <span class="required">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="judul" name="judul"
+                                    value="{{ old('judul') }}" required maxlength="100"
+                                    placeholder="Contoh: Masalah login aplikasi">
+                                <div class="character-count" id="judul-count">0/100</div>
                             </div>
-                        </div>
 
-                        <!-- Kategori Layanan (dinamis berdasarkan layanan) -->
-                        <div class="form-group" id="kategori-wrapper">
-                            <label for="layanan_category_id" class="form-label">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 6h16M7 12h10M10 18h4" />
-                                </svg>
-                                Kategori Layanan <span class="required" id="kategori-required"
-                                    style="display:none;">*</span>
-                            </label>
-                            <select class="form-control" id="layanan_category_id" name="layanan_category_id" disabled style="background-color: #f9fafb; color: #6b7280; opacity: 0.6;">
-                                <option value="">Pilih jenis layanan terlebih dahulu</option>
-                            </select>
-                            @error('layanan_category_id')
-                                <div class="alert alert-danger" style="margin-top:.5rem;">{{ $message }}</div>
-                            @enderror
-                        </div>
+                            <div class="form-group">
+                                <label for="nama_pelapor" class="form-label">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                    </svg>
+                                    Nama Lengkap <span class="required">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="nama_pelapor" name="nama_pelapor"
+                                    value="{{ old('nama_pelapor') }}" required maxlength="50"
+                                    placeholder="Masukkan nama lengkap Anda">
+                                <div class="character-count" id="nama_pelapor-count">0/50</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email" class="form-label">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                        </path>
+                                    </svg>
+                                    Email <span class="required">*</span>
+                                </label>
+                                <input type="email" class="form-control" id="email" name="email"
+                                    value="{{ old('email') }}" required placeholder="contoh@email.com">
+                            </div>
+                            <!-- Layanan (jenis insiden) - berasal dari master layanan admin -->
+                            <div class="form-group">
+                                <label for="layanan_id" class="form-label">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 6h16M4 12h16M4 18h16" />
+                                    </svg>
+                                    Jenis Layanan <span class="required">*</span>
+                                </label>
+                                <select class="form-control" id="layanan_id" name="layanan_id" required>
+                                    <option value="">Pilih layanan</option>
+                                    @foreach ($layanan as $l)
+                                        <option value="{{ $l->id }}"
+                                            {{ old('layanan_id') == $l->id ? 'selected' : '' }}>{{ $l->name }}</option>
+                                    @endforeach
+                                </select>
+                                <div id="kategori-inline" style="margin-top:.5rem; color:#6b7280; display:none;">
+                                    Kategori: <span id="kategori-inline-name"></span>
+                                </div>
+                            </div>
+
+                            <!-- Kategori Layanan (dinamis berdasarkan layanan) -->
+                            <div class="form-group" id="kategori-wrapper">
+                                <label for="layanan_category_id" class="form-label">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 6h16M7 12h10M10 18h4" />
+                                    </svg>
+                                    Kategori Serangan <span class="required" id="kategori-required"
+                                        style="display:none;">*</span>
+                                </label>
+                                <select class="form-control" id="layanan_category_id" name="layanan_category_id" disabled
+                                    style="background-color: #f9fafb; color: #6b7280; opacity: 0.6;">
+                                    <option value="">Pilih jenis layanan terlebih dahulu</option>
+                                </select>
+                                @error('layanan_category_id')
+                                    <div class="alert alert-danger" style="margin-top:.5rem;">{{ $message }}</div>
+                                @enderror
+                                <!-- Deskripsi kategori yang dipilih akan muncul di sini -->
+                                <div id="kategori-description" class="section-description"
+                                    style="display:none; margin-top:.5rem;"></div>
+                            </div>
 
 
-                        <div class="form-group">
-                            <label for="nomor_pelapor" class="form-label">
-                                <svg width="16" height="16" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24" class="inline-block mr-2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z">
-                                    </path>
-                                </svg>
-                                Nomor Aktif <span class="required">*</span>
-                            </label>
-                            <input type="text" class="form-control" id="no_hp" name="no_hp"
-                                value="{{ old('no_hp') }}" required maxlength="15" pattern="[0-9]*"
-                                inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                placeholder="Masukkan nomor telepon atau WhatsApp Anda">
-                            <div class="character-count" id="no_hp-count">0/15</div>
-                        </div>
+                            <div class="form-group">
+                                <label for="nomor_pelapor" class="form-label">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24" class="inline-block mr-2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z">
+                                        </path>
+                                    </svg>
+                                    Nomor Aktif <span class="required">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="no_hp" name="no_hp"
+                                    value="{{ old('no_hp') }}" required maxlength="15" pattern="[0-9]*"
+                                    inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                    placeholder="Masukkan nomor telepon atau WhatsApp Anda">
+                                <div class="character-count" id="no_hp-count">0/15</div>
+                            </div>
 
 
 
-                        <div class="form-group">
-                            <label for="kecamatan" class="form-label">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
-                                    </path>
-                                </svg>
-                                Kecamatan <span class="required">*</span>
-                            </label>
-                            <div style="position: relative;">
-                                <!-- Replaced simple select with searchable dropdown -->
-                                <div class="searchable-dropdown" id="kecamatan-dropdown">
-                                    <input type="hidden" id="kecamatan" name="kecamatan_id" required>
-                                    <div class="dropdown-input" id="kecamatan-input" tabindex="0">
-                                        <span class="dropdown-placeholder">Pilih Kecamatan</span>
-                                        <svg class="dropdown-arrow" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M19 9l-7 7-7-7"></path>
-                                        </svg>
-                                    </div>
-                                    <div class="dropdown-menu" id="kecamatan-menu">
-                                        <div class="dropdown-search">
-                                            <input type="text" id="kecamatan-search" placeholder="Cari kecamatan..."
-                                                autocomplete="off">
-                                            <svg class="search-icon" fill="none" stroke="currentColor"
+                            <div class="form-group">
+                                <label for="kecamatan" class="form-label">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                        </path>
+                                    </svg>
+                                    Kecamatan <span class="required">*</span>
+                                </label>
+                                <div style="position: relative;">
+                                    <!-- Replaced simple select with searchable dropdown -->
+                                    <div class="searchable-dropdown" id="kecamatan-dropdown">
+                                        <input type="hidden" id="kecamatan" name="kecamatan_id" required>
+                                        <div class="dropdown-input" id="kecamatan-input" tabindex="0">
+                                            <span class="dropdown-placeholder">Pilih Kecamatan</span>
+                                            <svg class="dropdown-arrow" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                                    d="M19 9l-7 7-7-7"></path>
                                             </svg>
                                         </div>
-                                        <div class="dropdown-options" id="kecamatan-options">
-                                            @foreach($kecamatans as $kec)
-                                                <div class="dropdown-option {{ old('kecamatan_id') == $kec->id ? 'selected' : '' }}" data-value="{{ $kec->id }}">{{ $kec->nama }}</div>
-                                            @endforeach
+                                        <div class="dropdown-menu" id="kecamatan-menu">
+                                            <div class="dropdown-search">
+                                                <input type="text" id="kecamatan-search"
+                                                    placeholder="Cari kecamatan..." autocomplete="off">
+                                                <svg class="search-icon" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                                </svg>
+                                            </div>
+                                            <div class="dropdown-options" id="kecamatan-options">
+                                                @foreach ($kecamatans as $kec)
+                                                    <div class="dropdown-option {{ old('kecamatan_id') == $kec->id ? 'selected' : '' }}"
+                                                        data-value="{{ $kec->id }}">{{ $kec->nama }}</div>
+                                                @endforeach
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="loading-overlay" id="kecamatan-loading">
-                                    <div class="spinner"></div>
+                                    <div class="loading-overlay" id="kecamatan-loading">
+                                        <div class="spinner"></div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <!-- Attachment -->
-                        <div class="form-group">
-                            <label for="attachment" class="form-label">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 7v10a5 5 0 11-10 0V7a3 3 0 016 0v9a1 1 0 11-2 0V7" />
-                                </svg>
-                                Lampiran (opsional)
-                            </label>
-                            <input type="file" class="form-control" id="attachment" name="attachment"
-                                accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.txt">
-                            <small class="text-muted">Maks 5MB. Format: pdf, doc, docx, xls, xlsx, png, jpg, jpeg,
-                                txt</small>
-                        </div>
+                            <!-- Attachment -->
+                            <div class="form-group col-span-2">
+                                <label for="attachment" class="form-label">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 7v10a5 5 0 11-10 0V7a3 3 0 016 0v9a1 1 0 11-2 0V7" />
+                                    </svg>
+                                    Lampiran (opsional)
+                                </label>
+                                <input type="file" class="form-control" id="attachment" name="attachment"
+                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.txt">
+                                <small class="text-muted">Maks 5MB. Format: pdf, doc, docx, xls, xlsx, png, jpg, jpeg,
+                                    txt</small>
+                            </div>
 
-                        <div class="form-group">
-                            <label for="description" class="form-label">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                                    </path>
-                                </svg>
-                                Deskripsi Masalah <span class="required">*</span>
-                            </label>
-                            <textarea class="form-control" id="description" name="description" rows="4" required maxlength="500"
-                                placeholder="Jelaskan masalah yang Anda alami secara detail...">{{ old('description') }}</textarea>
-                            <div class="character-count" id="description-count">0/500</div>
-                        </div>
-                        <button type="submit" class="btn" id="submitBtn">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                            </svg>
-                            <span id="submitText">Buat Tiket</span>
-                        </button>
+                            <div class="form-group col-span-2">
+                                <label for="description" class="form-label">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                        </path>
+                                    </svg>
+                                    Deskripsi Masalah <span class="required">*</span>
+                                </label>
+                                <textarea class="form-control" id="description" name="description" rows="4" required maxlength="500"
+                                    placeholder="Jelaskan masalah yang Anda alami secara detail...">{{ old('description') }}</textarea>
+                                <div class="character-count" id="description-count">0/500</div>
+                            </div>
+                            <div class="col-span-2">
+                                <button type="submit" class="btn" id="submitBtn">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                    </svg>
+                                    <span id="submitText">Buat Tiket</span>
+                                </button>
+                            </div>
+                        </div> <!-- end .form-grid -->
                     </form>
 
                     <script>
@@ -963,7 +991,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const kabupatenSelect = document.getElementById('kabupaten');
+            // const kabupatenSelect = document.getElementById('kabupaten'); // removed: no longer used
             const kecamatanDropdown = document.getElementById('kecamatan-dropdown');
             const kecamatanInput = document.getElementById('kecamatan-input');
             const kecamatanMenu = document.getElementById('kecamatan-menu');
@@ -1104,7 +1132,10 @@
 
             // Initialize kecamatan options from server-rendered list
             allKecamatanData = Array.from(document.querySelectorAll('#kecamatan-options .dropdown-option'))
-                .map(opt => ({ id: opt.dataset.value, nama: opt.textContent.trim() }));
+                .map(opt => ({
+                    id: opt.dataset.value,
+                    nama: opt.textContent.trim()
+                }));
             kecamatanInput.classList.remove('blurred');
 
             // Restore old value if exists
@@ -1137,6 +1168,7 @@
             const kategoriRequiredMark = document.getElementById('kategori-required');
             const kategoriInline = document.getElementById('kategori-inline');
             const kategoriInlineName = document.getElementById('kategori-inline-name');
+            const kategoriDescription = document.getElementById('kategori-description');
 
             function resetKategori() {
                 kategoriSelect.innerHTML = '<option value="">Pilih jenis layanan terlebih dahulu</option>';
@@ -1148,6 +1180,10 @@
                 kategoriRequiredMark.style.display = 'none';
                 kategoriInline.style.display = 'none';
                 kategoriInlineName.textContent = '';
+                if (kategoriDescription) {
+                    kategoriDescription.style.display = 'none';
+                    kategoriDescription.textContent = '';
+                }
             }
 
             function loadCategories(layananId) {
@@ -1179,7 +1215,8 @@
 
                         // Enable the select and populate options
                         kategoriSelect.disabled = false;
-                        kategoriSelect.style.backgroundColor = '#ffffff'; // Set background to white when enabled
+                        kategoriSelect.style.backgroundColor =
+                            '#ffffff'; // Set background to white when enabled
                         kategoriSelect.style.color = '#000000'; // Set text color to black when enabled
                         kategoriSelect.style.opacity = '1'; // Make it fully visible when enabled
                         kategoriSelect.innerHTML = '<option value="">Pilih kategori</option>';
@@ -1189,6 +1226,8 @@
                             const opt = document.createElement('option');
                             opt.value = item.id;
                             opt.textContent = item.name;
+                            // Simpan deskripsi pada data attribute agar mudah diakses saat dipilih
+                            opt.setAttribute('data-description', item.description || '');
                             kategoriSelect.appendChild(opt);
                         }
 
@@ -1196,10 +1235,17 @@
                         const oldVal = "{{ old('layanan_category_id') }}";
                         if (oldVal) {
                             kategoriSelect.value = oldVal;
-                            const selectedOption = Array.from(kategoriSelect.options).find(o => o.value == oldVal);
+                            const selectedOption = Array.from(kategoriSelect.options).find(o => o.value ==
+                                oldVal);
                             if (selectedOption) {
                                 kategoriInline.style.display = 'block';
                                 kategoriInlineName.textContent = selectedOption.textContent;
+                                // Tampilkan deskripsi jika ada (saat restore)
+                                const desc = selectedOption.getAttribute('data-description');
+                                if (kategoriDescription) {
+                                    kategoriDescription.style.display = desc ? 'block' : 'none';
+                                    kategoriDescription.textContent = desc || '';
+                                }
                             }
                         }
                     })
@@ -1225,9 +1271,19 @@
                 if (this.value) {
                     kategoriInline.style.display = '';
                     kategoriInlineName.textContent = selected.textContent;
+                    // Tampilkan deskripsi kategori terpilih (jika tersedia)
+                    const desc = selected.getAttribute('data-description');
+                    if (kategoriDescription) {
+                        kategoriDescription.style.display = desc ? 'block' : 'none';
+                        kategoriDescription.textContent = desc || '';
+                    }
                 } else {
                     kategoriInline.style.display = 'none';
                     kategoriInlineName.textContent = '';
+                    if (kategoriDescription) {
+                        kategoriDescription.style.display = 'none';
+                        kategoriDescription.textContent = '';
+                    }
                 }
             });
 

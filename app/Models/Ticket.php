@@ -109,4 +109,12 @@ class Ticket extends Model
     {
         return $this->belongsTo(Kecamatan::class, 'kecamatan_id');
     }
+
+    // Removed kabupaten relationship as it is no longer needed
+    /*
+    public function kabupaten()
+    {
+        return $this->belongsTo(Kabupaten::class, 'kabupaten_id');
+    }
+    */
 }

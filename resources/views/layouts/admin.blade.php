@@ -781,9 +781,9 @@
                     </li>
                     <li class="nav-item">
                         <button type="button"
-                            class="nav-link {{ request()->routeIs('admin.kabupaten*') || request()->routeIs('admin.kecamatan*') ? 'active' : '' }} {{ request()->routeIs('admin.kabupaten*') || request()->routeIs('admin.kecamatan*') ? '' : 'collapsed' }}"
+                            class="nav-link {{ request()->routeIs('admin.kecamatan*') ? 'active' : '' }} {{ request()->routeIs('admin.kecamatan*') ? '' : 'collapsed' }}"
                             data-bs-toggle="collapse" data-bs-target="#regionMenu"
-                            aria-expanded="{{ request()->routeIs('admin.kabupaten*') || request()->routeIs('admin.kecamatan*') ? 'true' : 'false' }}"
+                            aria-expanded="{{ request()->routeIs('admin.kecamatan*') ? 'true' : 'false' }}"
                             aria-controls="regionMenu">
                             <div class="nav-icon">
                                 <i class="fas fa-map"></i>
