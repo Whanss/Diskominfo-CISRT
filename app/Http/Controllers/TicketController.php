@@ -140,7 +140,7 @@ class TicketController extends Controller
     // Admin: list all tickets with filtering
     public function adminIndex(Request $request)
     {
-        $query = Ticket::with(['kabupaten', 'kecamatan', 'layanan']);
+        $query = Ticket::with(['kecamatan', 'layanan']);
 
         // Filter by status
         if ($request->filled('status') && $request->status !== 'all') {
@@ -445,7 +445,7 @@ class TicketController extends Controller
     {
         // Build query for accepted tickets with search and pagination
         $query = Ticket::where('status', 'diterima/approved')
-            ->with(['layanan', 'kabupaten', 'kecamatan']);
+            ->with(['layanan', 'kecamatan']);
 
         // Search functionality
         if ($request->filled('search')) {

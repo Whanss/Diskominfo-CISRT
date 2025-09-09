@@ -1062,12 +1062,6 @@
                                             </div>
                                         </div>
                                     @endif
-                                    @if ($ticket->kabupaten)
-                                        <div class="meta-item">
-                                            <div class="meta-label">Kabupaten</div>
-                                            <div class="meta-value">{{ $ticket->kabupaten->nama }}</div>
-                                        </div>
-                                    @endif
                                     @if ($ticket->kecamatan)
                                         <div class="meta-item">
                                             <div class="meta-label">Kecamatan</div>

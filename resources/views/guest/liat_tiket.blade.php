@@ -1210,13 +1210,6 @@
                             Tindakan
                         </h3>
                         <div class="action-buttons">
-                            <button class="btn btn-primary" onclick="window.print()">
-                                <svg fill="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z" />
-                                </svg>
-                                Cetak Tiket
-                            </button>
                             <a href="/guest/create_tiket" class="btn btn-secondary">
                                 <svg fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />

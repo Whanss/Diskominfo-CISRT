@@ -2485,10 +2485,7 @@
                         <div class="ticket-detail-label">Tanggal Dibuat</div>
                         <div class="ticket-detail-value">${new Date(ticket.created_at).toLocaleString('id-ID')}</div>
                     </div>
-                    <div class="ticket-detail-item">
-                        <div class="ticket-detail-label">Kabupaten</div>
-                        <div class="ticket-detail-value">${ticket.kabupaten?.nama || '-'}</div>
-                    </div>
+
                     <div class="ticket-detail-item">
                         <div class="ticket-detail-label">Kecamatan</div>
                         <div class="ticket-detail-value">${ticket.kecamatan?.nama || '-'}</div>
