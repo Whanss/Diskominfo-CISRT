@@ -255,16 +255,20 @@
                             </li>
                         </ul>
                     </li>
-                    <li><a href="{{ route('guest.news.index') }}">Berita Terkini</a></li>
                     <li class="dropdown">
-                        <a href="#"><span>Event</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                        <a href="#"><span>Informasi</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
                         <ul>
-                            <li><a href="{{ route('guest.events.index') }}">Agenda</a></li>
+                            <li><a href="{{ route('guest.news.index') }}">Berita</a></li>
+                            <li class="dropdown">
+                                <a href="#"><span>Event</span> <i
+                                        class="bi bi-chevron-right toggle-right"></i></a>
+                                <ul>
+                                    <li><a href="{{ route('guest.events.index') }}">Agenda</a></li>
+                                </ul>
+                            </li>
                         </ul>
                     </li>
                     <li><a href="{{ route('guest.guest_dashboard') }}#about">Tentang Kami</a></li>
-
-
                 </ul>
             </nav>
 

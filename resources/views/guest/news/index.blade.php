@@ -512,13 +512,15 @@
     <!-- Events/Agenda Section (Top of News) -->
     <section class="py-5" style="padding-bottom: 0 !important;">
         <div class="container">
-            @if(isset($eventsTop) && $eventsTop->count())
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h2 class="fw-bold mb-0">Agenda Terdekat</h2>
-                    <a href="{{ route('guest.events.index') }}" class="btn btn-outline-primary btn-sm">Lihat semua</a>
-                </div>
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h2 class="fw-bold mb-0">Event Terbaru</h2>
+                <a href="{{ route('guest.events.index') }}" class="btn btn-outline-primary btn-sm">Lihat event
+                    selengkapnya</a>
+            </div>
+
+            @if (isset($eventsTop) && $eventsTop->count())
                 <div class="row gy-4">
-                    @foreach($eventsTop as $event)
+                    @foreach ($eventsTop as $event)
                         <div class="col-lg-4 col-md-6">
                             <div class="card h-100 shadow-sm">
                                 <div class="card-body d-flex flex-column">
@@ -527,11 +529,14 @@
                                         <i class="bi bi-calendar-event me-1"></i>
                                         {{ optional($event->start_at)->format('d M Y H:i') }}
                                     </div>
-                                    <div class="text-muted small mb-2">
-                                        <i class="bi bi-geo-alt me-1"></i> {{ $event->location }}
-                                    </div>
+                                    @if (!empty($event->location))
+                                        <div class="text-muted small mb-2">
+                                            <i class="bi bi-geo-alt me-1"></i> {{ $event->location }}
+                                        </div>
+                                    @endif
                                     <p class="text-secondary flex-grow-1">{{ Str::limit($event->summary, 100) }}</p>
-                                    <a href="{{ route('guest.events.show', $event->slug) }}" class="btn btn-primary mt-auto">
+                                    <a href="{{ route('guest.events.show', $event->slug) }}"
+                                        class="btn btn-primary mt-auto">
                                         Lihat Agenda
                                     </a>
                                 </div>
@@ -539,13 +544,23 @@
                         </div>
                     @endforeach
                 </div>
+            @else
+                <div class="text-center py-5">
+                    <i class="bi bi-calendar-x" style="font-size: 3rem; color: #cbd5e0;"></i>
+                    <h5 class="mt-3 text-muted">Belum ada event terbaru</h5>
+                    <p class="text-muted">Pantau halaman agenda untuk informasi selanjutnya.</p>
+                </div>
             @endif
         </div>
     </section>
 
     <!-- News Section -->
-    <section class="py-5">
+    <section class="py-5" style="padding-bottom: 0 !important;">
         <div class="container">
+             <div class="d-flex align-items-center justify-content-between mb-3">
+                <h2 class="fw-bold mb-0">Berita</h2>
+
+            </div>
             @if (request('search') || request('category'))
                 <div class="row mb-4">
                     <div class="col-12">
