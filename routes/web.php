@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminController;
 // use App\Http\Controllers\KabupatenController;
 use App\Http\Controllers\KecamatanController;
 use App\Http\Controllers\LayananController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\NewsController as AdminNewsController;
 use App\Http\Controllers\NewsController as GuestNewsController;
 // use App\Models\Kabupaten;
@@ -38,6 +39,10 @@ Route::middleware(['prevent.admin.guest'])->group(function () {
     // News routes for guests
     Route::get('berita', [GuestNewsController::class, 'guestIndex'])->name('guest.news.index');
     Route::get('berita/{slug}', [GuestNewsController::class, 'guestShow'])->name('guest.news.show');
+
+    // Events/Agenda routes for guests
+    Route::get('agenda', [EventController::class, 'guestIndex'])->name('guest.events.index');
+    Route::get('agenda/{slug}', [EventController::class, 'guestShow'])->name('guest.events.show');
 });
 
 // Admin Authentication Routes (not protected - admins need access when not logged in)
@@ -74,6 +79,7 @@ Route::middleware(['admin.auth', 'prevent.guest.admin'])->prefix('admin')->name(
     Route::resource('kecamatan', KecamatanController::class);
     // Route::resource('layanan', LayananController::class); // disabled: using Master Layanan module
     Route::resource('news', AdminNewsController::class);
+    Route::resource('events', EventController::class);
     // Master data resources
     Route::resource('layanan', \App\Http\Controllers\Admin\LayananController::class);
     Route::resource('news-categories', \App\Http\Controllers\NewsCategoryController::class);

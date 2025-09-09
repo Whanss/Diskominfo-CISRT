@@ -509,6 +509,40 @@
         </div>
     </section>
 
+    <!-- Events/Agenda Section (Top of News) -->
+    <section class="py-5" style="padding-bottom: 0 !important;">
+        <div class="container">
+            @if(isset($eventsTop) && $eventsTop->count())
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h2 class="fw-bold mb-0">Agenda Terdekat</h2>
+                    <a href="{{ route('guest.events.index') }}" class="btn btn-outline-primary btn-sm">Lihat semua</a>
+                </div>
+                <div class="row gy-4">
+                    @foreach($eventsTop as $event)
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title mb-2">{{ $event->title }}</h5>
+                                    <div class="text-muted small mb-2">
+                                        <i class="bi bi-calendar-event me-1"></i>
+                                        {{ optional($event->start_at)->format('d M Y H:i') }}
+                                    </div>
+                                    <div class="text-muted small mb-2">
+                                        <i class="bi bi-geo-alt me-1"></i> {{ $event->location }}
+                                    </div>
+                                    <p class="text-secondary flex-grow-1">{{ Str::limit($event->summary, 100) }}</p>
+                                    <a href="{{ route('guest.events.show', $event->slug) }}" class="btn btn-primary mt-auto">
+                                        Lihat Agenda
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </div>
+    </section>
+
     <!-- News Section -->
     <section class="py-5">
         <div class="container">
