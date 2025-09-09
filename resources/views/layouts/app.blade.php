@@ -256,7 +256,13 @@
                         </ul>
                     </li>
                     <li><a href="{{ route('guest.news.index') }}">Berita Terkini</a></li>
-                      <li><a href="{{ route('guest.guest_dashboard') }}#about">Tentang Kami</a></li>
+                    <li class="dropdown">
+                        <a href="#"><span>Event</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                        <ul>
+                            <li><a href="{{ route('guest.events.index') }}">Agenda</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="{{ route('guest.guest_dashboard') }}#about">Tentang Kami</a></li>
 
 
                 </ul>
@@ -285,6 +291,15 @@
                     <li><a href="{{ route('guest.guest_dashboard') }}#about">Tentang Kami</a></li>
                     <li><a href="{{ route('guest.guest_dashboard') }}#services">Layanan</a></li>
                     <li><a href="{{ route('guest.news.index') }}">Berita Terkini</a></li>
+                    <li class="mobile-dropdown">
+                        <a href="#" class="mobile-dropdown-toggle">Event <i
+                                class="bi bi-chevron-down chev"></i></a>
+                        <div class="mobile-dropdown-menu">
+                            <div>
+                                <a href="{{ route('guest.events.index') }}">Agenda</a>
+                            </div>
+                        </div>
+                    </li>
                 </ul>
             </div>
 

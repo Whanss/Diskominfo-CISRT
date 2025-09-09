@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\News;
 use App\Models\NewsCategory;
+use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -40,8 +41,9 @@ class NewsController extends Controller
 
         $news = $query->paginate(6)->withQueryString();
         $categories = NewsCategory::where('is_active', true)->orderBy('name')->get(['id', 'name']);
+        $eventsTop = Event::published()->orderBy('start_at')->limit(3)->get();
 
-        return view('guest.news.index', compact('news', 'categories'));
+        return view('guest.news.index', compact('news', 'categories', 'eventsTop'));
     }
 
     /**

@@ -1,30 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app')
 
-<head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>{{ $news->title }} - CSIRT LOMBOK TENGAH</title>
-    <meta name="description" content="{{ $news->excerpt }}">
-    <meta name="keywords" content="berita, keamanan siber, CSIRT, Lombok Tengah">
-
-    <!-- Favicons -->
-    <link href="{{ asset('template/Dashboard/assets/img/favicon.png') }}" rel="icon">
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com" rel="preconnect">
-    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
-
-    <!-- Vendor CSS Files -->
-    <link href="{{ asset('template/Dashboard/assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('template/Dashboard/assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-    <link href="{{ asset('template/Dashboard/assets/vendor/aos/aos.css') }}" rel="stylesheet">
-
-    <!-- Main CSS File -->
-    <link href="{{ asset('template/Dashboard/assets/css/main.css') }}" rel="stylesheet">
-
+@section('content')
     <style>
         :root {
             --csirt-primary: #1b212a;
@@ -35,11 +11,6 @@
             --csirt-info: #3182ce;
             --csirt-dark: #1a202c;
             --csirt-light: #f7fafc;
-        }
-
-        body {
-            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8fafc;
         }
 
         .news-header {
@@ -78,16 +49,12 @@
         .news-image {
             border-radius: 12px;
             box-shadow: 0 20px 40px rgba(26, 54, 93, 0.15);
-            border: 1px solid #e5e7eb;
+            border: 1px solid #e2e8f0;
             max-width: 700px;
-            /* shrink on large screens */
             width: 100%;
-            /* responsive on small screens */
             height: auto;
-            /* keep aspect ratio */
             display: block;
             margin: 0 auto;
-            /* center */
         }
 
         .related-news-card {
@@ -154,235 +121,135 @@
             background-color: var(--csirt-primary);
             border-color: var(--csirt-primary);
         }
-
-        .bg-danger {
-            background-color: var(--csirt-accent) !important;
-        }
-
-        .bg-warning {
-            background-color: var(--csirt-warning) !important;
-        }
-
-        .bg-success {
-            background-color: var(--csirt-success) !important;
-        }
-
-        .bg-info {
-            background-color: var(--csirt-info) !important;
-        }
-
-        .bg-primary {
-            background-color: var(--csirt-primary) !important;
-        }
-
-        .card {
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-header {
-            background-color: #f8fafc;
-            border-bottom: 1px solid #e2e8f0;
-            font-weight: 600;
-            color: var(--csirt-dark);
-        }
-
-        .badge {
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 4px 8px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
     </style>
-</head>
 
-<body>
-    <header id="header" class="header d-flex align-items-center fixed-top">
-        <div class="container-fluid container-xl position-relative d-flex align-items-center">
-            <a href="{{ route('guest.guest_dashboard') }}" class="logo d-flex align-items-center me-auto">
-                <img src="{{ asset('template/Dashboard/assets/img/logo.png') }}" alt="">
-                <h1 class="sitename"></h1>
-            </a>
-
-            <nav id="navmenu" class="navmenu">
-                <ul>
-                    <li><a href="{{ route('guest.guest_dashboard') }}">Home</a></li>
-                    <li><a href="{{ route('guest.news.index') }}">Berita</a></li>
-                    <li><a href="{{ route('guest.create_tiket') }}">Kirim Aduan</a></li>
-                </ul>
+    <!-- News Header -->
+    <section class="news-header">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ route('guest.guest_dashboard') }}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('guest.news.index') }}">Berita</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ Str::limit($news->title, 50) }}</li>
+                </ol>
             </nav>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <span class="badge bg-{{ $news->category_badge_class }} mb-3">{{ $news->category_label }}</span>
+                    <h1 class="display-5 fw-bold mb-3 text-white">{{ $news->title }}</h1>
+                    <div class="d-flex align-items-center text-white-50 mb-4">
+                        <i class="bi bi-calendar3 me-2"></i>
+                        <span class="me-4">{{ $news->created_at->format('d F Y') }}</span>
+                        <i class="bi bi-clock me-2"></i>
+                        <span>{{ $news->created_at->format('H:i') }} WITA</span>
+                    </div>
+                    @if ($news->excerpt)
+                        <p class="lead text-white-75">{{ $news->excerpt }}</p>
+                    @endif
+                </div>
+            </div>
         </div>
-    </header>
+    </section>
 
-    <main class="main">
-        <!-- News Header -->
-        <section class="news-header">
-            <div class="container">
-                <!-- Breadcrumb -->
-                <nav aria-label="breadcrumb" class="mb-4">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ route('guest.guest_dashboard') }}">Home</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('guest.news.index') }}">Berita</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{ Str::limit($news->title, 50) }}</li>
-                    </ol>
-                </nav>
+    <!-- News Content -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <article class="news-content">
+                        @if ($news->image)
+                            <div class="mb-5">
+                                <img src="{{ asset('storage/' . $news->image) }}" alt="{{ $news->title }}"
+                                    class="img-fluid news-image w-100">
+                            </div>
+                        @endif
 
-                <div class="row">
-                    <div class="col-lg-8">
-                        <span class="badge bg-{{ $news->category_badge_class }} mb-3">
-                            {{ $news->category_label }}
-                        </span>
+                        <div class="content">{!! nl2br(e($news->content)) !!}</div>
 
-                        <h1 class="display-5 fw-bold mb-3 text-white">{{ $news->title }}</h1>
+                        <!-- Share Buttons -->
+                        <div class="mt-5 pt-4 border-top">
+                            <h5 class="mb-3">Bagikan Berita Ini:</h5>
+                            <div class="share-buttons">
+                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->fullUrl()) }}"
+                                    target="_blank" class="btn btn-primary">
+                                    <i class="bi bi-facebook me-1"></i> Facebook
+                                </a>
+                                <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->fullUrl()) }}&text={{ urlencode($news->title) }}"
+                                    target="_blank" class="btn btn-info">
+                                    <i class="bi bi-twitter me-1"></i> Twitter
+                                </a>
+                                <a href="https://wa.me/?text={{ urlencode($news->title . ' - ' . request()->fullUrl()) }}"
+                                    target="_blank" class="btn btn-success">
+                                    <i class="bi bi-whatsapp me-1"></i> WhatsApp
+                                </a>
+                                <button class="btn btn-secondary" onclick="copyToClipboard(event)">
+                                    <i class="bi bi-link-45deg me-1"></i> Salin Tautan
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                </div>
 
-                        <div class="d-flex align-items-center text-white-50 mb-4">
-                            <i class="bi bi-calendar3 me-2"></i>
-                            <span class="me-4">{{ $news->created_at->format('d F Y') }}</span>
-                            <i class="bi bi-clock me-2"></i>
-                            <span>{{ $news->created_at->format('H:i') }} WITA</span>
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <div class="sticky-top" style="top: 100px;">
+                        <div class="card mb-4">
+                            <div class="card-body text-center">
+                                <a href="{{ route('guest.news.index') }}" class="btn btn-outline-primary">
+                                    <i class="bi bi-arrow-left me-1"></i> kembali ke Berita
+                                </a>
+                            </div>
                         </div>
 
-                        @if ($news->excerpt)
-                            <p class="lead text-white-75">{{ $news->excerpt }}</p>
+                        @if ($relatedNews->count() > 0)
+                            <div class="card">
+                                <div class="card-body">
+                                    @foreach ($relatedNews as $related)
+                                        <div class="card related-news-card border-0 shadow-sm mb-3">
+                                            @if ($related->image)
+                                                <img src="{{ asset('storage/' . $related->image) }}"
+                                                    class="card-img-top related-news-image" alt="{{ $related->title }}">
+                                            @else
+                                                <img src="{{ asset('template/Dashboard/assets/img/portfolio/app-1.jpg') }}"
+                                                    class="card-img-top related-news-image" alt="{{ $related->title }}">
+                                            @endif
+
+                                            <div class="card-body p-3">
+                                                <span
+                                                    class="badge bg-{{ $related->category_badge_class }} mb-2">{{ $related->category_label }}</span>
+                                                <h6 class="card-title">
+                                                    <a href="{{ route('guest.news.show', $related->slug) }}"
+                                                        class="text-decoration-none text-dark">
+                                                        {{ Str::limit($related->title, 60) }}
+                                                    </a>
+                                                </h6>
+                                                <small class="text-muted">
+                                                    <i class="bi bi-calendar3 me-1"></i>
+                                                    {{ $related->created_at->format('d M Y') }}
+                                                </small>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
                         @endif
                     </div>
                 </div>
             </div>
-        </section>
-
-        <!-- News Content -->
-        <section class="py-5">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-8">
-                        <article class="news-content">
-                            @if ($news->image)
-                                <div class="mb-5">
-                                    <img src="{{ asset('storage/' . $news->image) }}" alt="{{ $news->title }}"
-                                        class="img-fluid news-image w-100">
-                                </div>
-                            @endif
-
-                            <div class="content">
-                                {!! nl2br(e($news->content)) !!}
-                            </div>
-
-                            <!-- Share Buttons -->
-                            <div class="mt-5 pt-4 border-top">
-                            <h5 class="mb-3">Bagikan Berita Ini:</h5>
-                                <div class="share-buttons">
-                                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->fullUrl()) }}"
-                                        target="_blank" class="btn btn-primary">
-                                        <i class="bi bi-facebook me-1"></i> Facebook
-                                    </a>
-                                    <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->fullUrl()) }}&text={{ urlencode($news->title) }}"
-                                        target="_blank" class="btn btn-info">
-                                        <i class="bi bi-twitter me-1"></i> Twitter
-                                    </a>
-                                    <a href="https://wa.me/?text={{ urlencode($news->title . ' - ' . request()->fullUrl()) }}"
-                                        target="_blank" class="btn btn-success">
-                                        <i class="bi bi-whatsapp me-1"></i> WhatsApp
-                                    </a>
-                                    <button class="btn btn-secondary" onclick="copyToClipboard()">
-                                        <i class="bi bi-link-45deg me-1"></i> Salin Tautan
-                                    </button>
-                                </div>
-                            </div>
-                        </article>
-                    </div>
-
-                    <!-- Sidebar -->
-                    <div class="col-lg-4">
-                        <div class="sticky-top" style="top: 100px;">
-                            <!-- Back to News -->
-                            <div class="card mb-4">
-                                <div class="card-body text-center">
-                                    <a href="{{ route('guest.news.index') }}" class="btn btn-outline-primary">
-                                        <i class="bi bi-arrow-left me-1"></i> kembali ke Berita
-                                    </a>
-                                </div>
-                            </div>
-
-                            <!-- Related News -->
-                            @if ($relatedNews->count() > 0)
-                                <div class="card">
-                                    <div class="card-body">
-                                        @foreach ($relatedNews as $related)
-                                            <div class="card related-news-card border-0 shadow-sm mb-3">
-                                                @if ($related->image)
-                                                    <img src="{{ asset('storage/' . $related->image) }}"
-                                                        class="card-img-top related-news-image"
-                                                        alt="{{ $related->title }}">
-                                                @else
-                                                    <img src="{{ asset('template/Dashboard/assets/img/portfolio/app-1.jpg') }}"
-                                                        class="card-img-top related-news-image"
-                                                        alt="{{ $related->title }}">
-                                                @endif
-
-                                                <div class="card-body p-3">
-                                                    <span class="badge bg-{{ $related->category_badge_class }} mb-2">
-                                                        {{ $related->category_label }}
-                                                    </span>
-                                                    <h6 class="card-title">
-                                                        <a href="{{ route('guest.news.show', $related->slug) }}"
-                                                            class="text-decoration-none text-dark">
-                                                            {{ Str::limit($related->title, 60) }}
-                                                        </a>
-                                                    </h6>
-                                                    <small class="text-muted">
-                                                        <i class="bi bi-calendar3 me-1"></i>
-                                                        {{ $related->created_at->format('d M Y') }}
-                                                    </small>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer id="footer" class="footer">
-        <div class="container copyright text-center mt-4">
-            <p>© <span>Copyright</span> <strong class="px-1 sitename">CSIRT Lombok Tengah</strong> <span>All Rights
-                    Reserved</span></p>
         </div>
-    </footer>
-
-    <!-- Vendor JS Files -->
-    <script src="{{ asset('template/Dashboard/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('template/Dashboard/assets/vendor/aos/aos.js') }}"></script>
-
-    <!-- Main JS File -->
-    <script src="{{ asset('template/Dashboard/assets/js/main.js') }}"></script>
+    </section>
 
     <script>
-        // Initialize AOS
-        AOS.init({
-            duration: 600,
-            easing: 'ease-in-out',
-            once: true,
-            mirror: false
-        });
-
-        // Copy to clipboard function
-        function copyToClipboard() {
+        function copyToClipboard(e) {
+            e.preventDefault();
             navigator.clipboard.writeText(window.location.href).then(function() {
-                // Show success message
-                const btn = event.target.closest('button');
+                const btn = e.target.closest('button');
                 const originalText = btn.innerHTML;
                 btn.innerHTML = '<i class="bi bi-check me-1"></i> Copied!';
                 btn.classList.remove('btn-secondary');
                 btn.classList.add('btn-success');
-
                 setTimeout(function() {
                     btn.innerHTML = originalText;
                     btn.classList.remove('btn-success');
@@ -391,6 +258,4 @@
             });
         }
     </script>
-</body>
-
-</html>
+@endsection
