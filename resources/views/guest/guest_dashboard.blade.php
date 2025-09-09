@@ -545,16 +545,23 @@
                     <li class="dropdown"><a href="#"><span>Layanan</span> <i
                                 class="bi bi-chevron-down toggle-dropdown"></i></a>
                         <ul>
-                            <li class="dropdown"><a href="{{ Route('guest.create_tiket') }}"><span>KIRIM ADUAN SIBER
-                                    </span> <i class="bi bi-chevron-right toggle-dropright"></i></a>
+                            <li class="dropdown"><a href="{{ Route('guest.create_tiket') }}"><span>KIRIM ADUAN
+                                        SIBER</span> <i class="bi bi-chevron-right toggle-dropright"></i></a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown"><a href="#"><span>Informasi</span> <i
+                                class="bi bi-chevron-down toggle-dropdown"></i></a>
+                        <ul>
+                            <li><a href="{{ route('guest.news.index') }}">Berita</a></li>
+                            <li class="dropdown"><a href="#"><span>Event</span> <i
+                                        class="bi bi-chevron-right toggle-dropright"></i></a>
+                                <ul>
+                                    <li><a href="{{ route('guest.events.index') }}">Agenda</a></li>
+                                </ul>
                             </li>
                         </ul>
                     </li>
-                    <li> <li><a href="{{ route('guest.news.index') }}">Berita Terkini</a></li>
-                        <a href="#about">Tentang Kami</a></li>
-
-
-
+                    <li><a href="#contact">Kontak</a></li>
                 </ul>
             </nav><!-- End Nav Menu -->
             <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -605,8 +612,8 @@
                     </div>
                     <div class="col-lg-6 order-1 order-lg-2 hero-img position-relative" data-aos="zoom-out"
                         style="position: relative;">
-                        <img src="{{ asset('template/Dashboard/assets/img/hero-img.png') }}" class="img-fluid animated"
-                            alt="" style="position: relative; z-index: 2;">
+                        <img src="{{ asset('template/Dashboard/assets/img/hero-img.png') }}"
+                            class="img-fluid animated" alt="" style="position: relative; z-index: 2;">
                     </div>
                 </div>
             </div>

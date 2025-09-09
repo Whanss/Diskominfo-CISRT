@@ -781,6 +781,31 @@
                     </li>
                     <li class="nav-item">
                         <button type="button"
+                            class="nav-link {{ request()->routeIs('admin.events*') ? 'active' : '' }} {{ request()->routeIs('admin.events*') ? '' : 'collapsed' }}"
+                            data-bs-toggle="collapse" data-bs-target="#eventsMenu"
+                            aria-expanded="{{ request()->routeIs('admin.events*') ? 'true' : 'false' }}"
+                            aria-controls="eventsMenu">
+                            <div class="nav-icon">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            <span class="nav-text">Kelola Event</span>
+                            <span class="nav-arrow"><i class="fas fa-chevron-right"></i></span>
+                        </button>
+                        <div class="collapse nav-collapse {{ request()->routeIs('admin.events*') ? 'show' : '' }}"
+                            id="eventsMenu">
+                            <ul class="nav-items">
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('admin.events.index') ? 'active' : '' }}"
+                                        href="{{ route('admin.events.index') }}">
+                                        <div class="nav-icon"><i class="fas fa-list"></i></div>
+                                        <span class="nav-text">Daftar Event</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <button type="button"
                             class="nav-link {{ request()->routeIs('admin.kecamatan*') ? 'active' : '' }} {{ request()->routeIs('admin.kecamatan*') ? '' : 'collapsed' }}"
                             data-bs-toggle="collapse" data-bs-target="#regionMenu"
                             aria-expanded="{{ request()->routeIs('admin.kecamatan*') ? 'true' : 'false' }}"
