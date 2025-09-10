@@ -83,8 +83,8 @@
             }
         }
 
-        /* Kartu agenda (selaras dengan news-card) */
-        .event-card {
+        /* Kartu dan gambar sama seperti news */
+        .news-card {
             transition: all 0.3s ease;
             height: 100%;
             border: 1px solid #e2e8f0;
@@ -93,10 +93,16 @@
             overflow: hidden;
         }
 
-        .event-card:hover {
+        .news-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(26, 54, 93, 0.15);
             border-color: var(--csirt-primary);
+        }
+
+        .news-image {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
         }
 
         .event-meta {
@@ -105,7 +111,7 @@
             font-weight: 500;
         }
 
-        .event-card .card-title {
+        .news-card .card-title {
             color: var(--csirt-dark);
             font-weight: 600;
             line-height: 1.4;
@@ -168,19 +174,27 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6">
-                    <h1 class="fw-bold mb-2">Agenda</h1>
+                    <h1 class="fw-bold mb-2 text-white">Agenda</h1>
                     <p class="mb-0 text-white-75">Kegiatan dan event terbaru yang akan berlangsung.</p>
                 </div>
                 <div class="col-lg-6 mt-4 mt-lg-0">
-                    <form action="" method="GET">
+                    <form action="{{ route('guest.events.index') }}" method="GET">
                         <div class="row g-3">
-                            <div class="col-8">
-                                <input type="text" name="q" value="{{ request('q') }}" class="form-control"
-                                    placeholder="Cari agenda (judul, lokasi)...">
+                            <div class="col-12 col-md-9">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                                    <input type="text" name="q" value="{{ request('q') }}"
+                                        class="form-control border-start-0"
+                                        placeholder="Cari agenda (judul, lokasi, ringkasan)...">
+                                    @if (request('q'))
+                                        <a href="{{ route('guest.events.index') }}"
+                                            class="btn btn-outline-secondary">Reset</a>
+                                    @endif
+                                </div>
                             </div>
-                            <div class="col-4 d-grid">
+                            <div class="col-12 col-md-3 d-grid">
                                 <button class="btn btn-light text-dark fw-bold" type="submit">
-                                    <i class="bi bi-search me-1"></i> Cari
+                                    Cari
                                 </button>
                             </div>
                         </div>
@@ -193,28 +207,36 @@
     <div class="container py-5">
         <div class="row gy-4">
             @forelse($events as $event)
-                <div class="col-md-6 col-lg-4">
-                    <div class="event-card h-100">
+                <div class="col-lg-4 col-md-6">
+                    <div class="card news-card border-0 shadow-sm">
+                        <div class="position-relative">
+                            @if ($event->image)
+                                <img src="{{ asset($event->image) }}" class="card-img-top news-image"
+                                    alt="{{ $event->title }}">
+                            @else
+                                <img src="{{ asset('template/Dashboard/assets/img/portfolio/app-1.jpg') }}"
+                                    class="card-img-top news-image" alt="{{ $event->title }}">
+                            @endif
+                        </div>
                         <div class="card-body d-flex flex-column">
-                            <h5 class="card-title mb-2">{{ $event->title }}</h5>
-                            <div class="event-meta mb-2">
-                                <i class="bi bi-calendar-event me-1"></i>
-                                {{ optional($event->start_at)->format('d M Y H:i') }}
+                            <h5 class="card-title">{{ $event->title }}</h5>
+                            <p class="card-text text-muted flex-grow-1">{{ Str::limit($event->summary, 140) }}</p>
+                            <div class="news-meta mb-1">
+                                <i class="bi bi-calendar3 me-1"></i>
+                                {{ optional($event->start_at)->format('d M Y') }}
+                            </div>
+                            <div class="news-meta mb-3">
+                                <i class="bi bi-clock me-1"></i>
+                                Mulai: {{ optional($event->start_at)->format('H:i') }}
                                 @if ($event->end_at)
-                                    - {{ optional($event->end_at)->format('d M Y H:i') }}
+                                    - Selesai: {{ optional($event->end_at)->format('H:i') }}
+                                @else
+                                    - Sampai selesai
                                 @endif
                             </div>
-                            @if ($event->location)
-                                <div class="event-meta mb-2">
-                                    <i class="bi bi-geo-alt me-1"></i> {{ $event->location }}
-                                </div>
-                            @endif
-                            <p class="text-secondary flex-grow-1 mb-3">{{ Str::limit($event->summary, 120) }}</p>
-                            <div class="mt-auto">
-                                <a href="{{ route('guest.events.show', $event->slug) }}" class="btn btn-primary w-100">
-                                    Detail Agenda
-                                </a>
-                            </div>
+                            <a href="{{ route('guest.events.show', $event->slug) }}" class="btn btn-primary">
+                                Detail Agenda <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -231,8 +253,15 @@
 
         @if (method_exists($events, 'links'))
             <div class="pagination-wrapper">
+                <div class="text-center mb-3">
+                    <span class="pagination-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Menampilkan {{ $events->firstItem() ?? 0 }} hingga {{ $events->lastItem() ?? 0 }} dari
+                        {{ $events->total() }} hasil
+                    </span>
+                </div>
                 <div class="d-flex justify-content-center">
-                    {{ $events->links('pagination::bootstrap-5') }}
+                    {{ $events->appends(request()->query())->onEachSide(1)->links('pagination::bootstrap-5') }}
                 </div>
             </div>
         @endif

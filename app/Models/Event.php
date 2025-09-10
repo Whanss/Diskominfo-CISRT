@@ -19,6 +19,7 @@ class Event extends Model
         'location',
         'slug',
         'is_published',
+        'image',
     ];
 
     protected $casts = [

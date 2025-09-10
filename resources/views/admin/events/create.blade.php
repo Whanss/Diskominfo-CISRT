@@ -20,7 +20,7 @@
                             </ul>
                         </div>
                     @endif
-                    <form method="POST" action="{{ route('admin.events.store') }}">
+                    <form method="POST" action="{{ route('admin.events.store') }}" enctype="multipart/form-data">
                         @include('admin.events._form')
                     </form>
                 </div>

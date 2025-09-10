@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->dateTime('start_at');
             $table->dateTime('end_at')->nullable();
             $table->string('location');
+            $table->string('image')->nullable(); // path gambar event (opsional)
             $table->boolean('is_published')->default(false);
             $table->timestamps();
         });

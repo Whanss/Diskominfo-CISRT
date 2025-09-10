@@ -328,6 +328,28 @@ namespace App\Models {
     /**
      * App\Models\Event
      *
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property boolean $is_published
+     * @property string $location
+     * @property \Illuminate\Support\Carbon|null $end_at
+     * @property \Illuminate\Support\Carbon $start_at
+     * @property string|null $description
+     * @property string $summary
+     * @property string $slug
+     * @property string $title
+     * @property int $id
+     * @method static \Illuminate\Database\Eloquent\Builder<Event>|Event whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Event>|Event whereTitle($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Event>|Event whereSlug($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Event>|Event whereSummary($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Event>|Event whereDescription($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Event>|Event whereStartAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Event>|Event whereEndAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Event>|Event whereLocation($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Event>|Event whereIsPublished($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Event>|Event whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Event>|Event whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Event>|Event published()
      * @method static \Illuminate\Database\Eloquent\Builder<Event>|Event upcoming()
      * @method static \Illuminate\Database\Eloquent\Builder<Event>|Event newModelQuery()
