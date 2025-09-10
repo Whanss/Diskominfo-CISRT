@@ -561,6 +561,7 @@
                             </li>
                         </ul>
                     </li>
+                    <li><a href="#about" class="active">Tentang Kami<br></a></li>
                     <li><a href="#contact">Kontak</a></li>
                 </ul>
             </nav><!-- End Nav Menu -->
@@ -799,8 +800,6 @@
                 <h2>About Us</h2>
                 <p>Tentang Kami<br></p>
             </div>
-
-
             <div class="container" data-aos="fade-up">
                 <div class="row gx-0">
 
@@ -815,7 +814,6 @@
                                 terbaru, kami memastikan keamanan informasi Anda tetap terjaga.
                             </p>
                             <div class="text-center text-lg-start">
-
                             </div>
                         </div>
                     </div>

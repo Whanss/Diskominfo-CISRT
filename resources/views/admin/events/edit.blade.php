@@ -20,7 +20,7 @@
                             </ul>
                         </div>
                     @endif
-                    <form method="POST" action="{{ route('admin.events.update', $event) }}">
+                    <form method="POST" action="{{ route('admin.events.update', $event) }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         @include('admin.events._form', ['event' => $event])
