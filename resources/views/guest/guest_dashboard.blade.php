@@ -960,8 +960,16 @@
 
         </section><!-- /Features Section -->
 
-        <!-- Alt Features Section -->
+
+
         <section id="alt-features" class="alt-features section">
+            <!-- Alt Features Section -->
+        <div class="container section-title" data-aos="fade-up">
+                <h2>APA ITU SERANGAN CYBER?</h2>
+                <p>Mengenal Jenis-jenis Serangan Siber yang Umum Terjadi<br>
+                </p>
+            </div><!-- End Section Title -->
+
 
             <div class="container">
 
