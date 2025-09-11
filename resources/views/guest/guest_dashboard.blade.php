@@ -593,15 +593,7 @@
                         <div class="mobile-dropdown-menu">
                             <div>
                                 <a href="{{ route('guest.news.index') }}">Berita</a>
-                            </div>
-                            <div class="mobile-dropdown">
-                                <a href="#" class="mobile-dropdown-toggle">Event <i
-                                        class="bi bi-chevron-down chev"></i></a>
-                                <div class="mobile-dropdown-menu">
-                                    <div>
-                                        <a href="{{ route('guest.events.index') }}">Agenda</a>
-                                    </div>
-                                </div>
+                                <a href="{{ route('guest.events.index') }}">Agenda</a>
                             </div>
                         </div>
                     </li>
@@ -728,38 +720,54 @@
                         </div>
 
                         <!-- Stats Section -->
+
                         <section id="stats" class="stats section">
+                            <h3 class="mt-4 mb-3 fw-bold text-primary text-center" data-aos="fade-up"
+                                data-aos-delay="500">SATISTIK TIKET</h3>
 
-                            <div class="container" data-aos="fade-up" data-aos-delay="100">
+                            <div data-aos="fade-up" data-aos-delay="100">
 
-                                <div class="row gy-4">
+                                <div class="row g-3 gy-4">
 
-                                    <div class="col-lg-3 col-md-6">
-                                        <div class="stats-item d-flex align-items-center w-100 h-100">
-                                            <i class="bi bi-emoji-smile color-blue flex-shrink-0"></i>
-                                            <div>
-                                                <span data-purecounter-start="0"
-                                                    data-purecounter-end="{{ $countSent }}"
-                                                    data-purecounter-duration="1"
-                                                    class="purecounter">{{ $countSent }}</span>
-                                                <p>Tiket yang sudah terkirim</p>
+                                    <div class="col-6 col-md-6">
+                                        <div class="card stats-card shadow-sm border-0 h-100 mb-3 mb-md-0">
+                                            <div
+                                                class="card-body d-flex flex-column align-items-center gap-2 text-center">
+                                                <div class="icon-wrap bg-primary-subtle text-primary mb-2"
+                                                    style="width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-size:22px;">
+                                                    <i class="bi bi-ticket-detailed"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="h3 mb-1 fw-bold text-primary">
+                                                        <span class="purecounter" data-purecounter-start="0"
+                                                            data-purecounter-end="{{ $countSent }}"
+                                                            data-purecounter-duration="1">{{ $countSent }}</span>
+                                                    </div>
+                                                    <small class="text-muted">Total tiket</small>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div><!-- End Stats Item -->
+                                    </div>
 
-                                    <div class="col-lg-3 col-md-6">
-                                        <div class="stats-item d-flex align-items-center w-100 h-100">
-                                            <i class="bi bi-journal-richtext color-orange flex-shrink-0"
-                                                style="color: #ee6c20;"></i>
-                                            <div>
-                                                <span data-purecounter-start="0"
-                                                    data-purecounter-end="{{ $countWorkedOn }}"
-                                                    data-purecounter-duration="1"
-                                                    class="purecounter">{{ $countWorkedOn }}</span>
-                                                <p>Tiket yang sudah dikerjakan</p>
+                                    <div class="col-6 col-md-6">
+                                        <div class="card stats-card shadow-sm border-0 h-100 mb-3 mb-md-0">
+                                            <div
+                                                class="card-body d-flex flex-column align-items-center gap-2 text-center">
+                                                <div class="icon-wrap bg-success-subtle text-success mb-2"
+                                                    style="width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-size:22px;">
+                                                    <i class="bi bi-patch-check"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="h3 mb-1 fw-bold text-success">
+                                                        <span class="purecounter" data-purecounter-start="0"
+                                                            data-purecounter-end="{{ $countWorkedOn }}"
+                                                            data-purecounter-duration="1">{{ $countWorkedOn }}</span>
+                                                    </div>
+                                                    <small class="text-muted">Tiket Resolved</small>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div><!-- End Stats Item -->
+                                    </div>
                                 </div>
                             </div>
                     </div>

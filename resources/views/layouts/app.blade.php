@@ -281,8 +281,9 @@
                 </div>
                 <ul class="mobile-nav">
                     <li><a href="{{ route('guest.guest_dashboard') }}#hero">Home</a></li>
+
                     <li class="mobile-dropdown">
-                        <a href="#" class="mobile-dropdown-toggle">Menu <i
+                        <a href="#" class="mobile-dropdown-toggle">Layanan <i
                                 class="bi bi-chevron-down chev"></i></a>
                         <div class="mobile-dropdown-menu">
                             <div>
@@ -290,18 +291,19 @@
                             </div>
                         </div>
                     </li>
-                    <li><a href="{{ route('guest.guest_dashboard') }}#about">Tentang Kami</a></li>
-                    <li><a href="{{ route('guest.guest_dashboard') }}#services">Layanan</a></li>
-                    <li><a href="{{ route('guest.news.index') }}">Berita</a></li>
+
                     <li class="mobile-dropdown">
-                        <a href="#" class="mobile-dropdown-toggle">Event <i
+                        <a href="#" class="mobile-dropdown-toggle">Informasi <i
                                 class="bi bi-chevron-down chev"></i></a>
                         <div class="mobile-dropdown-menu">
                             <div>
+                                <a href="{{ route('guest.news.index') }}">Berita</a>
                                 <a href="{{ route('guest.events.index') }}">Agenda</a>
                             </div>
                         </div>
                     </li>
+
+                    <li><a href="{{ route('guest.guest_dashboard') }}#about">Tentang Kami</a></li>
                     <li><a href="{{ route('guest.guest_dashboard') }}#contact">Kontak</a></li>
                 </ul>
             </div>

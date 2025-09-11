@@ -18,8 +18,8 @@ class TicketController extends Controller
 {
     public function guestDashboard()
     {
-        $countSent = \App\Models\Ticket::whereNotIn('status', ['ditolak/rejected'])->count();
-        $countWorkedOn = \App\Models\Ticket::whereIn('status', ['diterima/approved', 'selesai/completed'])->count();
+        $countSent = \App\Models\Ticket::count();
+        $countWorkedOn = \App\Models\Ticket::where('status', 'selesai/completed')->count();
 
         // Get latest news for portfolio section, limit to 3
         $latestNews = \App\Models\News::published()->latest()->take(3)->get();
