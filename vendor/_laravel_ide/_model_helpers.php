@@ -331,6 +331,7 @@ namespace App\Models {
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property boolean $is_published
+     * @property string|null $image
      * @property string $location
      * @property \Illuminate\Support\Carbon|null $end_at
      * @property \Illuminate\Support\Carbon $start_at
@@ -347,6 +348,7 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<Event>|Event whereStartAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Event>|Event whereEndAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Event>|Event whereLocation($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Event>|Event whereImage($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Event>|Event whereIsPublished($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Event>|Event whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Event>|Event whereUpdatedAt($value)
