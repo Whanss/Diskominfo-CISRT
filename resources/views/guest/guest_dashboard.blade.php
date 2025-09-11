@@ -886,44 +886,68 @@
                         <div class="row align-self-center gy-4">
 
                             <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
-                                <div class="feature-box d-flex align-items-center">
+                                <div class="feature-box d-flex align-items-start gap-3">
                                     <i class="bi bi-shield-check"></i>
-                                    <h3>Deteksi Ancaman Real-time</h3>
+                                    <div>
+                                        <h3>Deteksi Ancaman Real-time</h3>
+                                        <p class="mb-0 text-muted">Pemantauan dan pemberitahuan dini untuk
+                                            mengidentifikasi ancaman saat terjadi.</p>
+                                    </div>
                                 </div>
                             </div><!-- End Feature Item -->
 
                             <div class="col-md-6" data-aos="fade-up" data-aos-delay="300">
-                                <div class="feature-box d-flex align-items-center">
+                                <div class="feature-box d-flex align-items-start gap-3">
                                     <i class="bi bi-lightning-charge"></i>
-                                    <h3>Respons Cepat 24/7</h3>
+                                    <div>
+                                        <h3>Respons Cepat 24/7</h3>
+                                        <p class="mb-0 text-muted">Tim siap sedia sepanjang waktu untuk merespons
+                                            insiden keamanan.</p>
+                                    </div>
                                 </div>
                             </div><!-- End Feature Item -->
 
                             <div class="col-md-6" data-aos="fade-up" data-aos-delay="400">
-                                <div class="feature-box d-flex align-items-center">
+                                <div class="feature-box d-flex align-items-start gap-3">
                                     <i class="bi bi-people"></i>
-                                    <h3>Tim Ahli Berpengalaman</h3>
+                                    <div>
+                                        <h3>Tim Ahli Berpengalaman</h3>
+                                        <p class="mb-0 text-muted">Tenaga profesional dengan sertifikasi dan pengalaman
+                                            menangani berbagai insiden.</p>
+                                    </div>
                                 </div>
                             </div><!-- End Feature Item -->
 
                             <div class="col-md-6" data-aos="fade-up" data-aos-delay="500">
-                                <div class="feature-box d-flex align-items-center">
+                                <div class="feature-box d-flex align-items-start gap-3">
                                     <i class="bi bi-graph-up"></i>
-                                    <h3>Analisis Forensik Digital</h3>
+                                    <div>
+                                        <h3>Analisis Forensik Digital</h3>
+                                        <p class="mb-0 text-muted">Investigasi mendalam untuk mengungkap jejak serangan
+                                            dan penyebab insiden.</p>
+                                    </div>
                                 </div>
                             </div><!-- End Feature Item -->
 
                             <div class="col-md-6" data-aos="fade-up" data-aos-delay="600">
-                                <div class="feature-box d-flex align-items-center">
+                                <div class="feature-box d-flex align-items-start gap-3">
                                     <i class="bi bi-book"></i>
-                                    <h3>Edukasi Keamanan Siber</h3>
+                                    <div>
+                                        <h3>Edukasi Keamanan Siber</h3>
+                                        <p class="mb-0 text-muted">Pelatihan dan materi edukasi untuk meningkatkan
+                                            kesadaran keamanan.</p>
+                                    </div>
                                 </div>
                             </div><!-- End Feature Item -->
 
                             <div class="col-md-6" data-aos="fade-up" data-aos-delay="700">
-                                <div class="feature-box d-flex align-items-center">
+                                <div class="feature-box d-flex align-items-start gap-3">
                                     <i class="bi bi-gear"></i>
-                                    <h3>Solusi Terintegrasi</h3>
+                                    <div>
+                                        <h3>Solusi Terintegrasi</h3>
+                                        <p class="mb-0 text-muted">Pendekatan end-to-end dari pencegahan, deteksi,
+                                            respons, hingga pemulihan.</p>
+                                    </div>
                                 </div>
                             </div><!-- End Feature Item -->
 
@@ -947,8 +971,8 @@
 
                         <div class="row align-self-center gy-5">
 
-                            <div class="col-md-6 icon-box">
-                                <i class="bi bi-award"></i>
+                            <div class="col-md-6 icon-box d-flex align-items-start gap-3">
+                                <i class="bi bi-envelope-exclamation"></i>
                                 <div>
                                     <h4>Phishing</h4>
                                     <p>Penipuan digital untuk mencuri informasi sensitif seperti password dan data kartu
@@ -956,8 +980,8 @@
                                 </div>
                             </div><!-- End Feature Item -->
 
-                            <div class="col-md-6 icon-box">
-                                <i class="bi bi-bug"></i>
+                            <div class="col-md-6 icon-box d-flex align-items-start gap-3">
+                                <i class="bi bi-shield-exclamation"></i>
                                 <div>
                                     <h4>Malware & Ransomware</h4>
                                     <p>Perangkat lunak berbahaya yang dapat merusak sistem dan mengenkripsi data untuk
@@ -965,8 +989,8 @@
                                 </div>
                             </div><!-- End Feature Item -->
 
-                            <div class="col-md-6 icon-box">
-                                <i class="bi bi-wifi"></i>
+                            <div class="col-md-6 icon-box d-flex align-items-start gap-3">
+                                <i class="bi bi-wifi-off"></i>
                                 <div>
                                     <h4>Serangan DDoS</h4>
                                     <p>Serangan yang membanjiri server dengan traffic palsu untuk melumpuhkan layanan
@@ -975,8 +999,8 @@
                                 </div>
                             </div><!-- End Feature Item -->
 
-                            <div class="col-md-6 icon-box">
-                                <i class="bi bi-person-x"></i>
+                            <div class="col-md-6 icon-box d-flex align-items-start gap-3">
+                                <i class="bi bi-person-exclamation"></i>
                                 <div>
                                     <h4>Social Engineering</h4>
                                     <p>Manipulasi psikologis untuk mendapatkan informasi rahasia atau akses tidak sah ke
@@ -984,16 +1008,17 @@
                                 </div>
                             </div><!-- End Feature Item -->
 
-                            <div class="col-md-6 icon-box">
-                                <i class="bi bi-lightning-charge"></i>
+                            <div class="col-md-6 icon-box d-flex align-items-start gap-3">
+                                <i class="bi bi-file-earmark-lock"></i>
                                 <div>
-                                    <h4>Molestiae dolor</h4>
-                                    <p>Et fuga et deserunt et enim. Dolorem architecto ratione tensa raptor marte</p>
+                                    <h4>Kerentanan Sistem</h4>
+                                    <p>Kelemahan konfigurasi atau celah keamanan yang memungkinkan penyerang mendapatkan
+                                        akses tidak sah</p>
                                 </div>
                             </div><!-- End Feature Item -->
 
-                            <div class="col-md-6 icon-box">
-                                <i class="bi bi-database-lock"></i>
+                            <div class="col-md-6 icon-box d-flex align-items-start gap-3">
+                                <i class="bi bi-shield-lock"></i>
                                 <div>
                                     <h4>Kebocoran Data</h4>
                                     <p>Insiden dimana data sensitif diakses, dicuri, atau diungkapkan tanpa izin kepada
