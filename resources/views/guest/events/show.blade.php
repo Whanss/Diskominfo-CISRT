@@ -49,6 +49,19 @@
             border-radius: 10px;
             box-shadow: 0 10px 24px rgba(26, 54, 93, .08);
         }
+
+        /* Breadcrumb white color (including separators) */
+        .breadcrumb .breadcrumb-item+.breadcrumb-item::before {
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .breadcrumb .breadcrumb-item a {
+            color: #fff !important;
+        }
+
+        .breadcrumb .breadcrumb-item.active {
+            color: #fff !important;
+        }
     </style>
 
     <!-- Header -->
@@ -80,6 +93,10 @@
                     </div>
                     @if ($event->summary)
                         <p class="lead text-white-75">{{ $event->summary }}</p>
+                    @endif
+
+                    @if(!empty($event->location))
+                        <p class="mt-2 text-white-75"><i class="bi bi-geo-alt me-2"></i> <strong>Lokasi:</strong> {{ $event->location }}</p>
                     @endif
                 </div>
             </div>

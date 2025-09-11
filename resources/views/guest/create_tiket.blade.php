@@ -748,7 +748,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M4 6h16M7 12h10M10 18h4" />
                                     </svg>
-                                    Kategori Serangan <span class="required" id="kategori-required"
+                                    Jenis Serangan<span class="required" id="kategori-required"
                                         style="display:none;">*</span>
                                 </label>
                                 <select class="form-control" id="layanan_category_id" name="layanan_category_id" disabled
@@ -837,9 +837,8 @@
                                     Lampiran (opsional)
                                 </label>
                                 <input type="file" class="form-control" id="attachment" name="attachment"
-                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.txt">
-                                <small class="text-muted">Maks 5MB. Format: pdf, doc, docx, xls, xlsx, png, jpg, jpeg,
-                                    txt</small>
+                                    accept=".pdf,.jpg,.jpeg">
+                                <small class="text-muted">Maks 5MB. Format diperbolehkan: PDF atau JPG.</small>
                             </div>
 
                             <div class="form-group col-span-2">
