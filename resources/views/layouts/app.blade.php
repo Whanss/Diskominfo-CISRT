@@ -245,30 +245,28 @@
 
             <nav id="navmenu" class="navmenu">
                 <ul>
-                    <li><a href="{{ Route('guest.guest_dashboard') }}">Home</a></li>
-                    <li class="dropdown">
-                        <a href="#"><span>Layanan</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                    <li><a href="{{ route('guest.guest_dashboard') }}#hero" class="active">Home<br></a></li>
+                    <li class="dropdown"><a href="#"><span>Layanan</span> <i
+                                class="bi bi-chevron-down toggle-dropdown"></i></a>
                         <ul>
-                            <li class="dropdown">
-                                <a href="{{ Route('guest.create_tiket') }}"><span>KIRIM ADUAN SIBER </span> <i
-                                        class="bi bi-chevron-right toggle-right"></i></a>
-                            </li>
+                            <li class="dropdown"><a href="{{ Route('guest.create_tiket') }}"><span>KIRIM ADUAN
+                                        SIBER</span> <i class="bi bi-chevron-right toggle-dropright"></i></a></li>
                         </ul>
                     </li>
-                    <li class="dropdown">
-                        <a href="#"><span>Informasi</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                    <li class="dropdown"><a href="#"><span>Informasi</span> <i
+                                class="bi bi-chevron-down toggle-dropdown"></i></a>
                         <ul>
                             <li><a href="{{ route('guest.news.index') }}">Berita</a></li>
-                            <li class="dropdown">
-                                <a href="#"><span>Event</span> <i
-                                        class="bi bi-chevron-right toggle-right"></i></a>
+                            <li class="dropdown"><a href="#"><span>Event</span> <i
+                                        class="bi bi-chevron-right toggle-dropright"></i></a>
                                 <ul>
                                     <li><a href="{{ route('guest.events.index') }}">Agenda</a></li>
                                 </ul>
                             </li>
                         </ul>
                     </li>
-                    <li><a href="{{ route('guest.guest_dashboard') }}#about">Tentang Kami</a></li>
+                    <li><a href="{{ route('guest.guest_dashboard') }}#about" class="active">Tentang Kami<br></a></li>
+                    <li><a href="{{ route('guest.guest_dashboard') }}#contact">Kontak</a></li>
                 </ul>
             </nav>
 
@@ -282,7 +280,7 @@
                     <img src="{{ asset('template/Dashboard/assets/img/logo.png') }}" alt="CSIRT Logo">
                 </div>
                 <ul class="mobile-nav">
-                    <li><a href="{{ Route('guest.guest_dashboard') }}">Home</a></li>
+                    <li><a href="{{ route('guest.guest_dashboard') }}#hero">Home</a></li>
                     <li class="mobile-dropdown">
                         <a href="#" class="mobile-dropdown-toggle">Menu <i
                                 class="bi bi-chevron-down chev"></i></a>
@@ -294,7 +292,7 @@
                     </li>
                     <li><a href="{{ route('guest.guest_dashboard') }}#about">Tentang Kami</a></li>
                     <li><a href="{{ route('guest.guest_dashboard') }}#services">Layanan</a></li>
-                    <li><a href="{{ route('guest.news.index') }}">Berita Terkini</a></li>
+                    <li><a href="{{ route('guest.news.index') }}">Berita</a></li>
                     <li class="mobile-dropdown">
                         <a href="#" class="mobile-dropdown-toggle">Event <i
                                 class="bi bi-chevron-down chev"></i></a>
@@ -304,6 +302,7 @@
                             </div>
                         </div>
                     </li>
+                    <li><a href="{{ route('guest.guest_dashboard') }}#contact">Kontak</a></li>
                 </ul>
             </div>
 

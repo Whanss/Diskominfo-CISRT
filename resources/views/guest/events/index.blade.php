@@ -14,6 +14,7 @@
         }
 
         body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8fafc;
         }
 
@@ -103,6 +104,12 @@
             height: 200px;
             object-fit: cover;
             width: 100%;
+        }
+
+        .news-meta {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 500;
         }
 
         .event-meta {
@@ -225,6 +232,12 @@
                                 <i class="bi bi-calendar3 me-1"></i>
                                 {{ optional($event->start_at)->format('d M Y') }}
                             </div>
+                            @if (!empty($event->location))
+                                <div class="news-meta mb-1">
+                                    <i class="bi bi-geo-alt me-1"></i>
+                                    {{ $event->location }}
+                                </div>
+                            @endif
                             <div class="news-meta mb-3">
                                 <i class="bi bi-clock me-1"></i>
                                 Mulai: {{ optional($event->start_at)->format('H:i') }}

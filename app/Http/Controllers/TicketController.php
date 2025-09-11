@@ -50,16 +50,16 @@ class TicketController extends Controller
                 'bail', // hentikan pada error pertama agar tidak dobel pesan
                 'file',
                 'max:5120',
-                'mimes:pdf,doc,docx,xls,xlsx,png,jpg,jpeg,txt',
-                'mimetypes:application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,image/png,image/jpeg,text/plain'
+                'mimes:pdf,jpg,jpeg',
+                'mimetypes:application/pdf,image/jpeg'
             ],
             'kecamatan_id' => 'required|exists:kecamatan,id',
         ], [
             // Pesan khusus berbahasa Indonesia yang ringkas
             'attachment.file' => 'Lampiran harus berupa file.',
             'attachment.max' => 'Ukuran file maksimal 5 MB.',
-            'attachment.mimes' => 'File yang anda masukkan tidak valid.',
-            'attachment.mimetypes' => 'File yang anda masukkan tidak valid.',
+            'attachment.mimes' => 'Format lampiran harus PDF atau JPG.',
+            'attachment.mimetypes' => 'Format lampiran harus PDF atau JPG.',
         ], [
             // Ubah label attribute
             'attachment' => 'Lampiran',
@@ -94,6 +94,29 @@ class TicketController extends Controller
             $originalName = $file->getClientOriginalName();
             if (preg_match('/\.(php|phtml|phar|js|html|svg|exe|cmd|bat|sh)(\.|$)/i', $originalName)) {
                 return back()->withErrors(['attachment' => 'Tipe file tidak diperbolehkan.']);
+            }
+
+            // Content-based verification (magic bytes) to prevent disguised files
+            try {
+                $stream = fopen($file->getPathname(), 'rb');
+                $header = $stream ? fread($stream, 8) : '';
+                if ($stream) {
+                    fclose($stream);
+                }
+                $isPdf = str_starts_with($header, "%PDF"); // PDF starts with %PDF
+                // JPEG starts with FF D8 and ends with FF D9
+                $isJpeg = false;
+                if (!$isPdf) {
+                    $bytes = file_get_contents($file->getPathname());
+                    if ($bytes !== false) {
+                        $isJpeg = (substr($bytes, 0, 2) === "\xFF\xD8") && (substr($bytes, -2) === "\xFF\xD9");
+                    }
+                }
+                if (!($isPdf || $isJpeg)) {
+                    return back()->withErrors(['attachment' => 'File tidak valid. Hanya PDF atau JPG yang diperbolehkan.'])->withInput();
+                }
+            } catch (\Throwable $e) {
+                return back()->withErrors(['attachment' => 'Gagal memverifikasi file lampiran.'])->withInput();
             }
 
             // Store into private storage, not publicly accessible
