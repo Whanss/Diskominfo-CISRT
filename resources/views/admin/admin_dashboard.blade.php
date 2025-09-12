@@ -2559,11 +2559,55 @@
             const newMonth = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0');
             currentMonth = newMonth;
 
+            // Sync calendar UI (selectors and internal state) if present
+            const yearSelectorEl = document.getElementById('yearSelector');
+            const monthSelectorEl = document.getElementById('monthSelector');
+            if (yearSelectorEl) yearSelectorEl.value = String(today.getFullYear());
+            if (monthSelectorEl) monthSelectorEl.value = String(today.getMonth() + 1);
+            try {
+                if (typeof calendarCurrentYear !== 'undefined') calendarCurrentYear = today.getFullYear();
+            } catch {}
+            try {
+                if (typeof calendarCurrentMonth !== 'undefined') calendarCurrentMonth = today.getMonth() + 1;
+            } catch {}
+            if (typeof updateCalendarDisplay === 'function') {
+                updateCalendarDisplay();
+            }
+
+            // Update visible month input immediately and close calendar if open
+            const mp = document.getElementById('monthPicker');
+            if (mp) mp.value = formatMonthDisplay(newMonth);
+            if (typeof closeCalendar === 'function') closeCalendar();
+
+            // Reset filters to defaults (optional: tweak if you want to preserve current filters)
+            currentFilters = {
+                kecamatan_id: '',
+                layanan_id: '',
+                layanan_category_id: ''
+            };
+            const kecSel = document.getElementById('filterKecamatan');
+            const laySel = document.getElementById('filterLayanan');
+            const katSel = document.getElementById('filterKategori');
+            if (kecSel) kecSel.value = '';
+            if (laySel) laySel.value = '';
+            if (katSel) katSel.value = '';
+
+            // Reset day range to show all days
+            currentDayRange = 30;
+            document.querySelectorAll('.day-range-btn').forEach(btn => btn.classList.remove('active'));
+            const allDaysBtn = Array.from(document.querySelectorAll('.day-range-btn')).find(b => b.textContent.includes(
+                'Semua Hari'));
+            if (allDaysBtn) allDaysBtn.classList.add('active');
+
+            // Refresh data and UI (both charts + stats)
             updateMonthDisplay(newMonth);
             loadDataForMonth(newMonth);
             updateNavigationButtons();
 
-            showNotification('info', 'Reset to current month');
+            // Ensure subtitles and processing chart title reflect current month
+            updateChartSubtitle?.();
+
+            showNotification('info', 'Reset tren dan analitik ke bulan ini');
         }
 
         /* =========  UI HELPERS  ========= */
@@ -2579,8 +2623,12 @@
                 month: 'long',
                 year: 'numeric'
             });
-            document.getElementById('currentMonthDisplay').textContent = m;
+            const currentMonthEl = document.getElementById('currentMonthDisplay');
+            if (currentMonthEl) currentMonthEl.textContent = m;
+            const mp = document.getElementById('monthPicker');
+            if (mp) mp.value = formatMonthDisplay(monthValue);
             updateSubtitles();
+            if (typeof updateChartSubtitle === 'function') updateChartSubtitle();
         }
 
         function updateSubtitles() {
@@ -2701,9 +2749,9 @@
                     <p>${ticket.deskripsi || 'Tidak ada deskripsi'}</p>
 
                     ${ticket.attachments && ticket.attachments.length > 0 ? `
-                                                                                                        <div class="ticket-attachments">
-                                                                                                            <h6><i class="fas fa-paperclip"></i> Lampiran</h6>
-                                                                                                            ${ticket.attachments.map(att => `
+                                                                                                                    <div class="ticket-attachments">
+                                                                                                                        <h6><i class="fas fa-paperclip"></i> Lampiran</h6>
+                                                                                                                        ${ticket.attachments.map(att => `
                                 <div class="attachment-item">
                                     <div class="attachment-icon">
                                         <i class="fas fa-file"></i>
@@ -2717,8 +2765,8 @@
                                     </a>
                                 </div>
                             `).join('')}
-                                                                                                        </div>
-                                                                                                    ` : ''}
+                                                                                                                    </div>
+                                                                                                                ` : ''}
                 </div>
             `;
 
