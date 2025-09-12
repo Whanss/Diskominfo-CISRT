@@ -1545,24 +1545,41 @@
                             <div>
                                 <h6 style="margin: 0; font-weight: 600; color: var(--gray-900);">📊 Tren Tiket</h6>
                                 <div class="d-flex gap-2 align-items-center my-2">
-                                    <select id="filterKecamatan" class="form-select form-select-sm" style="width: 180px">
-                                        <option value="">Semua Kecamatan</option>
-                                        @foreach ($kecamatanList ?? [] as $k)
-                                            <option value="{{ data_get($k, 'id') }}">{{ data_get($k, 'nama') }}</option>
-                                        @endforeach
-                                    </select>
-                                    <select id="filterLayanan" class="form-select form-select-sm" style="width: 180px">
-                                        <option value="">Semua Layanan</option>
-                                        @foreach ($layananList ?? [] as $l)
-                                            <option value="{{ data_get($l, 'id') }}">{{ data_get($l, 'name') }}</option>
-                                        @endforeach
-                                    </select>
-                                    <select id="filterKategori" class="form-select form-select-sm" style="width: 210px">
-                                        <option value="">Semua Kategori</option>
-                                    </select>
-                                    <button class="btn btn-outline-secondary btn-sm"
-                                        id="applyFiltersBtn">
-                                        <i class="fas fa-search"></i></button>
+                                    <div class="filter-select with-icon" style="position: relative; width: 180px;">
+                                        <select id="filterKecamatan" class="form-select form-select-sm"
+                                            style="width: 100%; padding-right: 1.75rem;">
+                                            <option value="">Semua Kecamatan</option>
+                                            @foreach ($kecamatanList ?? [] as $k)
+                                                <option value="{{ data_get($k, 'id') }}">{{ data_get($k, 'nama') }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <i class="fas fa-caret-down filter-caret"
+                                            style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: var(--gray-400); pointer-events: none; transition: transform 0.15s ease;"></i>
+                                    </div>
+                                    <div class="filter-select with-icon" style="position: relative; width: 180px;">
+                                        <select id="filterLayanan" class="form-select form-select-sm"
+                                            style="width: 100%; padding-right: 1.75rem;">
+                                            <option value="">Semua Layanan</option>
+                                            @foreach ($layananList ?? [] as $l)
+                                                <option value="{{ data_get($l, 'id') }}">{{ data_get($l, 'name') }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <i class="fas fa-caret-down filter-caret"
+                                            style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: var(--gray-400); pointer-events: none; transition: transform 0.15s ease;"></i>
+                                    </div>
+                                    <div class="filter-select with-icon" style="position: relative; width: 210px;">
+                                        <select id="filterKategori" class="form-select form-select-sm"
+                                            style="width: 100%; padding-right: 1.75rem;">
+                                            <option value="">Semua Kategori</option>
+                                        </select>
+                                        <i class="fas fa-caret-down filter-caret"
+                                            style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: var(--gray-400); pointer-events: none; transition: transform 0.15s ease;"></i>
+                                    </div>
+                                    <button class="btn btn-outline-secondary btn-sm" id="applyFiltersBtn">
+                                        <i class="fas fa-search"></i>
+                                    </button>
                                 </div>
                                 <p style="margin: 0.25rem 0 0 0; font-size: 0.875rem; color: var(--gray-600);"
                                     id="chartSubtitle">
@@ -1641,7 +1658,7 @@
                                     <th>Pelapor</th>
                                     <th>Status</th>
                                     <th>Dibuat</th>
-                                    <th>Waktu Proses</th>
+                                    <th>Waktu Diterima</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -1670,15 +1687,12 @@
                                         </td>
                                         <td>{{ $ticket->created_at->diffForHumans() }}</td>
                                         <td>
-                                            @if ($ticket->resolved_at && $ticket->status == 'selesai/completed')
-                                                <span style="color: var(--green-600);">
-                                                    {{ round($ticket->created_at->diffInHours($ticket->resolved_at), 1) }}
-                                                    jam
+                                            @if ($ticket->accepted_at)
+                                                <span style="color: var(--blue-600);">
+                                                    {{ $ticket->accepted_at->diffForHumans() }}
                                                 </span>
-                                            @elseif($ticket->accepted_at)
-                                                <span style="color: var(--blue-600);">Sedang Diproses</span>
                                             @else
-                                                <span style="color: var(--gray-500);">Belum Dimulai</span>
+                                                <span style="color: var(--gray-500);">Belum Diterima</span>
                                             @endif
                                         </td>
                                         <td>
@@ -2204,6 +2218,30 @@
                     loadDataForMonth(currentMonth);
                 });
             }
+
+            // Animate caret on focus/blur for all filter selects
+            const filterWrappers = document.querySelectorAll('.filter-select.with-icon');
+            filterWrappers.forEach(wrapper => {
+                const select = wrapper.querySelector('select');
+                const caret = wrapper.querySelector('.filter-caret');
+                if (!select || !caret) return;
+                // Rotate down when open (approximate with focus), reset on blur
+                select.addEventListener('focus', () => {
+                    caret.style.transform = 'translateY(-50%) rotate(180deg)';
+                    caret.style.color = 'var(--gray-600)';
+                });
+                select.addEventListener('blur', () => {
+                    caret.style.transform = 'translateY(-50%) rotate(0deg)';
+                    caret.style.color = 'var(--gray-400)';
+                });
+                // Also nudge on mouseenter for a subtle hint
+                wrapper.addEventListener('mouseenter', () => {
+                    caret.style.color = 'var(--gray-500)';
+                });
+                wrapper.addEventListener('mouseleave', () => {
+                    caret.style.color = 'var(--gray-400)';
+                });
+            });
         });
 
         function updateChartsData(chartData) {
@@ -2592,9 +2630,9 @@
                     <p>${ticket.deskripsi || 'Tidak ada deskripsi'}</p>
 
                     ${ticket.attachments && ticket.attachments.length > 0 ? `
-                                                                <div class="ticket-attachments">
-                                                                    <h6><i class="fas fa-paperclip"></i> Lampiran</h6>
-                                                                    ${ticket.attachments.map(att => `
+                                                                        <div class="ticket-attachments">
+                                                                            <h6><i class="fas fa-paperclip"></i> Lampiran</h6>
+                                                                            ${ticket.attachments.map(att => `
                                 <div class="attachment-item">
                                     <div class="attachment-icon">
                                         <i class="fas fa-file"></i>
@@ -2608,8 +2646,8 @@
                                     </a>
                                 </div>
                             `).join('')}
-                                                                </div>
-                                                            ` : ''}
+                                                                        </div>
+                                                                    ` : ''}
                 </div>
             `;
 
