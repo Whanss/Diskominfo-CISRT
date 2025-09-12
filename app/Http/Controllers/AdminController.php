@@ -68,8 +68,15 @@ class AdminController extends Controller
         // SLA Compliance calculations
         $slaCompliance = $this->calculateSLACompliance();
 
-        // Processing time analytics - FIXED: Only use resolved tickets
-        $processingTimeData = $this->getProcessingTimeAnalytics($selectedMonth);
+        // Collect optional filters from request
+        $filters = [
+            'kecamatan_id' => $request->input('kecamatan_id'),
+            'layanan_id' => $request->input('layanan_id'),
+            'layanan_category_id' => $request->input('layanan_category_id'),
+        ];
+
+        // Processing time analytics - use filters
+        $processingTimeData = $this->getProcessingTimeAnalytics($selectedMonth, $filters);
 
         // Recent tickets for the table
         $recentTickets = \App\Models\Ticket::with(['layanan'])
@@ -77,8 +84,12 @@ class AdminController extends Controller
             ->limit(10)
             ->get();
 
+        // Dropdown data for filters
+        $kecamatanList = \App\Models\Kecamatan::orderBy('nama')->get(['id', 'nama']);
+        $layananList = \App\Models\MasterLayanan::where('is_active', true)->orderBy('name')->get(['id', 'name']);
+
         // Get ticket counts per month for the selected range
-        $chartData = $this->getChartData($selectedMonth, $monthsToShow);
+        $chartData = $this->getChartData($selectedMonth, $monthsToShow, $filters);
 
         return view('admin.admin_dashboard', compact(
             'totalTickets',
@@ -91,14 +102,16 @@ class AdminController extends Controller
             'processingTimeData',
             'selectedMonth',
             'monthsToShow',
-            'monthOptions'
+            'monthOptions',
+            'kecamatanList',
+            'layananList'
         ) + $chartData);
     }
 
     /**
      * Get chart data for a specific month - now shows daily data within the month
      */
-    public function getChartData($selectedMonth = null, $monthsToShow = 6)
+    public function getChartData($selectedMonth = null, $monthsToShow = 6, $filters = [])
     {
         if ($selectedMonth) {
             // Parse the selected month and get daily data for that month
@@ -107,26 +120,51 @@ class AdminController extends Controller
             $endDate = $selectedDate->copy()->endOfMonth();
 
             // Get daily tickets for the selected month (by created_at)
-            $dailyTickets = \App\Models\Ticket::select(
+            $dailyTicketsQuery = \App\Models\Ticket::select(
                 DB::raw('DAY(created_at) as day'),
                 DB::raw('count(*) as total'),
                 DB::raw('sum(case when status = "pending" then 1 else 0 end) as pending'),
                 DB::raw('sum(case when status = "diterima/approved" then 1 else 0 end) as accepted'),
                 DB::raw('sum(case when status = "ditolak/rejected" then 1 else 0 end) as rejected')
             )
-                ->whereBetween('created_at', [$startDate, $endDate])
+                ->whereBetween('created_at', [$startDate, $endDate]);
+
+            // Apply optional filters
+            if (!empty($filters['kecamatan_id'])) {
+                $dailyTicketsQuery->where('kecamatan_id', $filters['kecamatan_id']);
+            }
+            if (!empty($filters['layanan_id'])) {
+                $dailyTicketsQuery->where('layanan_id', $filters['layanan_id']);
+            }
+            if (!empty($filters['layanan_category_id'])) {
+                $dailyTicketsQuery->where('layanan_category_id', $filters['layanan_category_id']);
+            }
+
+            $dailyTickets = $dailyTicketsQuery
                 ->groupBy('day')
                 ->orderBy('day')
                 ->get();
 
             // Get daily resolved tickets for the selected month (by resolved_at date)
-            $dailyResolved = \App\Models\Ticket::select(
+            $dailyResolvedQuery = \App\Models\Ticket::select(
                 DB::raw('DAY(resolved_at) as day'),
                 DB::raw('COUNT(*) as resolved')
             )
                 ->where('status', 'selesai/completed')
                 ->whereNotNull('resolved_at')
-                ->whereBetween('resolved_at', [$startDate, $endDate])
+                ->whereBetween('resolved_at', [$startDate, $endDate]);
+
+            if (!empty($filters['kecamatan_id'])) {
+                $dailyResolvedQuery->where('kecamatan_id', $filters['kecamatan_id']);
+            }
+            if (!empty($filters['layanan_id'])) {
+                $dailyResolvedQuery->where('layanan_id', $filters['layanan_id']);
+            }
+            if (!empty($filters['layanan_category_id'])) {
+                $dailyResolvedQuery->where('layanan_category_id', $filters['layanan_category_id']);
+            }
+
+            $dailyResolved = $dailyResolvedQuery
                 ->groupBy('day')
                 ->orderBy('day')
                 ->get();
@@ -171,26 +209,50 @@ class AdminController extends Controller
             $endDate = Carbon::now()->endOfMonth();
 
             // Created-based monthly aggregates (totals and non-resolved statuses)
-            $monthlyCreated = \App\Models\Ticket::select(
+            $monthlyCreatedQuery = \App\Models\Ticket::select(
                 DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
                 DB::raw('count(*) as total'),
                 DB::raw('sum(case when status = "pending" then 1 else 0 end) as pending'),
                 DB::raw('sum(case when status = "diterima/approved" then 1 else 0 end) as accepted'),
                 DB::raw('sum(case when status = "ditolak/rejected" then 1 else 0 end) as rejected')
             )
-                ->whereBetween('created_at', [$startDate, $endDate])
+                ->whereBetween('created_at', [$startDate, $endDate]);
+
+            if (!empty($filters['kecamatan_id'])) {
+                $monthlyCreatedQuery->where('kecamatan_id', $filters['kecamatan_id']);
+            }
+            if (!empty($filters['layanan_id'])) {
+                $monthlyCreatedQuery->where('layanan_id', $filters['layanan_id']);
+            }
+            if (!empty($filters['layanan_category_id'])) {
+                $monthlyCreatedQuery->where('layanan_category_id', $filters['layanan_category_id']);
+            }
+
+            $monthlyCreated = $monthlyCreatedQuery
                 ->groupBy('month')
                 ->orderBy('month')
                 ->get();
 
             // Resolved-based monthly aggregates (completed tickets counted by resolved_at)
-            $monthlyResolved = \App\Models\Ticket::select(
+            $monthlyResolvedQuery = \App\Models\Ticket::select(
                 DB::raw('DATE_FORMAT(resolved_at, "%Y-%m") as month'),
                 DB::raw('COUNT(*) as resolved')
             )
                 ->where('status', 'selesai/completed')
                 ->whereNotNull('resolved_at')
-                ->whereBetween('resolved_at', [$startDate, $endDate])
+                ->whereBetween('resolved_at', [$startDate, $endDate]);
+
+            if (!empty($filters['kecamatan_id'])) {
+                $monthlyResolvedQuery->where('kecamatan_id', $filters['kecamatan_id']);
+            }
+            if (!empty($filters['layanan_id'])) {
+                $monthlyResolvedQuery->where('layanan_id', $filters['layanan_id']);
+            }
+            if (!empty($filters['layanan_category_id'])) {
+                $monthlyResolvedQuery->where('layanan_category_id', $filters['layanan_category_id']);
+            }
+
+            $monthlyResolved = $monthlyResolvedQuery
                 ->groupBy('month')
                 ->orderBy('month')
                 ->get();
@@ -240,7 +302,13 @@ class AdminController extends Controller
         $selectedMonth = $request->input('month');
         $monthsToShow = $request->input('months_to_show', 6);
 
-        $chartData = $this->getChartData($selectedMonth, $monthsToShow);
+        $filters = [
+            'kecamatan_id' => $request->input('kecamatan_id'),
+            'layanan_id' => $request->input('layanan_id'),
+            'layanan_category_id' => $request->input('layanan_category_id'),
+        ];
+
+        $chartData = $this->getChartData($selectedMonth, $monthsToShow, $filters);
 
         return response()->json([
             'success' => true,
@@ -251,7 +319,7 @@ class AdminController extends Controller
     /**
      * Get processing time analytics - now shows monthly average processing time
      */
-    public function getProcessingTimeAnalytics($selectedMonth = null)
+    public function getProcessingTimeAnalytics($selectedMonth = null, $filters = [])
     {
         if ($selectedMonth) {
             // Show last 6 months including the selected month
@@ -260,7 +328,7 @@ class AdminController extends Controller
             $endDate = $selectedDate->copy()->endOfMonth();
 
             // Get monthly resolved tickets data
-            $monthlyData = \App\Models\Ticket::select(
+            $monthlyDataQuery = \App\Models\Ticket::select(
                 DB::raw('DATE_FORMAT(resolved_at, "%Y-%m") as month'),
                 DB::raw('COUNT(*) as resolved_count'),
                 DB::raw('AVG(TIMESTAMPDIFF(HOUR, created_at, resolved_at)) as avg_processing_hours')
@@ -268,7 +336,19 @@ class AdminController extends Controller
                 ->where('status', 'selesai/completed')
                 ->whereNotNull('resolved_at')
                 ->whereNotNull('created_at')
-                ->whereBetween('resolved_at', [$startDate, $endDate])
+                ->whereBetween('resolved_at', [$startDate, $endDate]);
+
+            if (!empty($filters['kecamatan_id'])) {
+                $monthlyDataQuery->where('kecamatan_id', $filters['kecamatan_id']);
+            }
+            if (!empty($filters['layanan_id'])) {
+                $monthlyDataQuery->where('layanan_id', $filters['layanan_id']);
+            }
+            if (!empty($filters['layanan_category_id'])) {
+                $monthlyDataQuery->where('layanan_category_id', $filters['layanan_category_id']);
+            }
+
+            $monthlyData = $monthlyDataQuery
                 ->groupBy('month')
                 ->orderBy('month')
                 ->get();
@@ -293,12 +373,23 @@ class AdminController extends Controller
 
                 // Get raw processing times for pie chart (only for selected month)
                 if ($monthKey === $selectedMonth) {
-                    $monthTickets = \App\Models\Ticket::where('status', 'selesai/completed')
+                    $monthTicketsQuery = \App\Models\Ticket::where('status', 'selesai/completed')
                         ->whereNotNull('resolved_at')
                         ->whereNotNull('created_at')
                         ->whereYear('resolved_at', $monthDate->year)
-                        ->whereMonth('resolved_at', $monthDate->month)
-                        ->get();
+                        ->whereMonth('resolved_at', $monthDate->month);
+
+                    if (!empty($filters['kecamatan_id'])) {
+                        $monthTicketsQuery->where('kecamatan_id', $filters['kecamatan_id']);
+                    }
+                    if (!empty($filters['layanan_id'])) {
+                        $monthTicketsQuery->where('layanan_id', $filters['layanan_id']);
+                    }
+                    if (!empty($filters['layanan_category_id'])) {
+                        $monthTicketsQuery->where('layanan_category_id', $filters['layanan_category_id']);
+                    }
+
+                    $monthTickets = $monthTicketsQuery->get();
 
                     foreach ($monthTickets as $ticket) {
                         $createdAt = Carbon::parse($ticket->created_at);
@@ -325,7 +416,8 @@ class AdminController extends Controller
             $startDate = Carbon::now()->subMonths(5)->startOfMonth();
             $endDate = Carbon::now()->endOfMonth();
 
-            $monthlyData = \App\Models\Ticket::select(
+            // FIXED: Define the query variable properly
+            $monthlyDataQuery = \App\Models\Ticket::select(
                 DB::raw('DATE_FORMAT(resolved_at, "%Y-%m") as month'),
                 DB::raw('COUNT(*) as resolved_count'),
                 DB::raw('AVG(TIMESTAMPDIFF(HOUR, created_at, resolved_at)) as avg_processing_hours')
@@ -333,7 +425,20 @@ class AdminController extends Controller
                 ->where('status', 'selesai/completed')
                 ->whereNotNull('resolved_at')
                 ->whereNotNull('created_at')
-                ->whereBetween('resolved_at', [$startDate, $endDate])
+                ->whereBetween('resolved_at', [$startDate, $endDate]);
+
+            // Apply optional filters
+            if (!empty($filters['kecamatan_id'])) {
+                $monthlyDataQuery->where('kecamatan_id', $filters['kecamatan_id']);
+            }
+            if (!empty($filters['layanan_id'])) {
+                $monthlyDataQuery->where('layanan_id', $filters['layanan_id']);
+            }
+            if (!empty($filters['layanan_category_id'])) {
+                $monthlyDataQuery->where('layanan_category_id', $filters['layanan_category_id']);
+            }
+
+            $monthlyData = $monthlyDataQuery
                 ->groupBy('month')
                 ->orderBy('month')
                 ->get();
@@ -392,7 +497,12 @@ class AdminController extends Controller
     public function getProcessingTimeAnalyticsAjax(Request $request)
     {
         $selectedMonth = $request->input('month');
-        $processingTimeData = $this->getProcessingTimeAnalytics($selectedMonth);
+        $filters = [
+            'kecamatan_id' => $request->input('kecamatan_id'),
+            'layanan_id' => $request->input('layanan_id'),
+            'layanan_category_id' => $request->input('layanan_category_id'),
+        ];
+        $processingTimeData = $this->getProcessingTimeAnalytics($selectedMonth, $filters);
 
         return response()->json([
             'success' => true,
@@ -420,8 +530,14 @@ class AdminController extends Controller
 
         $newMonth = $currentDate->subMonth()->format('Y-m');
 
-        $chartData = $this->getChartData($newMonth, $monthsToShow);
-        $processingTimeData = $this->getProcessingTimeAnalytics($newMonth);
+        $filters = [
+            'kecamatan_id' => $request->input('kecamatan_id'),
+            'layanan_id' => $request->input('layanan_id'),
+            'layanan_category_id' => $request->input('layanan_category_id'),
+        ];
+
+        $chartData = $this->getChartData($newMonth, $monthsToShow, $filters);
+        $processingTimeData = $this->getProcessingTimeAnalytics($newMonth, $filters);
 
         return response()->json([
             'success' => true,
@@ -451,8 +567,14 @@ class AdminController extends Controller
 
         $newMonth = $currentDate->addMonth()->format('Y-m');
 
-        $chartData = $this->getChartData($newMonth, $monthsToShow);
-        $processingTimeData = $this->getProcessingTimeAnalytics($newMonth);
+        $filters = [
+            'kecamatan_id' => $request->input('kecamatan_id'),
+            'layanan_id' => $request->input('layanan_id'),
+            'layanan_category_id' => $request->input('layanan_category_id'),
+        ];
+
+        $chartData = $this->getChartData($newMonth, $monthsToShow, $filters);
+        $processingTimeData = $this->getProcessingTimeAnalytics($newMonth, $filters);
 
         return response()->json([
             'success' => true,
