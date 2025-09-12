@@ -331,11 +331,11 @@ class AdminController extends Controller
             $monthlyDataQuery = \App\Models\Ticket::select(
                 DB::raw('DATE_FORMAT(resolved_at, "%Y-%m") as month'),
                 DB::raw('COUNT(*) as resolved_count'),
-                DB::raw('AVG(TIMESTAMPDIFF(HOUR, created_at, resolved_at)) as avg_processing_hours')
+                DB::raw('AVG(TIMESTAMPDIFF(HOUR, accepted_at, resolved_at)) as avg_processing_hours')
             )
                 ->where('status', 'selesai/completed')
                 ->whereNotNull('resolved_at')
-                ->whereNotNull('created_at')
+                ->whereNotNull('accepted_at')
                 ->whereBetween('resolved_at', [$startDate, $endDate]);
 
             if (!empty($filters['kecamatan_id'])) {
@@ -375,7 +375,7 @@ class AdminController extends Controller
                 if ($monthKey === $selectedMonth) {
                     $monthTicketsQuery = \App\Models\Ticket::where('status', 'selesai/completed')
                         ->whereNotNull('resolved_at')
-                        ->whereNotNull('created_at')
+                        ->whereNotNull('accepted_at')
                         ->whereYear('resolved_at', $monthDate->year)
                         ->whereMonth('resolved_at', $monthDate->month);
 
@@ -392,9 +392,9 @@ class AdminController extends Controller
                     $monthTickets = $monthTicketsQuery->get();
 
                     foreach ($monthTickets as $ticket) {
-                        $createdAt = Carbon::parse($ticket->created_at);
+                        $acceptedAt = Carbon::parse($ticket->accepted_at);
                         $resolvedAt = Carbon::parse($ticket->resolved_at);
-                        $processingTimeHours = $createdAt->diffInHours($resolvedAt);
+                        $processingTimeHours = $acceptedAt->diffInHours($resolvedAt);
 
                         if ($processingTimeHours > 0) {
                             $allProcessingTimes[] = $processingTimeHours;
@@ -420,11 +420,11 @@ class AdminController extends Controller
             $monthlyDataQuery = \App\Models\Ticket::select(
                 DB::raw('DATE_FORMAT(resolved_at, "%Y-%m") as month'),
                 DB::raw('COUNT(*) as resolved_count'),
-                DB::raw('AVG(TIMESTAMPDIFF(HOUR, created_at, resolved_at)) as avg_processing_hours')
+                DB::raw('AVG(TIMESTAMPDIFF(HOUR, accepted_at, resolved_at)) as avg_processing_hours')
             )
                 ->where('status', 'selesai/completed')
                 ->whereNotNull('resolved_at')
-                ->whereNotNull('created_at')
+                ->whereNotNull('accepted_at')
                 ->whereBetween('resolved_at', [$startDate, $endDate]);
 
             // Apply optional filters
@@ -465,15 +465,15 @@ class AdminController extends Controller
             $currentMonthDate = Carbon::now();
             $currentMonthTickets = \App\Models\Ticket::where('status', 'selesai/completed')
                 ->whereNotNull('resolved_at')
-                ->whereNotNull('created_at')
+                ->whereNotNull('accepted_at')
                 ->whereYear('resolved_at', $currentMonthDate->year)
                 ->whereMonth('resolved_at', $currentMonthDate->month)
                 ->get();
 
             foreach ($currentMonthTickets as $ticket) {
-                $createdAt = Carbon::parse($ticket->created_at);
+                $acceptedAt = Carbon::parse($ticket->accepted_at);
                 $resolvedAt = Carbon::parse($ticket->resolved_at);
-                $processingTimeHours = $createdAt->diffInHours($resolvedAt);
+                $processingTimeHours = $acceptedAt->diffInHours($resolvedAt);
 
                 if ($processingTimeHours > 0) {
                     $allProcessingTimes[] = $processingTimeHours;
