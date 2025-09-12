@@ -156,6 +156,90 @@
             pointer-events: none;
         }
 
+        /* Simple CSS tooltip for info icons */
+        .info-tooltip {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            cursor: help;
+        }
+
+        .info-tooltip .tooltip-text {
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(17, 24, 39, 0.95);
+            /* gray-900 with opacity */
+            color: #fff;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            line-height: 1.2;
+            white-space: normal;
+            width: max-content;
+            max-width: 260px;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            z-index: 1000;
+        }
+
+        .info-tooltip:hover .tooltip-text {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-4px);
+        }
+
+        .info-tooltip .tooltip-text::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: rgba(17, 24, 39, 0.95) transparent transparent transparent;
+        }
+
+        /* Use a portal tooltip to escape overflow clipping */
+        .global-tooltip {
+            position: fixed;
+            background: rgba(17, 24, 39, 0.95);
+            color: #fff;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            line-height: 1.2;
+            box-shadow: var(--shadow-lg);
+            z-index: 9999;
+            pointer-events: none;
+            max-width: 280px;
+            display: none;
+            white-space: normal;
+        }
+
+        .global-tooltip::after {
+            content: '';
+            position: absolute;
+            border-width: 6px;
+            border-style: solid;
+            border-color: rgba(17, 24, 39, 0.95) transparent transparent transparent;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 100%;
+        }
+
+        .global-tooltip.below::after {
+            top: -6px;
+            border-color: transparent transparent rgba(17, 24, 39, 0.95) transparent;
+        }
+
+        /* Hide inline tooltip (used only as text source) */
+        .info-tooltip .tooltip-text {
+            display: none !important;
+        }
+
         /* Custom Calendar Dropdown */
         .calendar-dropdown {
             position: absolute;
@@ -170,8 +254,9 @@
             margin-top: 4px;
             overflow: hidden;
             display: none;
-            min-width: 350px;
-            width: max-content;
+            min-width: 320px;
+            max-width: 360px;
+            width: auto;
         }
 
         .calendar-dropdown.show {
@@ -1117,13 +1202,13 @@
             }
 
             .year-month-selectors {
-                flex-direction: column;
-                gap: 0.5rem;
+                flex-direction: row;
+                gap: 0.75rem;
             }
 
             .year-selector,
             .month-selector-dropdown {
-                min-width: auto;
+                min-width: 120px;
             }
         }
 
@@ -1423,7 +1508,12 @@
                                 <div class="text-center p-2 rounded bg-light">
                                     <div class="fw-bold text-primary fs-5">
                                         {{ round(($resolvedTickets / max($totalTickets, 1)) * 100) }}%</div>
-                                    <small class="text-muted">Tingkat Penyelesaian</small>
+                                    <small class="text-muted">Tingkat Penyelesaian
+                                        <span class="info-tooltip ms-1">
+                                            <i class="fas fa-info-circle"></i>
+                                            <span class="tooltip-text">Rumus: (tiket selesai ÷ total tiket) × 100</span>
+                                        </span>
+                                    </small>
                                 </div>
                             </div>
                             <div class="col-6 col-lg-3">
@@ -1431,7 +1521,13 @@
                                     <div class="fw-bold text-success fs-5">
                                         {{ round((($acceptedTickets + $resolvedTickets) / max($totalTickets, 1)) * 100) }}%
                                     </div>
-                                    <small class="text-muted">Tingkat Persetujuan</small>
+                                    <small class="text-muted">Tingkat Persetujuan
+                                        <span class="info-tooltip ms-1">
+                                            <i class="fas fa-info-circle"></i>
+                                            <span class="tooltip-text">Rumus: ((tiket yang sudah dikerjakan + tiket
+                                                selesai) ÷ total tiket) × 100</span>
+                                        </span>
+                                    </small>
                                 </div>
                             </div>
                             <div class="col-6 col-lg-3">
@@ -1454,31 +1550,17 @@
 
         <!-- Enhanced Month Navigation -->
         <div class="month-navigation">
-            <div class="d-flex justify-content-between align-items-center nav-controls">
-                <div class="d-flex align-items-center gap-3">
-                    <button class="btn btn-primary" id="prevMonthBtn" onclick="navigatePreviousMonth()">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-
-                    <div class="month-display" id="currentMonthDisplay">
-                        {{ Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->format('F Y') }}
-                    </div>
-
-                    <button class="btn btn-primary" id="nextMonthBtn" onclick="navigateNextMonth()">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
+            <div class="d-flex align-items-center gap-3">
+                <!-- Day Range Selector on the left -->
+                <div class="range-selector">
+                    <span style="font-size: 0.875rem; color: var(--gray-600); margin-right: 0.5rem;">Tampilkan:</span>
+                    <button onclick="changeDayRange(7)" class="day-range-btn">7 Hari</button>
+                    <button onclick="changeDayRange(15)" class="day-range-btn">15 Hari</button>
+                    <button onclick="changeDayRange(30)" class="day-range-btn active">Semua Hari</button>
                 </div>
 
-                <div class="d-flex align-items-center gap-3">
-                    <!-- Day Range Selector -->
-                    <div class="range-selector">
-                        <span style="font-size: 0.875rem; color: var(--gray-600); margin-right: 0.5rem;">Tampilkan:</span>
-                        <button onclick="changeDayRange(7)" class="day-range-btn">7 Hari</button>
-                        <button onclick="changeDayRange(15)" class="day-range-btn">15 Hari</button>
-                        <button onclick="changeDayRange(30)" class="day-range-btn active">Semua Hari</button>
-                    </div>
-
-                    <!-- Calendar Picker -->
+                <!-- Month/Year display with Today button on the right side -->
+                <div class="ms-auto d-flex align-items-center gap-2">
                     <div class="date-picker-container">
                         <input type="text" class="date-picker-input" id="monthPicker" readonly
                             value="{{ Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->format('F Y') }}"
@@ -1504,7 +1586,7 @@
                             </div>
                             <div class="year-month-selectors">
                                 <select class="year-selector" id="yearSelector">
-                                    @for ($year = 2020; $year <= Carbon\Carbon::now()->addYears(2)->year; $year++)
+                                    @for ($year = 2010; $year <= Carbon\Carbon::now()->addYears(20)->year; $year++)
                                         <option value="{{ $year }}"
                                             {{ $year == Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->year ? 'selected' : '' }}>
                                             {{ $year }}
@@ -1527,207 +1609,215 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Reset to Current Month -->
                     <button class="nav-button secondary" onclick="resetToCurrentMonth()">
                         <i class="fas fa-calendar-day"></i> Hari Ini
                     </button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Charts Section -->
-        <div class="row mb-4">
-            <div class="col-lg-8 mb-4">
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 style="margin: 0; font-weight: 600; color: var(--gray-900);">📊 Tren Tiket</h6>
-                                <div class="d-flex gap-2 align-items-center my-2">
-                                    <div class="filter-select with-icon" style="position: relative; width: 180px;">
-                                        <select id="filterKecamatan" class="form-select form-select-sm"
-                                            style="width: 100%; padding-right: 1.75rem;">
-                                            <option value="">Semua Kecamatan</option>
-                                            @foreach ($kecamatanList ?? [] as $k)
-                                                <option value="{{ data_get($k, 'id') }}">{{ data_get($k, 'nama') }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <i class="fas fa-caret-down filter-caret"
-                                            style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: var(--gray-400); pointer-events: none; transition: transform 0.15s ease;"></i>
-                                    </div>
-                                    <div class="filter-select with-icon" style="position: relative; width: 180px;">
-                                        <select id="filterLayanan" class="form-select form-select-sm"
-                                            style="width: 100%; padding-right: 1.75rem;">
-                                            <option value="">Semua Layanan</option>
-                                            @foreach ($layananList ?? [] as $l)
-                                                <option value="{{ data_get($l, 'id') }}">{{ data_get($l, 'name') }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <i class="fas fa-caret-down filter-caret"
-                                            style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: var(--gray-400); pointer-events: none; transition: transform 0.15s ease;"></i>
-                                    </div>
-                                    <div class="filter-select with-icon" style="position: relative; width: 210px;">
-                                        <select id="filterKategori" class="form-select form-select-sm"
-                                            style="width: 100%; padding-right: 1.75rem;">
-                                            <option value="">Semua Kategori</option>
-                                        </select>
-                                        <i class="fas fa-caret-down filter-caret"
-                                            style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: var(--gray-400); pointer-events: none; transition: transform 0.15s ease;"></i>
-                                    </div>
-                                    <button class="btn btn-outline-secondary btn-sm" id="applyFiltersBtn">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
-                                <p style="margin: 0.25rem 0 0 0; font-size: 0.875rem; color: var(--gray-600);"
-                                    id="chartSubtitle">
-                                    @if ($selectedMonth)
-                                        Data harian untuk
-                                        {{ Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->format('F Y') }}
-                                    @else
-                                        {{ $monthsToShow }} bulan terakhir hingga
-                                        {{ Carbon\Carbon::now()->format('F Y') }}
-                                    @endif
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="chart-body">
-                        <div class="chart-loading" id="chartLoading" style="display: none;">
-                            <div class="spinner"></div>
-                        </div>
-                        <canvas id="ticketChart" width="400" height="200"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4 mb-4">
-                <div class="chart-card">
-                    <div class="chart-header">
+    <!-- Charts Section -->
+    <div class="row mb-4">
+        <div class="col-lg-8 mb-4">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 style="margin: 0; font-weight: 600; color: var(--gray-900);">⏱️ Processing Time Analytics
-                            </h6>
+                            <h6 style="margin: 0; font-weight: 600; color: var(--gray-900);">📊 Tren Tiket</h6>
+                            <div class="d-flex gap-2 align-items-center my-2">
+                                <div class="filter-select with-icon" style="position: relative; width: 180px;">
+                                    <select id="filterKecamatan" class="form-select form-select-sm"
+                                        style="width: 100%; padding-right: 1.75rem;">
+                                        <option value="">Semua Kecamatan</option>
+                                        @foreach ($kecamatanList ?? [] as $k)
+                                            <option value="{{ data_get($k, 'id') }}">{{ data_get($k, 'nama') }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <i class="fas fa-caret-down filter-caret"
+                                        style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: var(--gray-400); pointer-events: none; transition: transform 0.15s ease;"></i>
+                                </div>
+                                <div class="filter-select with-icon" style="position: relative; width: 180px;">
+                                    <select id="filterLayanan" class="form-select form-select-sm"
+                                        style="width: 100%; padding-right: 1.75rem;">
+                                        <option value="">Semua Layanan</option>
+                                        @foreach ($layananList ?? [] as $l)
+                                            <option value="{{ data_get($l, 'id') }}">{{ data_get($l, 'name') }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <i class="fas fa-caret-down filter-caret"
+                                        style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: var(--gray-400); pointer-events: none; transition: transform 0.15s ease;"></i>
+                                </div>
+                                <div class="filter-select with-icon" style="position: relative; width: 210px;">
+                                    <select id="filterKategori" class="form-select form-select-sm"
+                                        style="width: 100%; padding-right: 1.75rem;">
+                                        <option value="">Semua Kategori</option>
+                                    </select>
+                                    <i class="fas fa-caret-down filter-caret"
+                                        style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: var(--gray-400); pointer-events: none; transition: transform 0.15s ease;"></i>
+                                </div>
+                                <button class="btn btn-outline-secondary btn-sm" id="applyFiltersBtn">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
                             <p style="margin: 0.25rem 0 0 0; font-size: 0.875rem; color: var(--gray-600);"
-                                id="processingSubtitle">
-                                Waktu pemrosesan tiket selesai -
-                                {{ Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->format('F Y') }}
+                                id="chartSubtitle">
+                                @if ($selectedMonth)
+                                    Data harian untuk
+                                    {{ Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->format('F Y') }}
+                                @else
+                                    {{ $monthsToShow }} bulan terakhir hingga
+                                    {{ Carbon\Carbon::now()->format('F Y') }}
+                                @endif
                             </p>
                         </div>
                     </div>
-                    <div class="chart-body">
-                        <div class="chart-loading" id="processingLoading" style="display: none;">
-                            <div class="spinner"></div>
-                        </div>
-                        <canvas id="processingTimeChart" width="400" height="200"></canvas>
+                </div>
+                <div class="chart-body">
+                    <div class="chart-loading" id="chartLoading" style="display: none;">
+                        <div class="spinner"></div>
                     </div>
+                    <canvas id="ticketChart" width="400" height="200"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Recent Tickets Table -->
-        <div class="row">
-            <div class="col-12">
-                <div class="table-card">
-                    <div class="table-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 style="margin: 0; font-weight: 600; color: var(--gray-900);">
-                                    <i class="bi bi-ticket-perforated status-icon ticket"></i> Recent Tickets
-                                </h6>
-                                <p style="margin: 0.25rem 0 0 0; font-size: 0.875rem; color: var(--gray-600);">Tiket
-                                    Terbaru</p>
-                            </div>
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-outline btn-sm" onclick="loadRecentTickets()">
-                                    <i class="fas fa-sync-alt"></i> Refresh
-                                </button>
-                                <a href="/admin/tickets" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-list"></i> View All
-                                </a>
-                            </div>
-                        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div>
+                        <h6 style="margin: 0; font-weight: 600; color: var(--gray-900);">⏱️ Processing Time Analytics
+                        </h6>
+                        <p style="margin: 0.25rem 0 0 0; font-size: 0.875rem; color: var(--gray-600);"
+                            id="processingSubtitle">
+                            Waktu pemrosesan tiket selesai -
+                            <span
+                                id="processingMonthText">{{ Carbon\Carbon::createFromFormat('Y-m', $selectedMonth)->format('F Y') }}</span>
+                            <span class="info-tooltip ms-1">
+                                <i class="fas fa-info-circle"></i>
+                                <span class="tooltip-text">Persentase = (jumlah tiket dalam kategori ÷ total tiket selesai)
+                                    × 100
+
+                                </span>
+                        </p>
                     </div>
-                    <div class="table-responsive">
-                        <table class="table" id="recentTicketsTable">
-                            <thead>
-                                <tr>
-                                    <th>Kode Tracking</th>
-                                    <th>Judul</th>
-                                    <th>Pelapor</th>
-                                    <th>Status</th>
-                                    <th>Dibuat</th>
-                                    <th>Waktu Diterima</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recentTicketsBody">
-                                @foreach ($recentTickets->take(3) as $ticket)
-                                    <tr>
-                                        <td><span class="badge primary">{{ $ticket->code_tracking }}</span></td>
-                                        <td>{{ Str::limit($ticket->judul ?? 'No Title', 30) }}</td>
-                                        <td>{{ $ticket->nama_pelapor ?? 'Anonymous' }}</td>
-                                        <td>
-                                            @if ($ticket->status == 'pending')
-                                                <span class="badge warning"><i class="bi bi-hourglass-split"></i>
-                                                    Pending</span>
-                                            @elseif($ticket->status == 'diterima/approved')
-                                                <span class="badge success"><i class="bi bi-check-lg"></i>
-                                                    Diterima/Approved</span>
-                                            @elseif($ticket->status == 'selesai/completed')
-                                                <span class="badge info"><i class="bi bi-check-circle"></i>
-                                                    Resolved</span>
-                                            @elseif($ticket->status == 'ditolak/rejected')
-                                                <span class="badge danger"><i class="bi bi-x-circle"></i>
-                                                    Ditolak/Rejected</span>
-                                            @else
-                                                <span class="badge secondary">{{ ucfirst($ticket->status) }}</span>
-                                            @endif
-                                        </td>
-                                        <td>{{ $ticket->created_at->diffForHumans() }}</td>
-                                        <td>
-                                            @if ($ticket->accepted_at)
-                                                <span style="color: var(--blue-600);">
-                                                    {{ $ticket->accepted_at->diffForHumans() }}
-                                                </span>
-                                            @else
-                                                <span style="color: var(--gray-500);">Belum Diterima</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <div class="d-flex gap-2">
-                                                <a class="btn btn-info btn-sm"
-                                                    href="{{ route('admin.tickets.show', $ticket) }}">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                @if ($ticket->status == 'pending')
-                                                    <button class="btn btn-success btn-sm"
-                                                        onclick="acceptTicket('{{ $ticket->id }}')">
-                                                        <i class="fas fa-check"></i>
-                                                    </button>
-                                                    <button class="btn btn-danger btn-sm"
-                                                        onclick="rejectTicket('{{ $ticket->id }}')">
-                                                        <i class="fas fa-times"></i>
-                                                    </button>
-                                                @endif
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                        @if ($recentTickets->count() == 0)
-                            <div class="empty-state">
-                                <div class="mb-3"><i class="fas fa-inbox"></i></div>
-                                <h6>Tidak ada tiket</h6>
-                                <p>Belum ada tiket yang tersedia untuk ditampilkan.</p>
-                            </div>
-                        @endif
+                </div>
+                <div class="chart-body">
+                    <div class="chart-loading" id="processingLoading" style="display: none;">
+                        <div class="spinner"></div>
                     </div>
+                    <canvas id="processingTimeChart" width="400" height="200"></canvas>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Recent Tickets Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="table-card">
+                <div class="table-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 style="margin: 0; font-weight: 600; color: var(--gray-900);">
+                                <i class="bi bi-ticket-perforated status-icon ticket"></i> Recent Tickets
+                            </h6>
+                            <p style="margin: 0.25rem 0 0 0; font-size: 0.875rem; color: var(--gray-600);">Tiket
+                                Terbaru</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="/admin/tickets" class="btn btn-primary btn-sm">
+                                <i class="fas fa-list"></i> View All
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table" id="recentTicketsTable">
+                        <thead>
+                            <tr>
+                                <th>Kode Tracking</th>
+                                <th>Judul</th>
+                                <th>Pelapor</th>
+                                <th>Status</th>
+                                <th>Dibuat</th>
+                                <th>Waktu Diterima</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentTicketsBody">
+                            @foreach ($recentTickets->take(3) as $ticket)
+                                <tr>
+                                    <td><span class="badge primary">{{ $ticket->code_tracking }}</span></td>
+                                    <td>{{ Str::limit($ticket->judul ?? 'No Title', 30) }}</td>
+                                    <td>{{ $ticket->nama_pelapor ?? 'Anonymous' }}</td>
+                                    <td>
+                                        @if ($ticket->status == 'pending')
+                                            <span class="badge warning"><i class="bi bi-hourglass-split"></i>
+                                                Pending</span>
+                                        @elseif($ticket->status == 'diterima/approved')
+                                            <span class="badge success"><i class="bi bi-check-lg"></i>
+                                                Diterima/Approved</span>
+                                        @elseif($ticket->status == 'selesai/completed')
+                                            <span class="badge info"><i class="bi bi-check-circle"></i>
+                                                Resolved</span>
+                                        @elseif($ticket->status == 'ditolak/rejected')
+                                            <span class="badge danger"><i class="bi bi-x-circle"></i>
+                                                Ditolak/Rejected</span>
+                                        @else
+                                            <span class="badge secondary">{{ ucfirst($ticket->status) }}</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ $ticket->created_at->diffForHumans() }}</td>
+                                    <td>
+                                        @if ($ticket->status == 'ditolak/rejected')
+                                            <span style="color: var(--red-600);">Ditolak</span>
+                                        @elseif ($ticket->accepted_at)
+                                            @php
+                                                $createdAt = \Carbon\Carbon::parse($ticket->created_at);
+                                                $acceptedAt = \Carbon\Carbon::parse($ticket->accepted_at);
+                                                $hours = round($createdAt->diffInMinutes($acceptedAt) / 60, 1);
+                                            @endphp
+                                            <span style="color: var(--blue-600);">{{ $hours }} jam</span>
+                                        @else
+                                            <span style="color: var(--gray-500);">-</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            <a class="btn btn-info btn-sm"
+                                                href="{{ route('admin.tickets.show', $ticket) }}">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            @if ($ticket->status == 'pending')
+                                                <button class="btn btn-success btn-sm"
+                                                    onclick="acceptTicket('{{ $ticket->id }}')">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                                <button class="btn btn-danger btn-sm"
+                                                    onclick="rejectTicket('{{ $ticket->id }}')">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    @if ($recentTickets->count() == 0)
+                        <div class="empty-state">
+                            <div class="mb-3"><i class="fas fa-inbox"></i></div>
+                            <h6>Tidak ada tiket</h6>
+                            <p>Belum ada tiket yang tersedia untuk ditampilkan.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 
     {{-- Chart.js CDN --}}
@@ -1783,51 +1873,29 @@
             resolvedGradient.addColorStop(1, 'rgba(99, 102, 241, 0.1)');
 
             ticketChart = new Chart(ctx, {
-                type: 'line',
+                type: 'bar',
                 data: {
                     labels: @json($months),
                     datasets: [{
-                            label: 'Total Tiket',
+                            label: 'Tiket Ditambahkan',
                             data: @json($totalCounts),
-                            // Cyan to distinguish clearly from 'Selesai' (indigo)
+                            backgroundColor: '#06b6d4',
                             borderColor: '#06b6d4',
-                            backgroundColor: totalGradient,
-                            borderWidth: 3,
-                            tension: 0.4,
-                            fill: true,
-                            pointRadius: 6,
-                            pointHoverRadius: 10,
-                            pointBackgroundColor: '#3b82f6',
-                            pointBorderColor: '#ffffff',
-                            pointBorderWidth: 3
+                            borderWidth: 1
                         },
                         {
                             label: 'Diterima',
                             data: @json($acceptedCounts),
+                            backgroundColor: '#22c55e',
                             borderColor: '#22c55e',
-                            backgroundColor: acceptedGradient,
-                            borderWidth: 3,
-                            tension: 0.4,
-                            fill: true,
-                            pointRadius: 6,
-                            pointHoverRadius: 10,
-                            pointBackgroundColor: '#22c55e',
-                            pointBorderColor: '#ffffff',
-                            pointBorderWidth: 3
+                            borderWidth: 1
                         },
                         {
                             label: 'Selesai',
                             data: @json($resolvedCounts),
+                            backgroundColor: '#6366f1',
                             borderColor: '#6366f1',
-                            backgroundColor: resolvedGradient,
-                            borderWidth: 3,
-                            tension: 0.4,
-                            fill: true,
-                            pointRadius: 6,
-                            pointHoverRadius: 10,
-                            pointBackgroundColor: '#6366f1',
-                            pointBorderColor: '#ffffff',
-                            pointBorderWidth: 3
+                            borderWidth: 1
                         }
                     ]
                 },
@@ -1856,7 +1924,7 @@
                             position: 'top',
                             labels: {
                                 usePointStyle: true,
-                                pointStyle: 'circle',
+                                pointStyle: 'rect',
                                 padding: 20,
                                 font: {
                                     size: 12,
@@ -2521,7 +2589,10 @@
                 year: 'numeric'
             });
             document.getElementById('chartSubtitle').textContent = `${currentRange} bulan berakhir ${m}`;
-            document.getElementById('processingSubtitle').textContent = `Waktu pemrosesan tiket selesai - ${m}`;
+            const pm = document.getElementById('processingMonthText');
+            if (pm) {
+                pm.textContent = m;
+            }
         }
 
         function showNotification(type, message) {
@@ -2630,9 +2701,9 @@
                     <p>${ticket.deskripsi || 'Tidak ada deskripsi'}</p>
 
                     ${ticket.attachments && ticket.attachments.length > 0 ? `
-                                                                        <div class="ticket-attachments">
-                                                                            <h6><i class="fas fa-paperclip"></i> Lampiran</h6>
-                                                                            ${ticket.attachments.map(att => `
+                                                                                                        <div class="ticket-attachments">
+                                                                                                            <h6><i class="fas fa-paperclip"></i> Lampiran</h6>
+                                                                                                            ${ticket.attachments.map(att => `
                                 <div class="attachment-item">
                                     <div class="attachment-icon">
                                         <i class="fas fa-file"></i>
@@ -2646,8 +2717,8 @@
                                     </a>
                                 </div>
                             `).join('')}
-                                                                        </div>
-                                                                    ` : ''}
+                                                                                                        </div>
+                                                                                                    ` : ''}
                 </div>
             `;
 
@@ -2918,6 +2989,69 @@
             initializeCharts();
             updateNavigationButtons();
 
+            // Portal tooltip logic (avoid overflow clipping)
+            const portal = document.getElementById('globalTooltip');
+            let activeAnchor = null;
+
+            function showPortalTooltip(anchor, text) {
+                if (!portal || !anchor) return;
+                portal.textContent = text;
+                portal.style.display = 'block';
+                portal.setAttribute('aria-hidden', 'false');
+                const rect = anchor.getBoundingClientRect();
+                // Place above by default
+                const padding = 8;
+                portal.classList.remove('below');
+                const top = rect.top - portal.offsetHeight - padding;
+                let left = rect.left + rect.width / 2 - portal.offsetWidth / 2;
+                // Prevent off-screen
+                left = Math.max(8, Math.min(left, window.innerWidth - portal.offsetWidth - 8));
+                let y = top;
+                // If above doesn't fit, place below
+                if (top < 8) {
+                    portal.classList.add('below');
+                    y = rect.bottom + padding;
+                }
+                portal.style.top = `${y}px`;
+                portal.style.left = `${left}px`;
+            }
+
+            function hidePortalTooltip() {
+                if (!portal) return;
+                portal.style.display = 'none';
+                portal.setAttribute('aria-hidden', 'true');
+                portal.classList.remove('below');
+            }
+            document.querySelectorAll('.info-tooltip').forEach(w => {
+                const icon = w.querySelector('i');
+                const textEl = w.querySelector('.tooltip-text');
+                const text = textEl ? textEl.textContent.trim() : '';
+                const anchor = icon || w;
+                w.addEventListener('mouseenter', () => {
+                    activeAnchor = anchor;
+                    showPortalTooltip(anchor, text);
+                });
+                w.addEventListener('mouseleave', () => {
+                    activeAnchor = null;
+                    hidePortalTooltip();
+                });
+                w.addEventListener('mousemove', (e) => {
+                    if (!portal || !activeAnchor) return;
+                    // Follow cursor horizontally for better UX
+                    const padding = 16;
+                    portal.classList.remove('below');
+                    let x = e.clientX + 12;
+                    let y = e.clientY + 16;
+                    if (y + portal.offsetHeight + padding > window.innerHeight) {
+                        portal.classList.add('below');
+                        y = e.clientY - portal.offsetHeight - 12;
+                    }
+                    x = Math.max(8, Math.min(x, window.innerWidth - portal.offsetWidth - 8));
+                    portal.style.left = `${x}px`;
+                    portal.style.top = `${y}px`;
+                });
+            });
+
             // Apply initial day range filter if in daily view
             if (@json($selectedMonth)) {
                 setTimeout(() => {
@@ -2966,15 +3100,25 @@
                 updateCalendarDisplay();
             });
 
+            // Function to update current month and load data
+            function updateCurrentMonthAndLoadData() {
+                const selectedMonth = `${calendarCurrentYear}-${calendarCurrentMonth.toString().padStart(2, '0')}`;
+                currentMonth = selectedMonth;
+                updateMonthDisplay(selectedMonth);
+                loadDataForMonth(selectedMonth);
+            }
+
             // Year and month selector changes
             document.getElementById('yearSelector').addEventListener('change', (e) => {
                 calendarCurrentYear = parseInt(e.target.value);
                 updateCalendarDisplay();
+                updateCurrentMonthAndLoadData();
             });
 
             document.getElementById('monthSelector').addEventListener('change', (e) => {
                 calendarCurrentMonth = parseInt(e.target.value);
                 updateCalendarDisplay();
+                updateCurrentMonthAndLoadData();
             });
 
             // Auto-refresh stats every 30 seconds
@@ -3010,4 +3154,6 @@
             }
         });
     </script>
+    <!-- Global tooltip container -->
+    <div id="globalTooltip" class="global-tooltip" role="tooltip" aria-hidden="true"></div>
 @endsection
