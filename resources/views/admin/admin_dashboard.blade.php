@@ -1522,8 +1522,8 @@
                             </div>
                             <div class="calendar-actions">
                                 <button type="button" class="calendar-btn" onclick="closeCalendar()">Batal</button>
-                                <button type="button" class="calendar-btn primary"
-                                    onclick="applySelectedMonth()">Terapkan</button>
+                                <button type="button" class="calendar-btn primary" onclick="applySelectedMonth()"><i
+                                        class="fas fa-search"></i></button>
                             </div>
                         </div>
                     </div>
@@ -1544,6 +1544,26 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <h6 style="margin: 0; font-weight: 600; color: var(--gray-900);">📊 Tren Tiket</h6>
+                                <div class="d-flex gap-2 align-items-center my-2">
+                                    <select id="filterKecamatan" class="form-select form-select-sm" style="width: 180px">
+                                        <option value="">Semua Kecamatan</option>
+                                        @foreach ($kecamatanList ?? [] as $k)
+                                            <option value="{{ data_get($k, 'id') }}">{{ data_get($k, 'nama') }}</option>
+                                        @endforeach
+                                    </select>
+                                    <select id="filterLayanan" class="form-select form-select-sm" style="width: 180px">
+                                        <option value="">Semua Layanan</option>
+                                        @foreach ($layananList ?? [] as $l)
+                                            <option value="{{ data_get($l, 'id') }}">{{ data_get($l, 'name') }}</option>
+                                        @endforeach
+                                    </select>
+                                    <select id="filterKategori" class="form-select form-select-sm" style="width: 210px">
+                                        <option value="">Semua Kategori</option>
+                                    </select>
+                                    <button class="btn btn-outline-secondary btn-sm"
+                                        id="applyFiltersBtn">
+                                        <i class="fas fa-search"></i></button>
+                                </div>
                                 <p style="margin: 0.25rem 0 0 0; font-size: 0.875rem; color: var(--gray-600);"
                                     id="chartSubtitle">
                                     @if ($selectedMonth)
@@ -1705,6 +1725,11 @@
         let currentRange = {{ $monthsToShow }};
         let currentDayRange = 30; // Default: show all days in month
         let ticketChart, processingTimeChart;
+        let currentFilters = {
+            kecamatan_id: '',
+            layanan_id: '',
+            layanan_category_id: ''
+        };
         const maxNavigableMonth = '{{ Carbon\Carbon::now()->addYears(2)->format('Y-m') }}';
         const minNavigableMonth = '{{ Carbon\Carbon::now()->subYears(10)->format('Y-m') }}';
 
@@ -2031,7 +2056,10 @@
                     },
                     body: JSON.stringify({
                         month: month,
-                        months_to_show: currentRange
+                        months_to_show: currentRange,
+                        kecamatan_id: currentFilters.kecamatan_id || undefined,
+                        layanan_id: currentFilters.layanan_id || undefined,
+                        layanan_category_id: currentFilters.layanan_category_id || undefined,
                     })
                 })
                 .then(r => r.json())
@@ -2130,6 +2158,52 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadRealtimeStats();
             setInterval(loadRealtimeStats, 15000);
+
+            // Filters: dependent dropdown for kategori when layanan changes
+            const layananSelect = document.getElementById('filterLayanan');
+            const kategoriSelect = document.getElementById('filterKategori');
+            const kecamatanSelect = document.getElementById('filterKecamatan');
+            const applyBtn = document.getElementById('applyFiltersBtn');
+
+            if (layananSelect) {
+                layananSelect.addEventListener('change', async () => {
+                    const layananId = layananSelect.value;
+                    kategoriSelect.innerHTML = '<option value="">Semua Kategori</option>';
+                    currentFilters.layanan_id = layananId;
+                    currentFilters.layanan_category_id = '';
+                    if (!layananId) return;
+                    try {
+                        const resp = await fetch(`/api/layanan/${layananId}/categories`);
+                        const data = await resp.json();
+                        data.forEach(c => {
+                            const opt = document.createElement('option');
+                            opt.value = c.id;
+                            opt.textContent = c.name;
+                            kategoriSelect.appendChild(opt);
+                        });
+                    } catch (e) {
+                        /* ignore */
+                    }
+                });
+            }
+
+            if (kecamatanSelect) {
+                kecamatanSelect.addEventListener('change', () => {
+                    currentFilters.kecamatan_id = kecamatanSelect.value;
+                });
+            }
+            if (kategoriSelect) {
+                kategoriSelect.addEventListener('change', () => {
+                    currentFilters.layanan_category_id = kategoriSelect.value;
+                });
+            }
+
+            if (applyBtn) {
+                applyBtn.addEventListener('click', () => {
+                    // Reload chart data with filters
+                    loadDataForMonth(currentMonth);
+                });
+            }
         });
 
         function updateChartsData(chartData) {
@@ -2215,7 +2289,10 @@
                     },
                     body: JSON.stringify({
                         current_month: currentMonth,
-                        months_to_show: currentRange
+                        months_to_show: currentRange,
+                        kecamatan_id: currentFilters.kecamatan_id || undefined,
+                        layanan_id: currentFilters.layanan_id || undefined,
+                        layanan_category_id: currentFilters.layanan_category_id || undefined,
                     })
                 })
                 .then(r => r.json())
@@ -2257,7 +2334,10 @@
                     },
                     body: JSON.stringify({
                         current_month: currentMonth,
-                        months_to_show: currentRange
+                        months_to_show: currentRange,
+                        kecamatan_id: currentFilters.kecamatan_id || undefined,
+                        layanan_id: currentFilters.layanan_id || undefined,
+                        layanan_category_id: currentFilters.layanan_category_id || undefined,
                     })
                 })
                 .then(r => r.json())
@@ -2512,9 +2592,9 @@
                     <p>${ticket.deskripsi || 'Tidak ada deskripsi'}</p>
 
                     ${ticket.attachments && ticket.attachments.length > 0 ? `
-                                                    <div class="ticket-attachments">
-                                                        <h6><i class="fas fa-paperclip"></i> Lampiran</h6>
-                                                        ${ticket.attachments.map(att => `
+                                                                <div class="ticket-attachments">
+                                                                    <h6><i class="fas fa-paperclip"></i> Lampiran</h6>
+                                                                    ${ticket.attachments.map(att => `
                                 <div class="attachment-item">
                                     <div class="attachment-icon">
                                         <i class="fas fa-file"></i>
@@ -2528,8 +2608,8 @@
                                     </a>
                                 </div>
                             `).join('')}
-                                                    </div>
-                                                ` : ''}
+                                                                </div>
+                                                            ` : ''}
                 </div>
             `;
 
