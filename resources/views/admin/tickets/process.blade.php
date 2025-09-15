@@ -191,6 +191,28 @@
             color: white;
         }
 
+        /* Icon-only link for view action */
+        .icon-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            color: #374151;
+            /* gray-700 */
+            text-decoration: none;
+        }
+
+        .icon-link:hover {
+            color: #111827;
+            /* gray-900 */
+        }
+
+        .icon-link i {
+            font-size: 14px;
+            line-height: 1;
+        }
+
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -866,6 +888,7 @@
 
     <script>
         let currentDate = new Date();
+        const ticketShowBase = "{{ url('admin/tickets') }}/";
 
         // Hook up modal with data attributes
         document.addEventListener('click', function(e) {
@@ -1254,11 +1277,19 @@
                                     }
                                 }
 
+                                const viewBtn = session.ticket_id ? `
+                                        <a href="${ticketShowBase}${session.ticket_id}" class="icon-link" title="Lihat tiket">
+                                            <i class="fas fa-eye"></i>
+                                        </a>` : '';
+
                                 return `
                             <div class="work-session-item">
                                 <div class="session-header" style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
                                     <div class="session-ticket" style="font-weight:600; flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${session.ticket_code} - ${session.ticket_title}</div>
-                                    <div class="session-badge">${badge}</div>
+                                    <div class="session-actions" style="display:flex; align-items:center; gap:6px;">
+                                        ${viewBtn}
+                                        <div class="session-badge">${badge}</div>
+                                    </div>
                                 </div>
                                 <div class="session-time">${timeMain}</div>
                                 ${timeSub ? `<div class="session-subtime">${timeSub}</div>` : ''}

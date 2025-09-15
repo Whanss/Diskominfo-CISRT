@@ -797,6 +797,7 @@ class TicketController extends Controller
 
                 return [
                     'id' => $session->id,
+                    'ticket_id' => $session->ticket_id,
                     'ticket_code' => optional($session->ticket)->code_tracking ?? '-',
                     'ticket_title' => optional($session->ticket)->judul ?? 'No Title',
                     'admin_name' => optional($session->admin)->name ?? 'Unknown Admin',
@@ -839,6 +840,7 @@ class TicketController extends Controller
 
                 $formattedSessions->push([
                     'id' => 'ticket-' . $ticket->id,
+                    'ticket_id' => $ticket->id,
                     'ticket_code' => $ticket->code_tracking,
                     'ticket_title' => $ticket->judul ?? 'No Title',
                     'admin_name' => 'System',
