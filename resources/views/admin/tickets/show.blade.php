@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('breadcrumb', 'Ticket Details')
-@section('page-title', 'Ticket Details - ' . $ticket->code_tracking)
+@section('breadcrumb', 'Detail Tiket')
+@section('page-title', 'Detail Tiket - ' . $ticket->code_tracking)
 
 @push('styles')
     <style>
@@ -136,9 +136,9 @@
 @section('content')
     <div class="container-fluid py-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4>Ticket Details</h4>
+            <h4>Detail Tiket</h4>
             <a href="{{ route('admin.tickets.index') }}" class="btn btn-secondary btn-sm">
-                <i class="fas fa-arrow-left"></i> Back to List
+                <i class="fas fa-arrow-left"></i> Kembali ke Daftar
             </a>
         </div>
 
@@ -146,17 +146,17 @@
             <div class="col-lg-8 col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="ticket-title">Ticket Information</h5>
+                        <h5 class="ticket-title">Informasi Tiket</h5>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <p><strong>Code Tracking:</strong> <span
+                                <p><strong>Kode Pelacakan:</strong> <span
                                         class="text-primary">{{ $ticket->code_tracking }}</span></p>
-                                <p><strong>Title:</strong> {{ $ticket->judul }}</p>
-                                <p><strong>Reporter Name:</strong> {{ $ticket->nama_pelapor }}</p>
+                                <p><strong>Judul:</strong> {{ $ticket->judul }}</p>
+                                <p><strong>Nama Pelapor:</strong> {{ $ticket->nama_pelapor }}</p>
                                 <p><strong>Email:</strong> {{ $ticket->email }}</p>
-                                <p><strong>Phone:</strong> {{ $ticket->no_hp ?? 'N/A' }}</p>
+                                <p><strong>No. HP:</strong> {{ $ticket->no_hp ?? '-' }}</p>
                             </div>
                             <div class="col-md-6">
                                 <p><strong>Status:</strong>
@@ -169,16 +169,16 @@
                                         {{ ucfirst(str_replace('_', ' ', $ticket->status)) }}
                                     </span>
                                 </p>
-                                <p><strong>Created:</strong> {{ $ticket->created_at->format('d M Y H:i') }}</p>
-                                <p><strong>Last Updated:</strong> {{ $ticket->updated_at->format('d M Y H:i') }}</p>
-                                <p><strong>Kecamatan:</strong> {{ $ticket->kecamatan->nama ?? 'N/A' }}</p>
+                                <p><strong>Dibuat:</strong> {{ $ticket->created_at->format('d M Y H:i') }}</p>
+                                <p><strong>Terakhir Diperbarui:</strong> {{ $ticket->updated_at->format('d M Y H:i') }}</p>
+                                <p><strong>Kecamatan:</strong> {{ $ticket->kecamatan->nama ?? '-' }}</p>
                             </div>
                         </div>
 
                         <hr>
 
                         <div class="mb-3">
-                            <strong>Description:</strong>
+                            <strong>Deskripsi:</strong>
                             <div class="mt-2 p-3"
                                 style="background-color: #f8f9fc; border-radius: 6px; border-left: 4px solid #4e73df;">
                                 {{ $ticket->description }}
@@ -186,7 +186,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <strong>Jenis Layanan:</strong>
+                            <strong>Layanan:</strong>
                             <div class="mt-2 p-3"
                                 style="background-color: #f8f9fc; border-radius: 6px; border-left: 4px solid #4e73df;">
                                 @if ($ticket->layanan)
@@ -213,11 +213,11 @@
 
                         @if ($ticket->attachment_path)
                             <div class="mb-3">
-                                <strong>Attachment dari Guest:</strong>
+                                <strong>Lampiran dari Pelapor:</strong>
                                 <br>
                                 <a href="{{ route('admin.tickets.download', $ticket) }}"
                                     class="btn btn-outline-primary btn-sm mt-2">
-                                    <i class="fas fa-file"></i> Lihat/Download Lampiran
+                                    <i class="fas fa-file"></i> Lihat/Unduh Lampiran
                                 </a>
                             </div>
                         @endif
@@ -248,14 +248,14 @@
             <div class="col-lg-4 col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="ticket-title">Actions</h5>
+                        <h5 class="ticket-title">Aksi</h5>
                     </div>
                     <div class="card-body">
                         @if ($ticket->status == 'pending')
                             <form action="{{ route('admin.tickets.accept', $ticket) }}" method="POST" class="mb-2">
                                 @csrf
                                 <button type="submit" class="btn btn-success btn-block">
-                                    <i class="fas fa-check"></i> Accept Ticket
+                                    <i class="fas fa-check"></i> Terima Tiket
                                 </button>
                             </form>
                             <form action="{{ route('admin.tickets.reject', $ticket) }}" method="POST">
@@ -266,7 +266,7 @@
                                         placeholder="Tuliskan alasan penolakan..." required></textarea>
                                 </div>
                                 <button type="submit" class="btn btn-danger btn-block">
-                                    <i class="fas fa-times"></i> Reject Ticket
+                                    <i class="fas fa-times"></i> Tolak Tiket
                                 </button>
                             </form>
                         @else
@@ -279,7 +279,7 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="ticket-title">Activity Log</h5>
+                        <h5 class="ticket-title">Riwayat Aktivitas</h5>
                     </div>
                     <div class="card-body">
                         @if ($ticket->activityLogs->count() > 0)
@@ -297,7 +297,7 @@
                                 @endforeach
                             </ul>
                         @else
-                            <p class="text-muted mb-0">No activity recorded yet.</p>
+                            <p class="text-muted mb-0">Belum ada aktivitas.</p>
                         @endif
                     </div>
                 </div>
