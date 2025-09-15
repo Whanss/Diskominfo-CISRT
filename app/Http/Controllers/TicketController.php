@@ -570,7 +570,7 @@ class TicketController extends Controller
 
         $events = [];
 
-        // First, try to get work sessions data
+        // First, try to get work sessions data grouped by started_at (for duration/active metrics)
         $workSessionsByDate = WorkSession::with(['ticket'])
             ->whereBetween('started_at', [$start, $end])
             ->where('status', 'completed')
@@ -580,7 +580,7 @@ class TicketController extends Controller
                 return Carbon::parse($session->started_at)->format('Y-m-d');
             });
 
-        // Get in-progress work sessions
+        // Get in-progress work sessions grouped by started_at
         $inProgressSessionsByDate = WorkSession::with(['ticket'])
             ->whereBetween('started_at', [$start, $end])
             ->whereIn('status', ['active', 'paused'])
@@ -590,11 +590,30 @@ class TicketController extends Controller
                 return Carbon::parse($session->started_at)->format('Y-m-d');
             });
 
-        // Combine all dates that have work sessions
+        // Additional: completed sessions grouped by completed_at to count tickets finished per day (even if started earlier)
+        $completedSessionsByCompletedDate = WorkSession::with(['ticket'])
+            ->whereBetween('completed_at', [$start, $end])
+            ->where('status', 'completed')
+            ->whereNotNull('completed_at')
+            ->get()
+            ->groupBy(function (WorkSession $session) {
+                return Carbon::parse($session->completed_at)->format('Y-m-d');
+            });
+
+        // Combine all dates that have any activity (start/in-progress/completed)
         $allDates = collect($workSessionsByDate->keys())
             ->merge($inProgressSessionsByDate->keys())
+            ->merge($completedSessionsByCompletedDate->keys())
             ->unique()
             ->values();
+
+        // Build resolved tickets per-day only once to avoid per-iteration queries
+        $resolvedTicketsByDate = Ticket::whereNotNull('resolved_at')
+            ->whereBetween('resolved_at', [$start, $end])
+            ->get(['id', 'resolved_at'])
+            ->groupBy(function ($t) {
+                return Carbon::parse($t->resolved_at)->format('Y-m-d');
+            });
 
         foreach ($allDates as $date) {
             $completed = $workSessionsByDate->get($date, collect());
@@ -609,6 +628,11 @@ class TicketController extends Controller
             $ticketCountTotal = $completedTicketIds->merge($inProgressTicketIds)->unique()->count();
 
             $formattedTime = $this->formatDuration($totalDuration);
+
+            // Use ticket resolved_at per day as the ONLY source for completed ticket counts
+            $completedTicketIdsByCompletedDate = collect($resolvedTicketsByDate->get($date, []))
+                ->pluck('id')
+                ->unique();
 
             $events[] = [
                 'id' => 'work-' . $date,
@@ -627,6 +651,7 @@ class TicketController extends Controller
                     'in_progress_duration' => $inProgressDuration,
                     'formatted_in_progress_duration' => $this->formatDuration($inProgressDuration),
                     'completed_ticket_count' => $completedTicketIds->unique()->count(),
+                    'completed_ticket_count_by_completed_date' => $completedTicketIdsByCompletedDate->count(),
                     'in_progress_ticket_count' => $inProgressTicketIds->unique()->count(),
                 ]
             ];
@@ -636,6 +661,8 @@ class TicketController extends Controller
         if (empty($events)) {
             $events = $this->getTicketFallbackEvents($start, $end);
         }
+
+
 
         return response()->json($events);
     }
@@ -668,6 +695,7 @@ class TicketController extends Controller
             ->whereNotNull('accepted_at')
             ->get()
             ->groupBy(function (Ticket $ticket) {
+                // Group by resolved date if available, otherwise by accepted date
                 if ($ticket->resolved_at) {
                     return $ticket->resolved_at->format('Y-m-d');
                 }
@@ -695,7 +723,10 @@ class TicketController extends Controller
                         'duration' => $totalDuration,
                         'ticket_count' => $ticketCount,
                         'sessions_count' => $ticketCount,
-                        'formatted_duration' => $formattedTime
+                        'formatted_duration' => $formattedTime,
+                        // count of completed tickets strictly by resolved_at on this date
+                        'completed_ticket_count_by_completed_date' => $tickets->whereNotNull('resolved_at')->count(),
+                        'completed_ticket_count' => $tickets->whereNotNull('resolved_at')->count(),
                     ]
                 ];
             }

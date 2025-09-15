@@ -2606,8 +2606,6 @@
 
             // Ensure subtitles and processing chart title reflect current month
             updateChartSubtitle?.();
-
-            showNotification('info', 'Reset tren dan analitik ke bulan ini');
         }
 
         /* =========  UI HELPERS  ========= */

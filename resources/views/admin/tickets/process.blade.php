@@ -316,10 +316,77 @@
             border-left: 4px solid #10b981;
         }
 
+        /* Highlight for days within a multi-day work range (non-start days) */
+        .calendar-day.range-work {
+            background: #f0fdf4;
+            border-left: 2px dashed #10b981;
+        }
+
         .calendar-day.selected {
             background: #dbeafe !important;
             border: 2px solid #3b82f6 !important;
             box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        /* Additional calendar indicators */
+        .work-dot {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            /* green */
+        }
+
+        .day-badges {
+            position: absolute;
+            bottom: 6px;
+            left: 6px;
+            display: inline-flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .day-badge {
+            font-size: 10px;
+            line-height: 1;
+            padding: 2px 4px;
+            border-radius: 4px;
+            background: #e5e7eb;
+            /* gray */
+            color: #374151;
+        }
+
+        .day-badge.completed {
+            background: #dcfce7;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .day-badge.progress {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        .session-subtime {
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .multi-day-badge {
+            display: inline-block;
+            font-size: 11px;
+            color: #1e40af;
+            background: #dbeafe;
+            border: 1px solid #93c5fd;
+            border-radius: 4px;
+            padding: 2px 6px;
+            margin-top: 4px;
+            white-space: nowrap;
         }
 
         .day-number {
@@ -399,6 +466,25 @@
         .work-session-item .session-ticket {
             grid-column: 1 / -1;
             word-break: break-word;
+        }
+
+        /* Fix overflow on completed ticket cards in "Hari Terpilih" > Selesai */
+        .session-header .session-ticket {
+            /* override inline nowrap/ellipsis */
+            white-space: normal !important;
+            text-overflow: clip !important;
+            /* show up to two lines, then clip */
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            /* allow breaking long words/IDs */
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            /* keep flex behavior from inline style */
+            min-width: 0;
+            flex: 1 1 auto;
+            font-weight: 600;
         }
 
         .work-session-item .session-duration {
@@ -734,10 +820,6 @@
                                         <span>Total Waktu:</span>
                                         <span id="month-total-hours">-</span>
                                     </div>
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                                        <span>Rata-rata/Hari:</span>
-                                        <span id="month-avg-hours">-</span>
-                                    </div>
                                     <div style="display: flex; justify-content: space-between;">
                                         <span>Tiket Selesai:</span>
                                         <span id="month-tickets">-</span>
@@ -1003,7 +1085,9 @@
                             formattedCompletedDuration: props.formatted_completed_duration || '-',
                             inProgressDuration: props.in_progress_duration || 0,
                             formattedInProgressDuration: props.formatted_in_progress_duration || '-',
-                            completedTickets: props.completed_ticket_count || 0,
+                            // prefer count by completed_at date if provided
+                            completedTickets: (props.completed_ticket_count_by_completed_date ?? props
+                                .completed_ticket_count ?? 0),
                             inProgressTickets: props.in_progress_ticket_count || 0,
                         };
 
@@ -1016,6 +1100,25 @@
                             const dot = document.createElement('div');
                             dot.className = 'work-dot';
                             dayElement.appendChild(dot);
+
+                            // Add mini badges for completed and in-progress counts
+                            const badges = document.createElement('div');
+                            badges.className = 'day-badges';
+                            if (props.completed_ticket_count) {
+                                const b1 = document.createElement('span');
+                                b1.className = 'day-badge completed';
+                                b1.textContent = `S:${props.completed_ticket_count}`; // Selesai
+                                badges.appendChild(b1);
+                            }
+                            if (props.in_progress_ticket_count) {
+                                const b2 = document.createElement('span');
+                                b2.className = 'day-badge progress';
+                                b2.textContent = `P:${props.in_progress_ticket_count}`; // Proses
+                                badges.appendChild(b2);
+                            }
+                            if (badges.childElementCount) {
+                                dayElement.appendChild(badges);
+                            }
                         }
                     });
 
@@ -1106,7 +1209,7 @@
                                     // Pola: dd MMM yyyy HH:mm(:ss)? — dd MMM yyyy HH:mm(:ss)?
                                     const m = normalized.match(
                                         /^(\d{1,2}\s+\p{L}+\s+\d{4})\s+(\d{2}:\d{2}(?::\d{2})?)\s+—\s+(\d{1,2}\s+\p{L}+\s+\d{4})\s+(\d{2}:\d{2}(?::\d{2})?)$/u
-                                        );
+                                    );
                                     if (m) {
                                         timeMain = `${m[1]} — ${m[3]}`;
                                         timeSub = `${m[2]} — ${m[4]}`;
@@ -1128,12 +1231,38 @@
                                     }
                                 }
 
+                                // Tanda lintas hari per item (jika tanggal mulai != tanggal selesai)
+                                let multiDayNote = '';
+                                if (isCompleted && typeof session.time_range === 'string') {
+                                    const normalized = session.time_range.replace(/\s*[—–-]\s*/, ' — ');
+                                    const m = normalized.match(
+                                        /^(\d{1,2}\s+\p{L}+\s+\d{4})\s+(\d{2}:\d{2}(?::\d{2})?)\s+—\s+(\d{1,2}\s+\p{L}+\s+\d{4})\s+(\d{2}:\d{2}(?::\d{2})?)$/u
+                                    );
+                                    if (m && m[1] !== m[3]) {
+                                        multiDayNote = `Lintas hari: ${m[1]} — ${m[3]}`;
+                                    } else {
+                                        const parts = session.time_range.split(/\s*[—–-]\s*/);
+                                        if (parts.length === 2) {
+                                            const leftTokens = parts[0].trim().split(/\s+/);
+                                            const rightTokens = parts[1].trim().split(/\s+/);
+                                            const leftDate = leftTokens.slice(0, 3).join(' ');
+                                            const rightDate = rightTokens.slice(0, 3).join(' ');
+                                            if (leftDate && rightDate && leftDate !== rightDate) {
+                                                multiDayNote = `Lintas hari: ${leftDate} — ${rightDate}`;
+                                            }
+                                        }
+                                    }
+                                }
+
                                 return `
                             <div class="work-session-item">
+                                <div class="session-header" style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                                    <div class="session-ticket" style="font-weight:600; flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${session.ticket_code} - ${session.ticket_title}</div>
+                                    <div class="session-badge">${badge}</div>
+                                </div>
                                 <div class="session-time">${timeMain}</div>
-                                ${badge}
                                 ${timeSub ? `<div class="session-subtime">${timeSub}</div>` : ''}
-                                <div class="session-ticket">${session.ticket_code} - ${session.ticket_title}</div>
+                                ${multiDayNote ? `<div class="multi-day-badge">${multiDayNote}</div>` : ''}
                                 <div class="session-duration">Durasi: ${session.duration}</div>
                             </div>`;
                             }
@@ -1184,6 +1313,7 @@
                                             <span>Sesi Kerja:</span>
                                             <span>Selesai: ${data.stats.completed_sessions} • Proses: ${data.stats.in_progress_sessions || 0}</span>
                                         </div>
+                                        ${data.cross_day_info ? `<div class="multi-day-badge">Lintas hari: ${data.cross_day_info}</div>` : ''}
                                     </div>
                                     <div style="font-size: 13px; color: #64748b; margin-bottom: 8px; display:flex; justify-content: space-between; align-items:center;">
                                         <span>Detail Sesi Kerja</span>
@@ -1223,19 +1353,28 @@
         }
 
         function updateMonthlySummary() {
+            const days = Object.values(workData);
             const workDays = Object.keys(workData).length;
-            const totalSeconds = Math.round(Object.values(workData).reduce((sum, day) => sum + Number(day.totalDuration ||
-                0), 0));
-            const totalTickets = Object.values(workData).reduce((sum, day) => sum + Number(day.ticketsWorked || 0), 0);
+            const totalSeconds = Math.round(days.reduce((sum, day) => sum + Number(day.totalDuration || 0), 0));
+            const totalCompletedTickets = Math.round(days.reduce((sum, day) => sum + Number(day.completedTickets || 0), 0));
 
             const totalTimeText = formatDuration(totalSeconds);
-            const avgSeconds = workDays > 0 ? Math.round(totalSeconds / workDays) : 0;
-            const avgTimeText = formatDuration(avgSeconds);
 
-            document.getElementById('month-work-days').textContent = workDays;
-            document.getElementById('month-total-hours').textContent = totalTimeText;
-            document.getElementById('month-avg-hours').textContent = avgTimeText;
-            document.getElementById('month-tickets').textContent = totalTickets;
+            const elWorkDays = document.getElementById('month-work-days');
+            if (elWorkDays) elWorkDays.textContent = workDays;
+
+            const elTotalHours = document.getElementById('month-total-hours');
+            if (elTotalHours) elTotalHours.textContent = totalTimeText;
+
+            const elCompletedTickets = document.getElementById('month-tickets');
+            if (elCompletedTickets) elCompletedTickets.textContent = totalCompletedTickets;
+
+            // Optional: only set average if the element exists in DOM
+            const elAvg = document.getElementById('month-avg-hours');
+            if (elAvg) {
+                const avgSeconds = workDays > 0 ? Math.round(totalSeconds / workDays) : 0;
+                elAvg.textContent = formatDuration(avgSeconds);
+            }
         }
     </script>
 @endsection
