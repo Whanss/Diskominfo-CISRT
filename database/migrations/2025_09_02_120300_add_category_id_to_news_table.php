@@ -18,7 +18,7 @@ return new class extends Migration {
     {
         Schema::table('news', function (Blueprint $table) {
             if (Schema::hasColumn('news', 'category_id')) {
-                $table->dropForeign(['category_id']);
+                // Drop the column directly, which will also drop the foreign key constraint if it exists
                 $table->dropColumn('category_id');
             }
         });

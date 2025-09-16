@@ -75,7 +75,6 @@ Route::middleware(['admin.auth', 'prevent.guest.admin'])->prefix('admin')->name(
     Route::post('dashboard/navigate/next', [AdminController::class, 'navigateNextMonth'])->name('dashboard.navigate.next');
 
     // Resource routes
-    // Route::resource('kabupaten', KabupatenController::class);
     Route::resource('kecamatan', KecamatanController::class);
     // Route::resource('layanan', LayananController::class); // disabled: using Master Layanan module
     Route::resource('news', AdminNewsController::class);
@@ -106,6 +105,10 @@ Route::middleware(['admin.auth', 'prevent.guest.admin'])->prefix('admin')->name(
     Route::get('tickets', [TicketController::class, 'adminIndex'])->name('tickets.index');
     Route::get('tickets/export', [TicketController::class, 'export'])->name('tickets.export');
     Route::get('tickets/activity', [TicketController::class, 'activity'])->name('tickets.activity');
+    Route::delete('tickets/activity/{activity}', function (\App\Models\TicketActivityLog $activity) {
+        $activity->delete();
+        return back()->with('success', 'Aktivitas berhasil dihapus.');
+    })->name('tickets.activity.delete');
     Route::get('tickets/process', [TicketController::class, 'process'])->name('tickets.process');
 
     // Secure download routes (admin-only)
