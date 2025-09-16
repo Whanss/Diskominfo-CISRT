@@ -434,34 +434,44 @@ class TicketController extends Controller
 
     public function activity(Request $request)
     {
-        $query = \App\Models\TicketActivityLog::query()
+        // Base query for current filters (date range, code), used for both list and counts
+        $base = \App\Models\TicketActivityLog::query()
             ->with(['ticket'])
             ->orderBy('created_at', 'desc');
 
-        // Filter by date range
+        // Apply date range filters to base
         if ($request->filled('start_date')) {
-            $query->whereDate('created_at', '>=', $request->start_date);
+            $base->whereDate('created_at', '>=', $request->start_date);
         }
-
         if ($request->filled('end_date')) {
-            $query->whereDate('created_at', '<=', $request->end_date);
+            $base->whereDate('created_at', '<=', $request->end_date);
         }
 
-        // Filter by action type
+        // Apply ticket code filter to base
+        if ($request->filled('code_tracking')) {
+            $code = $request->code_tracking;
+            $base->whereHas('ticket', function ($q) use ($code) {
+                $q->where('code_tracking', 'like', "%{$code}%");
+            });
+        }
+
+        // Derive the listing query from base and then apply action filter (if any)
+        $query = (clone $base);
         if ($request->filled('action')) {
             $query->where('action', $request->action);
         }
 
-        // Filter by ticket code
-        if ($request->filled('code_tracking')) {
-            $query->whereHas('ticket', function ($q) use ($request) {
-                $q->where('code_tracking', 'like', '%' . $request->code_tracking . '%');
-            });
-        }
+        // Compute counts per action (respecting date/code filters, but not the action filter)
+        $counts = [
+            'total'     => (clone $base)->count(),
+            'accepted'  => (clone $base)->where('action', 'accepted')->count(),
+            'rejected'  => (clone $base)->where('action', 'rejected')->count(),
+            'completed' => (clone $base)->where('action', 'completed')->count(),
+        ];
 
-        $activities = $query->paginate(20);
+        $activities = $query->paginate(6)->appends($request->query());
 
-        return view('admin.tickets.activity', compact('activities'));
+        return view('admin.tickets.activity', compact('activities', 'counts'));
     }
 
     public function process(Request $request)

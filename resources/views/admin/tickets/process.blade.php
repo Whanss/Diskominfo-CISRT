@@ -620,7 +620,11 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-number">{{ gmdate('H:i:s', $totalWorkTimeToday) }}</div>
-                    <div class="stat-label">Total Work Time Today</div>
+                    <div class="stat-label"
+                        title="Durasi sesi lintas hari otomatis dipotong ke jendela 00:00–23:59 pada tanggal ini">Total
+                        Waktu Kerja (Hari ini)</div>
+                    <div style="margin-top:6px; font-size:12px; color:#64748b;">Termasuk sesi lintas hari (dipotong per
+                        hari)</div>
                 </div>
             </div>
 
