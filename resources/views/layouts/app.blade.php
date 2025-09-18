@@ -237,7 +237,7 @@
     <header id="header" class="header d-flex align-items-center fixed-top">
         <div class="container-fluid container-xl position-relative d-flex align-items-center">
 
-            <a href="{{ route('guest.guest_dashboard') }}" class="logo d-flex align-items-center me-auto">
+            <a href="/" class="logo d-flex align-items-center me-auto">
                 <!-- Uncomment the line below if you also wish to use an image logo -->
                 <img src="{{ asset('template/Dashboard/assets/img/logo.png') }}" alt="">
                 <h1 class="sitename"></h1>
@@ -245,7 +245,7 @@
 
             <nav id="navmenu" class="navmenu">
                 <ul>
-                    <li><a href="{{ route('guest.guest_dashboard') }}#hero" class="active">Home<br></a></li>
+                    <li><a href="{{ route('guest.guest_dashboard') }}/" class="active">Home<br></a></li>
                     <li class="dropdown"><a href="#"><span>Layanan</span> <i
                                 class="bi bi-chevron-down toggle-dropdown"></i></a>
                         <ul>
@@ -280,7 +280,7 @@
                     <img src="{{ asset('template/Dashboard/assets/img/logo.png') }}" alt="CSIRT Logo">
                 </div>
                 <ul class="mobile-nav">
-                    <li><a href="{{ route('guest.guest_dashboard') }}#hero">Home</a></li>
+                    <li><a href="{{ route('guest.guest_dashboard') }}/">Home</a></li>
 
                     <li class="mobile-dropdown">
                         <a href="#" class="mobile-dropdown-toggle">Layanan <i
