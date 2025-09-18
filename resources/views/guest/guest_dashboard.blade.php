@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>CSIRT - LOMBOK TENGAH</title>
+    <title>SIAP-SIBER</title>
     <meta name="description" content="">
     <meta name="keywords" content="">
 
@@ -541,7 +541,7 @@
 
             <nav id="navmenu" class="navmenu">
                 <ul>
-                    <li><a href="#hero" class="active">Home<br></a></li>
+                    <li><a href="/" class="active">Home<br></a></li>
                     <li class="dropdown"><a href="#"><span>Layanan</span> <i
                                 class="bi bi-chevron-down toggle-dropdown"></i></a>
                         <ul>
@@ -575,7 +575,7 @@
                     <img src="{{ asset('template/Dashboard/assets/img/logo.png') }}" alt="CSIRT Logo">
                 </div>
                 <ul class="mobile-nav">
-                    <li><a href="#hero">Home</a></li>
+                    <li><a href="/">Home</a></li>
 
                     <li class="mobile-dropdown">
                         <a href="#" class="mobile-dropdown-toggle">Layanan <i
@@ -610,23 +610,36 @@
         <!-- Hero Section -->
         <section id="hero" class="hero section">
 
-            <div class="container">
-                <div class="row gy-4">
-                    <div class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center">
-                        <h1 data-aos="fade-up"> Siaga 24/7 untuk Keamanan Siber Anda</h1>
-                        <p data-aos="fade-up" data-aos-delay="100">Kami adalah tim respons insiden keamanan siber yang
-                            berdedikasi, siap bertindak cepat untuk mengatasi serangan siber dan meminimalkan kerugian
-                            Anda.</p>
+            <div class="container"
+                style="padding: 100px 0 60px; background: radial-gradient(1200px 400px at 50% -200px, rgba(49,130,206,.08), transparent 70%);">
+                <div class="row gy-4 justify-content-center">
+                    <div
+                        class="col-12 col-lg-10 d-flex flex-column align-items-center text-center justify-content-center">
+                        <div class="p-4 p-md-5 rounded-4 border shadow-sm"
+                            style="background:#ffffff00; border-color:#e2e8f0;">
+                            <h1 data-aos="fade-up">Siaga 24/7 untuk Keamanan Siber Anda</h1>
+                            <p data-aos="fade-up" data-aos-delay="100">Kami adalah tim respons insiden keamanan siber
+                                yang berdedikasi, siap bertindak cepat untuk mengatasi serangan siber dan meminimalkan
+                                kerugian Anda.</p>
 
-                        <div class="d-flex flex-column flex-md-row" data-aos="fade-up" data-aos-delay="200">
-                            <a href="{{ Route('guest.create_tiket') }}" class="btn-get-started">KIRIM ADUAN CYBER<i
-                                    class="bi bi-cursor"></i></a>
+                            <div class="d-flex justify-content-center gap-3 mt-2" data-aos="fade-up"
+                                data-aos-delay="200">
+                                <a href="{{ Route('guest.create_tiket') }}" class="btn-get-started">KIRIM ADUAN CYBER
+                                    <i class="bi bi-cursor"></i></a>
+                            </div>
+
+                            <ul class="list-inline mt-4 mb-0" data-aos="fade-up" data-aos-delay="250">
+                                <li class="list-inline-item mb-2"><span
+                                        class="badge rounded-pill bg-light border text-primary"><i
+                                            class="bi bi-shield-check me-1"></i>Respon 24/7</span></li>
+                                <li class="list-inline-item mb-2"><span
+                                        class="badge rounded-pill bg-light border text-primary"><i
+                                            class="bi bi-lightning-charge me-1"></i>Tindak Cepat</span></li>
+                                <li class="list-inline-item mb-2"><span
+                                        class="badge rounded-pill bg-light border text-primary"><i
+                                            class="bi bi-lock me-1"></i>Data Aman</span></li>
+                            </ul>
                         </div>
-                    </div>
-                    <div class="col-lg-6 order-1 order-lg-2 hero-img position-relative" data-aos="zoom-out"
-                        style="position: relative;">
-                        <img src="{{ asset('template/Dashboard/assets/img/hero-img.png') }}"
-                            class="img-fluid animated" alt="" style="position: relative; z-index: 2;">
                     </div>
                 </div>
             </div>
@@ -660,9 +673,6 @@
                                         @endif
                                     </div>
                                     <div class="post-content">
-                                        <div class="post-meta">
-                                            <span class="post-date">{{ $news->created_at->format('d M Y') }}</span>
-                                        </div>
                                         <h3><a
                                                 href="{{ route('guest.news.show', $news->slug) }}">{{ $news->title }}</a>
                                         </h3>
@@ -829,9 +839,9 @@
                 <p>Tentang Kami<br></p>
             </div>
             <div class="container" data-aos="fade-up">
-                <div class="row gx-0">
+                <div class="row gx-0 justify-content-center">
 
-                    <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up"
+                    <div class="col-lg-8 d-flex flex-column justify-content-center" data-aos="fade-up"
                         data-aos-delay="200">
                         <div class="content">
                             <h3>Who We Are</h3>
@@ -846,10 +856,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
-                        <img src="{{ asset('template/Dashboard/assets/img/about.jpeg') }}" class="img-fluid"
-                            alt="">
-                    </div>
+
 
                 </div>
             </div>
@@ -870,7 +877,7 @@
             <!-- Section Title -->
             <div class="container section-title" data-aos="fade-up">
                 <h2>Keunggulan Kami</h2>
-                <p>Fitur-fitur Unggulan CSIRT Lombok Tengah<br></p>
+                <p>Fitur-fitur Unggulan SIAP-SIBER<br></p>
             </div><!-- End Section Title -->
 
             <div class="container">
@@ -964,7 +971,7 @@
 
         <section id="alt-features" class="alt-features section">
             <!-- Alt Features Section -->
-        <div class="container section-title" data-aos="fade-up">
+            <div class="container section-title" data-aos="fade-up">
                 <h2>APA ITU SERANGAN CYBER?</h2>
                 <p>Mengenal Jenis-jenis Serangan Siber yang Umum Terjadi<br>
                 </p>
@@ -1090,7 +1097,7 @@
                             </div><!-- End Faq item-->
 
                             <div class="faq-item">
-                                <h3>Berapa lama waktu respons CSIRT terhadap laporan insiden?</h3>
+                                <h3>Berapa lama waktu respons SIAP-SIBER terhadap laporan insiden?</h3>
                                 <div class="faq-content">
                                     <p>Waktu respons kami bervariasi tergantung tingkat keparahan insiden. Untuk insiden
                                         kritis, kami merespons dalam 1-2 jam. Insiden dengan tingkat menengah ditangani
@@ -1123,7 +1130,7 @@
                                 <h3>Apa yang harus dilakukan jika terkena serangan ransomware?</h3>
                                 <div class="faq-content">
                                     <p>Jangan panik dan jangan membayar tebusan. Segera putuskan koneksi internet,
-                                        laporkan ke CSIRT, backup data yang masih bisa diselamatkan, dan jangan
+                                        laporkan ke SIAP-SIBER, backup data yang masih bisa diselamatkan, dan jangan
                                         menghapus file yang terenkripsi karena mungkin masih bisa dipulihkan.
                                     </p>
                                 </div>
@@ -1135,7 +1142,7 @@
                                 <div class="faq-content">
                                     <p>Selalu verifikasi pengirim email, jangan klik link mencurigakan, periksa URL
                                         dengan teliti, gunakan two-factor authentication, dan selalu update software
-                                        keamanan. Jika ragu, hubungi CSIRT untuk verifikasi.</p>
+                                        keamanan. Jika ragu, hubungi call-center SIAP-SIBER untuk verifikasi.</p>
                                 </div>
                                 <i class="faq-toggle bi bi-chevron-right"></i>
                             </div><!-- End Faq item-->
@@ -1154,11 +1161,45 @@
 
         <!-- Clients Section -->
         <section id="clients" class="clients section">
+            <style>
+                /* Bigger logos and consistent sizing */
+                .clients .client-logo {
+                    max-height: 80px;
+                    /* increase size here */
+                    width: auto;
+                    object-fit: contain;
+                    filter: grayscale(0);
+                    /* keep colors; set to 1 for gray */
+                    transition: transform .2s ease;
+                }
+
+                @media (min-width: 992px) {
+                    .clients .client-logo {
+                        max-height: 90px;
+                    }
+                }
+
+                .clients .client-logo:hover {
+                    transform: scale(1.04);
+                }
+
+                /* Ensure slides size to image width to avoid empty gaps */
+                .clients .swiper-slide {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                /* Optional: tweak container spacing if needed */
+                .clients .swiper {
+                    padding: 10px 0;
+                }
+            </style>
 
             <!-- Section Title -->
             <div class="container section-title" data-aos="fade-up">
                 <h2>Clients</h2>
-                <p>We work with best clients<br></p>
+                <p>Kami Bekerja sama dengan<br></p>
             </div><!-- End Section Title -->
 
             <div class="container" data-aos="fade-up" data-aos-delay="100">
@@ -1167,61 +1208,48 @@
                     <script type="application/json" class="swiper-config">
             {
               "loop": true,
-              "speed": 600,
+              "loopAdditionalSlides": 8,
+              "speed": 3000,
               "autoplay": {
-                "delay": 5000
+                "delay": 0,
+                "disableOnInteraction": false,
+                "pauseOnMouseEnter": true
               },
               "slidesPerView": "auto",
+              "spaceBetween": 40,
+              "allowTouchMove": true,
               "pagination": {
                 "el": ".swiper-pagination",
                 "type": "bullets",
                 "clickable": true
-              },
-              "breakpoints": {
-                "320": {
-                  "slidesPerView": 2,
-                  "spaceBetween": 40
-                },
-                "480": {
-                  "slidesPerView": 3,
-                  "spaceBetween": 60
-                },
-                "640": {
-                  "slidesPerView": 4,
-                  "spaceBetween": 80
-                },
-                "992": {
-                  "slidesPerView": 6,
-                  "spaceBetween": 120
-                }
               }
             }
           </script>
                     <div class="swiper-wrapper align-items-center">
-                        <div class="swiper-slide"><img
+                        <div class="swiper-slide" style="width:auto"><img
                                 src="{{ asset('template/Dashboard/assets/img/clients/client-1.png') }}"
-                                class="img-fluid" alt=""></div>
-                        <div class="swiper-slide"><img
+                                class="img-fluid client-logo" alt=""></div>
+                        <div class="swiper-slide" style="width:auto"><img
                                 src="{{ asset('template/Dashboard/assets/img/clients/client-2.png') }}"
-                                class="img-fluid" alt=""></div>
-                        <div class="swiper-slide"><img
+                                class="img-fluid client-logo" alt=""></div>
+                        <div class="swiper-slide" style="width:auto"><img
                                 src="{{ asset('template/Dashboard/assets/img/clients/client-3.png') }}"
-                                class="img-fluid" alt=""></div>
-                        <div class="swiper-slide"><img
+                                class="img-fluid client-logo" alt=""></div>
+                        <div class="swiper-slide" style="width:auto"><img
                                 src="{{ asset('template/Dashboard/assets/img/clients/client-4.png') }}"
-                                class="img-fluid" alt=""></div>
-                        <div class="swiper-slide"><img
+                                class="img-fluid client-logo" alt=""></div>
+                        <div class="swiper-slide" style="width:auto"><img
                                 src="{{ asset('template/Dashboard/assets/img/clients/client-5.png') }}"
-                                class="img-fluid" alt=""></div>
-                        <div class="swiper-slide"><img
+                                class="img-fluid client-logo" alt=""></div>
+                        <div class="swiper-slide" style="width:auto"><img
                                 src="{{ asset('template/Dashboard/assets/img/clients/client-6.png') }}"
-                                class="img-fluid" alt=""></div>
-                        <div class="swiper-slide"><img
+                                class="img-fluid client-logo" alt=""></div>
+                        <div class="swiper-slide" style="width:auto"><img
                                 src="{{ asset('template/Dashboard/assets/img/clients/client-7.png') }}"
-                                class="img-fluid" alt=""></div>
-                        <div class="swiper-slide"><img
+                                class="img-fluid client-logo" alt=""></div>
+                        <div class="swiper-slide" style="width:auto"><img
                                 src="{{ asset('template/Dashboard/assets/img/clients/client-8.png') }}"
-                                class="img-fluid" alt=""></div>
+                                class="img-fluid client-logo" alt=""></div>
                     </div>
                     <div class="swiper-pagination"></div>
                 </div>
@@ -1275,14 +1303,7 @@
                                 </div>
                             </div><!-- End Info Item -->
 
-                            <div class="col-md-6">
-                                <div class="info-item" data-aos="fade" data-aos-delay="500">
-                                    <i class="bi bi-clock"></i>
-                                    <h3>Jam Operasional</h3>
-                                    <p>Senin - Jumat: 08:00 - 16:00</p>
-                                    <p>Emergency Response: 24/7</p>
-                                </div>
-                            </div><!-- End Info Item -->
+
 
                         </div>
 

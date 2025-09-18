@@ -19,7 +19,7 @@ use App\Models\Ticket;
 Route::middleware(['prevent.admin.guest'])->group(function () {
     Route::get('/', [TicketController::class, 'guestDashboard']);
 
-    Route::get('/guest/guest_dashboard', [TicketController::class, 'guestDashboard'])->name('guest.guest_dashboard');
+    Route::get('/', [TicketController::class, 'guestDashboard'])->name('guest.guest_dashboard');
 
     Route::get('guest/create_tiket', function () {
         $kecamatans = \App\Models\Kecamatan::orderBy('nama')->get(['id', 'nama']);
