@@ -615,7 +615,7 @@
                     <img src="{{ asset('images/lomboktengah.png') }}" alt="Lombok Tengah"
                         style="width:100px;height:100px;object-fit:contain;border-radius:4px;" />
                 </div>
-                <h1 class="main-title">Sistem Pengaduan Masyarakat</h1>
+                <h1 class="main-title">Sistem Pengaduan Insiden Siber</h1>
                 <p class="main-subtitle">Laporkan masalah atau lacak status tiket Anda dengan mudah</p>
             </div>
 

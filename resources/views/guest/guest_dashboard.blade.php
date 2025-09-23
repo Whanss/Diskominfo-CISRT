@@ -722,8 +722,9 @@
                             <h4>Kontak Darurat</h4>
                             <div class="contact-info">
                                 <p><strong>Respon Insiden 24/7</strong></p>
-                                <p><i class="bi bi-telephone me-2"></i>+62 370 XXX-XXXX</p>
-                                <p><i class="bi bi-envelope me-2"></i>incident@csirt-loteng.go.id</p>
+                                <p><i class="bi bi-envelope me-2"></i>:diskominfo@lomboktengahkab.go.id</p>
+                                <p><i class="bi bi-telephone me-2"></i> : 0370 655081 Fax. 0370 655081</p>
+                                
                                 <p class="small text-muted">Untuk insiden keamanan kritis yang memerlukan respon segera
                                 </p>
                             </div>
@@ -1158,108 +1159,6 @@
         </section><!-- /Faq Section -->
 
 
-
-        <!-- Clients Section -->
-        <section id="clients" class="clients section">
-            <style>
-                /* Bigger logos and consistent sizing */
-                .clients .client-logo {
-                    max-height: 80px;
-                    /* increase size here */
-                    width: auto;
-                    object-fit: contain;
-                    filter: grayscale(0);
-                    /* keep colors; set to 1 for gray */
-                    transition: transform .2s ease;
-                }
-
-                @media (min-width: 992px) {
-                    .clients .client-logo {
-                        max-height: 90px;
-                    }
-                }
-
-                .clients .client-logo:hover {
-                    transform: scale(1.04);
-                }
-
-                /* Ensure slides size to image width to avoid empty gaps */
-                .clients .swiper-slide {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-
-                /* Optional: tweak container spacing if needed */
-                .clients .swiper {
-                    padding: 10px 0;
-                }
-            </style>
-
-            <!-- Section Title -->
-            <div class="container section-title" data-aos="fade-up">
-                <h2>Clients</h2>
-                <p>Kami Bekerja sama dengan<br></p>
-            </div><!-- End Section Title -->
-
-            <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-                <div class="swiper init-swiper">
-                    <script type="application/json" class="swiper-config">
-            {
-              "loop": true,
-              "loopAdditionalSlides": 8,
-              "speed": 3000,
-              "autoplay": {
-                "delay": 0,
-                "disableOnInteraction": false,
-                "pauseOnMouseEnter": true
-              },
-              "slidesPerView": "auto",
-              "spaceBetween": 40,
-              "allowTouchMove": true,
-              "pagination": {
-                "el": ".swiper-pagination",
-                "type": "bullets",
-                "clickable": true
-              }
-            }
-          </script>
-                    <div class="swiper-wrapper align-items-center">
-                        <div class="swiper-slide" style="width:auto"><img
-                                src="{{ asset('template/Dashboard/assets/img/clients/client-1.png') }}"
-                                class="img-fluid client-logo" alt=""></div>
-                        <div class="swiper-slide" style="width:auto"><img
-                                src="{{ asset('template/Dashboard/assets/img/clients/client-2.png') }}"
-                                class="img-fluid client-logo" alt=""></div>
-                        <div class="swiper-slide" style="width:auto"><img
-                                src="{{ asset('template/Dashboard/assets/img/clients/client-3.png') }}"
-                                class="img-fluid client-logo" alt=""></div>
-                        <div class="swiper-slide" style="width:auto"><img
-                                src="{{ asset('template/Dashboard/assets/img/clients/client-4.png') }}"
-                                class="img-fluid client-logo" alt=""></div>
-                        <div class="swiper-slide" style="width:auto"><img
-                                src="{{ asset('template/Dashboard/assets/img/clients/client-5.png') }}"
-                                class="img-fluid client-logo" alt=""></div>
-                        <div class="swiper-slide" style="width:auto"><img
-                                src="{{ asset('template/Dashboard/assets/img/clients/client-6.png') }}"
-                                class="img-fluid client-logo" alt=""></div>
-                        <div class="swiper-slide" style="width:auto"><img
-                                src="{{ asset('template/Dashboard/assets/img/clients/client-7.png') }}"
-                                class="img-fluid client-logo" alt=""></div>
-                        <div class="swiper-slide" style="width:auto"><img
-                                src="{{ asset('template/Dashboard/assets/img/clients/client-8.png') }}"
-                                class="img-fluid client-logo" alt=""></div>
-                    </div>
-                    <div class="swiper-pagination"></div>
-                </div>
-
-            </div>
-
-        </section><!-- /Clients Section -->
-
-
-
         <!-- Contact Section -->
         <section id="contact" class="contact section">
 
@@ -1276,75 +1175,38 @@
                     <div class="col-lg-6">
 
                         <div class="row gy-4">
-                            <div class="col-md-6">
-                                <div class="info-item" data-aos="fade" data-aos-delay="200">
-                                    <i class="bi bi-geo-alt"></i>
-                                    <h3>Alamat</h3>
-                                    <p>Kantor Pemerintah Daerah</p>
-                                    <p>Lombok Tengah, NTB</p>
-                                </div>
-                            </div><!-- End Info Item -->
-
-                            <div class="col-md-6">
-                                <div class="info-item" data-aos="fade" data-aos-delay="300">
+                            <div class="col-12">
+                                <div class="info-item" data-aos="fade" data-aos-delay="300"
+                                    style="margin-bottom: 1rem;">
                                     <i class="bi bi-telephone"></i>
                                     <h3>Hubungi Kami</h3>
-                                    <p>+62 370 123456</p>
-                                    <p>Hotline 24/7: 0800-CSIRT</p>
+                                    <p>0370 655081 </p>
+                                    <p>Fax. 0370 655081</p>
                                 </div>
                             </div><!-- End Info Item -->
+                        </div>
 
-                            <div class="col-md-6">
+                        <div class="row gy-4">
+                            <div class="col-12">
                                 <div class="info-item" data-aos="fade" data-aos-delay="400">
                                     <i class="bi bi-envelope"></i>
                                     <h3>Email</h3>
-                                    <p>csirt@lomboktengahkab.go.id</p>
-                                    <p>incident@lomboktengahkab.go.id</p>
+                                    <p>diskominfo@lomboktengahkab.go.id</p>
+
                                 </div>
                             </div><!-- End Info Item -->
-
-
-
                         </div>
 
                     </div>
 
                     <div class="col-lg-6">
-                        <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up"
-                            data-aos-delay="200">
-                            <div class="row gy-4">
-
-                                <div class="col-md-6">
-                                    <input type="text" name="name" class="form-control"
-                                        placeholder="Nama Lengkap" required="">
-                                </div>
-
-                                <div class="col-md-6 ">
-                                    <input type="email" class="form-control" name="email"
-                                        placeholder="Email Anda" required="">
-                                </div>
-
-                                <div class="col-12">
-                                    <input type="text" class="form-control" name="subject"
-                                        placeholder="Subjek Pesan" required="">
-                                </div>
-
-                                <div class="col-12">
-                                    <textarea class="form-control" name="message" rows="6" placeholder="Pesan atau Laporan Insiden Keamanan Siber"
-                                        required=""></textarea>
-                                </div>
-
-                                <div class="col-12 text-center">
-                                    <div class="loading">Mengirim...</div>
-                                    <div class="error-message"></div>
-                                    <div class="sent-message">Pesan Anda telah terkirim. Terima kasih!</div>
-
-                                    <button type="submit">Kirim Pesan</button>
-                                </div>
-
-                            </div>
-                        </form>
-                    </div><!-- End Contact Form -->
+                        <div class="map-container" data-aos="fade" data-aos-delay="500">
+                            <iframe
+                                src="https://maps.google.com/maps?q=865X+QP9+Puyung+Kec.+Jonggat+Kabupaten+Lombok+Tengah+Nusa+Tenggara+Bar.+83521&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                                width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
+                    </div>
 
                 </div>
 
