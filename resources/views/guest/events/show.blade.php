@@ -3,9 +3,14 @@
 @section('content')
     <style>
         :root {
-            --csirt-primary: #1a365d;
+            --csirt-primary: #1b212a;
             --csirt-secondary: #2d3748;
+            --csirt-accent: #e53e3e;
+            --csirt-warning: #d69e2e;
+            --csirt-success: #38a169;
+            --csirt-info: #3182ce;
             --csirt-dark: #1a202c;
+            --csirt-light: #f7fafc;
         }
 
         .event-header {
@@ -33,21 +38,71 @@
             border-color: var(--csirt-primary);
         }
 
+        .btn-primary {
+            background-color: var(--csirt-primary);
+            border-color: var(--csirt-primary);
+        }
+
         .btn-primary:hover {
             background-color: #2c5282;
             border-color: #2c5282;
         }
 
+        .btn-outline-primary {
+            color: var(--csirt-primary);
+            border-color: var(--csirt-primary);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--csirt-primary);
+            border-color: var(--csirt-primary);
+        }
+
         .event-content {
-            font-size: 1.05rem;
-            line-height: 1.75;
+            font-size: 1.1rem;
+            line-height: 1.8;
             color: #374151;
+        }
+
+        .event-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        .event-image {
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(26, 54, 93, 0.15);
+            border: 1px solid #e2e8f0;
+            max-width: 700px;
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
         }
 
         .event-card {
             border: 1px solid #e2e8f0;
             border-radius: 10px;
             box-shadow: 0 10px 24px rgba(26, 54, 93, .08);
+        }
+
+        .related-news-card {
+            transition: all 0.3s ease;
+            height: 100%;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .related-news-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(26, 54, 93, 0.15);
+            border-color: var(--csirt-primary);
+        }
+
+        .related-news-image {
+            height: 120px;
+            object-fit: cover;
+            width: 100%;
         }
 
         /* Breadcrumb white color (including separators) */
@@ -61,6 +116,13 @@
 
         .breadcrumb .breadcrumb-item.active {
             color: #fff !important;
+        }
+
+        .share-buttons .btn {
+            margin-right: 10px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            font-weight: 500;
         }
     </style>
 
@@ -95,8 +157,9 @@
                         <p class="lead text-white-75">{{ $event->summary }}</p>
                     @endif
 
-                    @if(!empty($event->location))
-                        <p class="mt-2 text-white-75"><i class="bi bi-geo-alt me-2"></i> <strong>Lokasi:</strong> {{ $event->location }}</p>
+                    @if (!empty($event->location))
+                        <p class="mt-2 text-white-75"><i class="bi bi-geo-alt me-2"></i> <strong>Lokasi:</strong>
+                            {{ $event->location }}</p>
                     @endif
                 </div>
             </div>
@@ -109,11 +172,42 @@
             <div class="row">
                 <div class="col-lg-8">
                     <article class="event-content">
-                        @if ($event->description)
-                            <div>{!! nl2br(e($event->description)) !!}</div>
-                        @else
-                            <p class="text-muted">Tidak ada deskripsi tambahan untuk agenda ini.</p>
+                        @if ($event->image)
+                            <div class="mb-5">
+                                <img src="{{ asset($event->image) }}" alt="{{ $event->title }}"
+                                    class="img-fluid event-image">
+                            </div>
                         @endif
+
+                        <div class="content">
+                            @if ($event->description)
+                                {!! nl2br(e($event->description)) !!}
+                            @else
+                                <p class="text-muted">Tidak ada deskripsi tambahan untuk agenda ini.</p>
+                            @endif
+                        </div>
+
+                        <!-- Share Buttons -->
+                        <div class="mt-5 pt-4 border-top">
+                            <h5 class="mb-3">Bagikan Agenda Ini:</h5>
+                            <div class="share-buttons">
+                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->fullUrl()) }}"
+                                    target="_blank" class="btn btn-primary">
+                                    <i class="bi bi-facebook me-1"></i> Facebook
+                                </a>
+                                <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->fullUrl()) }}&text={{ urlencode($event->title) }}"
+                                    target="_blank" class="btn btn-info">
+                                    <i class="bi bi-twitter me-1"></i> Twitter
+                                </a>
+                                <a href="https://wa.me/?text={{ urlencode($event->title . ' - ' . request()->fullUrl()) }}"
+                                    target="_blank" class="btn btn-success">
+                                    <i class="bi bi-whatsapp me-1"></i> WhatsApp
+                                </a>
+                                <button class="btn btn-secondary" onclick="copyToClipboard(event)">
+                                    <i class="bi bi-link-45deg me-1"></i> Salin Tautan
+                                </button>
+                            </div>
+                        </div>
                     </article>
                 </div>
 
@@ -148,4 +242,22 @@
             </div>
         </div>
     </section>
+
+    <script>
+        function copyToClipboard(e) {
+            e.preventDefault();
+            navigator.clipboard.writeText(window.location.href).then(function() {
+                const btn = e.target.closest('button');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="bi bi-check me-1"></i> Copied!';
+                btn.classList.remove('btn-secondary');
+                btn.classList.add('btn-success');
+                setTimeout(function() {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('btn-success');
+                    btn.classList.add('btn-secondary');
+                }, 2000);
+            });
+        }
+    </script>
 @endsection

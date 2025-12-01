@@ -117,14 +117,14 @@ class EventController extends Controller
             $term = '%' . $request->get('q') . '%';
             $query->where(function ($q) use ($term) {
                 $q->where('title', 'like', $term)
-                  ->orWhere('location', 'like', $term)
-                  ->orWhere('summary', 'like', $term);
+                    ->orWhere('location', 'like', $term)
+                    ->orWhere('summary', 'like', $term);
             });
         }
 
         $events = $query->orderBy('start_at')
-                        ->paginate(3, ['*'], 'events_page')
-                        ->withQueryString();
+            ->paginate(3, ['*'], 'events_page')
+            ->withQueryString();
 
         return view('guest.events.index', compact('events'));
     }

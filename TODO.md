@@ -1,0 +1,5 @@
+-   [ ] Update CSS variables in resources/views/guest/events/show.blade.php to match news detail page
+-   [ ] Add image display in the article section before the description
+-   [ ] Add share buttons section ("Bagikan Sekarang") after the content
+-   [ ] Add JavaScript for copy to clipboard functionality
+-   [ ] Test the changes by viewing an event detail page
