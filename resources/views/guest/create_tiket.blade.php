@@ -727,7 +727,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M4 6h16M4 12h16M4 18h16" />
                                     </svg>
-                                    Jenis Layanan <span class="required">*</span>
+                                    Kategori Layanan <span class="required">*</span>
                                 </label>
                                 <select class="form-control" id="layanan_id" name="layanan_id" required>
                                     <option value="">Pilih layanan</option>
@@ -748,7 +748,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M4 6h16M7 12h10M10 18h4" />
                                     </svg>
-                                    Jenis Serangan<span class="required" id="kategori-required"
+                                    Jenis Serangan/Layanan<span class="required" id="kategori-required"
                                         style="display:none;">*</span>
                                 </label>
                                 <select class="form-control" id="layanan_category_id" name="layanan_category_id" disabled

@@ -857,13 +857,13 @@
                                     <div>{{ $ticket->description }}</div>
                                 </div>
                                 <div>
-                                    <div style="font-weight:600; color:#4a148c; margin-bottom:6px;">Jenis Layanan/Insiden
+                                    <div style="font-weight:600; color:#4a148c; margin-bottom:6px;">Kategori Layanan/Insiden
                                     </div>
                                     <div>
                                         @if ($ticket->layanan)
                                             {{ $ticket->layanan->name }}
                                             @if ($ticket->layananCategory)
-                                                <br><small style="color:#444; font-weight:600;">Kategori: {{ $ticket->layananCategory->name }}</small>
+                                                <br><small style="color:#444; font-weight:600;">Jenis serangan/Layanan: {{ $ticket->layananCategory->name }}</small>
                                                 @if ($ticket->layananCategory->description)
                                                     <br><small style="color:#666; font-weight:400;">Keterangan: {{ $ticket->layananCategory->description }}</small>
                                                 @endif
