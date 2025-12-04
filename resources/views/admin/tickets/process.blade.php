@@ -522,7 +522,7 @@
         }
 
         .session-time {
-            color: #059669;
+            color: #08ab77ff;
             font-weight: 600;
             font-size: 14px;
         }
