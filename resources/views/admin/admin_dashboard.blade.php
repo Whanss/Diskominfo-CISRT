@@ -2809,9 +2809,6 @@
 
         function acceptTicket(ticketId) {
             if (confirm('Apakah Anda yakin ingin menerima tiket ini?')) {
-                // Show loading state
-                showNotification('info', 'Memproses tiket...');
-
                 fetch(`/admin/tickets/${ticketId}/accept`, {
                         method: 'POST',
                         headers: {
@@ -2874,9 +2871,6 @@
         function rejectTicket(ticketId) {
             const reason = prompt('Alasan penolakan:');
             if (reason && confirm('Apakah Anda yakin ingin menolak tiket ini?')) {
-                // Show loading state
-                showNotification('info', 'Memproses penolakan tiket...');
-
                 fetch(`/admin/tickets/${ticketId}/reject`, {
                         method: 'POST',
                         headers: {

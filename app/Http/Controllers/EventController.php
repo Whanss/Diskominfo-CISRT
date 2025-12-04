@@ -12,7 +12,7 @@ class EventController extends Controller
     // Admin: list
     public function index()
     {
-        $events = Event::latest('start_at')->paginate(10);
+        $events = Event::latest()->paginate(10);
         return view('admin.events.index', compact('events'));
     }
 
@@ -48,7 +48,7 @@ class EventController extends Controller
         // Handle image upload
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('events', 'public');
-            $validated['image'] = 'storage/' . $path; // public path
+            $validated['image'] = $path; // relative path from storage/app/public
         }
 
         Event::create($validated);
@@ -93,7 +93,7 @@ class EventController extends Controller
         // Handle image upload (replace old if new uploaded)
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('events', 'public');
-            $validated['image'] = 'storage/' . $path;
+            $validated['image'] = $path;
         }
 
         $event->update($validated);

@@ -17,14 +17,15 @@
     <table class="table table-bordered table-striped">
         <thead>
             <tr>
+                <th width="5%">No</th>
                 <th>Nama Kecamatan</th>
-
                 <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($kecamatans as $kecamatan)
+            @foreach($kecamatans as $index => $kecamatan)
             <tr>
+                <td>{{ $kecamatans->firstItem() + $index }}</td>
                 <td>{{ $kecamatan->nama }}</td>
                 <td>
                     <a href="{{ route('admin.kecamatan.edit', $kecamatan) }}" class="btn btn-sm btn-warning">Edit</a>

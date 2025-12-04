@@ -262,7 +262,7 @@
 
         .stat-header {
             display: flex;
-            items-center;
+            align-items: center;
             justify-content: space-between;
             margin-bottom: 16px;
         }
@@ -1124,14 +1124,14 @@
                                                 Accept
                                             </button>
                                         </form>
-                                        <form action="{{ route('admin.tickets.reject', $ticket) }}" method="POST"
-                                            style="display: inline-block;" class="ticket-form">
-                                            @csrf
-                                            <button type="submit" class="btn btn-danger">
-                                                <i class="fas fa-times"></i>
-                                                Reject
-                                            </button>
-                                        </form>
+                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                            data-bs-target="#rejectModal"
+                                            data-action="{{ route('admin.tickets.reject', $ticket) }}"
+                                            data-title="{{ $ticket->judul ?? 'No Title' }}"
+                                            data-code="{{ $ticket->code_tracking }}">
+                                            <i class="fas fa-times"></i>
+                                            Reject
+                                        </button>
                                     @else
                                         <div class="no-actions">
                                             <i class="fas fa-info-circle"></i>
@@ -1264,6 +1264,59 @@
             cards.forEach((card, index) => {
                 card.style.animationDelay = `${index * 0.05}s`;
                 card.classList.add('fade-in');
+            });
+        });
+    </script>
+
+    <!-- Reject Ticket Modal -->
+    <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rejectModalLabel">Reject Ticket</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="rejectForm" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <div style="margin-bottom: 10px; font-size: 14px; color: #64748b;">
+                            <div><strong>Ticket:</strong> <span id="reject-ticket-title">-</span></div>
+                            <div><strong>Code:</strong> <span id="reject-ticket-code">-</span></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="rejection_reason"><strong>Rejection Reason</strong></label>
+                            <textarea class="form-control" id="rejection_reason" name="rejection_reason" rows="4"
+                                placeholder="Please provide a reason for rejecting this ticket" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger"><i class="fas fa-times"></i> Reject Ticket</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Hook up modal with data attributes for rejection
+        document.addEventListener('click', function(e) {
+            const trigger = e.target.closest('[data-bs-target="#rejectModal"]');
+            if (!trigger) return;
+            const action = trigger.getAttribute('data-action');
+            const title = trigger.getAttribute('data-title');
+            const code = trigger.getAttribute('data-code');
+
+            const form = document.getElementById('rejectForm');
+            form.setAttribute('action', action);
+            document.getElementById('reject-ticket-title').textContent = title || '-';
+            document.getElementById('reject-ticket-code').textContent = code || '-';
+
+            // reset textarea on open
+            const textarea = document.getElementById('rejection_reason');
+            textarea.value = '';
+            textarea.focus({
+                preventScroll: true
             });
         });
     </script>

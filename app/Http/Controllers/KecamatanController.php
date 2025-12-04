@@ -10,7 +10,7 @@ class KecamatanController extends Controller
 {
     public function index()
     {
-        $kecamatans = Kecamatan::orderBy('nama')->paginate(15);
+        $kecamatans = Kecamatan::latest()->paginate(15);
         return view('admin.kecamatan.index', compact('kecamatans'));
     }
 

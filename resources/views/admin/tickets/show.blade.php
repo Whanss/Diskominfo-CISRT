@@ -270,9 +270,23 @@
                                 </button>
                             </form>
                         @else
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle"></i> Tiket ini telah diproses.
-                            </div>
+                            @if ($ticket->status == 'diterima/approved')
+                                <div class="alert alert-success">
+                                    <i class="fas fa-check-circle"></i> Tiket berhasil diterima dan siap diproses.
+                                </div>
+                            @elseif ($ticket->status == 'ditolak/rejected')
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-times-circle"></i> Tiket berhasil ditolak.
+                                </div>
+                            @elseif ($ticket->status == 'selesai/completed')
+                                <div class="alert alert-success">
+                                    <i class="fas fa-check-double"></i> Tiket telah selesai diproses.
+                                </div>
+                            @else
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i> Tiket ini telah diproses.
+                                </div>
+                            @endif
                         @endif
                     </div>
                 </div>
