@@ -23,6 +23,9 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
+        // Seed admin user
+        $this->call(AdminSeeder::class);
+
         // Seed kecamatan data only, remove kabupaten seeder call
         $this->call(Kecamatanseeder::class);
 
@@ -34,6 +37,9 @@ class DatabaseSeeder extends Seeder
 
         // Seed news articles
         $this->call(NewsSeeder::class);
+
+        // Seed events
+        $this->call(EventSeeder::class);
 
         $this->command->info('All seeders completed successfully!');
     }

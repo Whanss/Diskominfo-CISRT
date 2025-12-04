@@ -11,7 +11,7 @@ class LayananController extends Controller
     public function index()
     {
         $items = MasterLayanan::withCount(['categories' => function($q){ $q->where('is_active', true); }])
-            ->orderBy('name')
+            ->latest()
             ->paginate(15);
         return view('admin.layanan.index', compact('items'));
     }

@@ -12,10 +12,17 @@
                     Tambah</a>
             </div>
             <div class="card-body">
+                @if (session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                @endif
+
                 <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
-
+                            <th width="5%">No</th>
                             <th>Nama</th>
                             <th>Deskripsi</th>
                             <th>Aktif</th>
@@ -24,8 +31,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($items as $item)
+                        @forelse($items as $index => $item)
                             <tr>
+                                <td>{{ $items->firstItem() + $index }}</td>
                                 <td>{{ $item->name }}</td>
                                 <td>{{ Str::limit($item->description, 120) }}</td>
                                 <td>
@@ -53,7 +61,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center">Belum ada data</td>
+                                <td colspan="6" class="text-center">Belum ada data</td>
                             </tr>
                         @endforelse
                     </tbody>

@@ -12,19 +12,26 @@
                         class="fas fa-plus"></i> Tambah</a>
             </div>
             <div class="card-body">
+                @if (session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                @endif
+
                 <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th>#</th>
+                            <th>No</th>
                             <th>Nama</th>
                             <th>Aktif</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($categories as $category)
+                        @forelse($categories as $index => $category)
                             <tr>
-                                <td>{{ $category->id }}</td>
+                                <td>{{ $categories->firstItem() + $index }}</td>
                                 <td>{{ $category->name }}</td>
                                 <td>
                                     <span

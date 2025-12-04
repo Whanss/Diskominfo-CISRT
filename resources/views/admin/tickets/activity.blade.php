@@ -304,17 +304,11 @@
                                                             </a>
                                                         </li>
                                                         <li>
-                                                            <a class="dropdown-item" href="#"
-                                                                onclick="printActivity({{ $activity->id }})">
-                                                                <i class="fas fa-print me-2"></i>Cetak
-                                                            </a>
-                                                        </li>
-                                                        <li>
                                                             <hr class="dropdown-divider">
                                                         </li>
                                                         <li>
                                                             <a class="dropdown-item text-danger" href="#"
-                                                                onclick="deleteActivity({{ $activity->id }})">
+                                                                onclick="deleteActivity({{ $activity->id }});" data-id="{{ $activity->id }}">
                                                                 <i class="fas fa-trash me-2"></i>Hapus
                                                             </a>
                                                         </li>
