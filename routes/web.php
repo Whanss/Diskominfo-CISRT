@@ -3,27 +3,24 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\AdminController;
-// use App\Http\Controllers\KabupatenController;
 use App\Http\Controllers\KecamatanController;
-use App\Http\Controllers\LayananController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\NewsController as AdminNewsController;
 use App\Http\Controllers\NewsController as GuestNewsController;
-// use App\Models\Kabupaten;
 use App\Models\Kecamatan;
-use App\Models\Ticket;
+use App\Models\LayananCategory;
+use App\Models\MasterLayanan;
+use App\Models\TicketActivityLog;
 
 // API endpoint untuk kecamatan berdasarkan kabupaten dihapus karena tidak lagi digunakan
 
 // Guest routes - protected from admin access
 Route::middleware(['prevent.admin.guest'])->group(function () {
-    Route::get('/', [TicketController::class, 'guestDashboard']);
-
     Route::get('/', [TicketController::class, 'guestDashboard'])->name('guest.guest_dashboard');
 
     Route::get('guest/create_tiket', function () {
-        $kecamatans = \App\Models\Kecamatan::orderBy('nama')->get(['id', 'nama']);
-        $layanan = \App\Models\MasterLayanan::where('is_active', true)->orderBy('name')->get(['id', 'name']);
+        $kecamatans = Kecamatan::query()->orderBy('nama')->get(['id', 'nama']);
+        $layanan = MasterLayanan::query()->where('is_active', true)->orderBy('name')->get(['id', 'name']);
         return view('guest.create_tiket', compact('kecamatans', 'layanan'));
     })->name('guest.create_tiket');
 
@@ -68,7 +65,6 @@ Route::middleware(['admin.auth', 'prevent.guest.admin'])->prefix('admin')->name(
     Route::post('dashboard/chart-data', [AdminController::class, 'getChartDataAjax'])->name('dashboard.chart-data');
     Route::post('dashboard/processing-time-data', [AdminController::class, 'getProcessingTimeAnalyticsAjax'])->name('dashboard.processing-time-data');
     Route::post('dashboard/processing-time', [AdminController::class, 'getProcessingTimeAnalyticsAjax'])->name('dashboard.processing-time');
-    Route::get('tickets/{ticket}/details', [AdminController::class, 'getTicketDetails'])->name('tickets.details');
 
     // Navigation routes for month navigation
     Route::post('dashboard/navigate/previous', [AdminController::class, 'navigatePreviousMonth'])->name('dashboard.navigate.previous');
@@ -88,8 +84,9 @@ Route::middleware(['admin.auth', 'prevent.guest.admin'])->prefix('admin')->name(
 });
 
 // API routes accessible to guests (for dynamic dropdowns)
-Route::get('api/layanan/{layanan}/categories', function (\App\Models\MasterLayanan $layanan) {
-    return \App\Models\LayananCategory::where('layanan_id', $layanan->id)
+Route::get('api/layanan/{layanan}/categories', function (MasterLayanan $layanan) {
+    return LayananCategory::query()
+        ->where('layanan_id', $layanan->id)
         ->where('is_active', true)
         ->orderBy('name')
         ->get(['id', 'name', 'description']);
@@ -105,7 +102,7 @@ Route::middleware(['admin.auth', 'prevent.guest.admin'])->prefix('admin')->name(
     Route::get('tickets', [TicketController::class, 'adminIndex'])->name('tickets.index');
     Route::get('tickets/export', [TicketController::class, 'export'])->name('tickets.export');
     Route::get('tickets/activity', [TicketController::class, 'activity'])->name('tickets.activity');
-    Route::delete('tickets/activity/{activity}', function (\App\Models\TicketActivityLog $activity) {
+    Route::delete('tickets/activity/{activity}', function (TicketActivityLog $activity) {
         $activity->delete();
         return back()->with('success', 'Aktivitas berhasil dihapus.');
     })->name('tickets.activity.delete');

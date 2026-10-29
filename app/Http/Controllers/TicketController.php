@@ -194,7 +194,7 @@ class TicketController extends Controller
             });
         }
 
-        $tickets = $query->orderBy('created_at', 'desc')->paginate(2);
+        $tickets = $query->orderBy('created_at', 'desc')->paginate(10);
 
         // Get filter options
         $kecamatanList = \App\Models\Kecamatan::orderBy('nama')->get();
@@ -300,7 +300,7 @@ class TicketController extends Controller
     // Get ticket details for modal
     public function getDetails(Ticket $ticket)
     {
-        $ticket->load(['kecamatan', 'layanan']);
+        $ticket->load(['kecamatan', 'layanan', 'layananCategory']);
 
         return response()->json([
             'success' => true,

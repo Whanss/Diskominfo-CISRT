@@ -2714,7 +2714,7 @@
                     </div>
                     <div class="ticket-detail-item">
                         <div class="ticket-detail-label">No. Telepon</div>
-                        <div class="ticket-detail-value">${ticket.no_telepon || '-'}</div>
+                        <div class="ticket-detail-value">${ticket.no_hp || '-'}</div>
                     </div>
                     <div class="ticket-detail-item">
                         <div class="ticket-detail-label">Tanggal Dibuat</div>
@@ -2727,7 +2727,7 @@
                     </div>
                     <div class="ticket-detail-item">
                         <div class="ticket-detail-label">Layanan</div>
-                        <div class="ticket-detail-value">${ticket.layanan?.nama || '-'}</div>
+                        <div class="ticket-detail-value">${ticket.layanan?.name || '-'}</div>
                     </div>
                     <div class="ticket-detail-item">
                         <div class="ticket-detail-label">Prioritas</div>
@@ -2744,27 +2744,24 @@
                     <p><strong>${ticket.judul || 'Tidak ada judul'}</strong></p>
 
                     <h6><i class="fas fa-align-left"></i> Deskripsi</h6>
-                    <p>${ticket.deskripsi || 'Tidak ada deskripsi'}</p>
+                    <p>${ticket.description || 'Tidak ada deskripsi'}</p>
 
-                    ${ticket.attachments && ticket.attachments.length > 0 ? `
-                                                                                                                    <div class="ticket-attachments">
-                                                                                                                        <h6><i class="fas fa-paperclip"></i> Lampiran</h6>
-                                                                                                                        ${ticket.attachments.map(att => `
-                                <div class="attachment-item">
-                                    <div class="attachment-icon">
-                                        <i class="fas fa-file"></i>
-                                    </div>
-                                    <div>
-                                        <div style="font-weight: 500;">${att.original_name}</div>
-                                        <div style="font-size: 0.875rem; color: var(--gray-600);">${att.file_size || 'Unknown size'}</div>
-                                    </div>
-                                    <a href="/admin/tickets/${ticket.id}/download" class="btn btn-sm btn-outline">
-                                        <i class="fas fa-download"></i>
-                                    </a>
+                    ${ticket.attachment_path ? `
+                        <div class="ticket-attachments">
+                            <h6><i class="fas fa-paperclip"></i> Lampiran</h6>
+                            <div class="attachment-item">
+                                <div class="attachment-icon">
+                                    <i class="fas fa-file"></i>
                                 </div>
-                            `).join('')}
-                                                                                                                    </div>
-                                                                                                                ` : ''}
+                                <div>
+                                    <div style="font-weight: 500;">lampiran_${ticket.code_tracking}</div>
+                                </div>
+                                <a href="/admin/tickets/${ticket.id}/download" class="btn btn-sm btn-outline">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                            </div>
+                        </div>
+                    ` : ''}
                 </div>
             `;
 
@@ -2855,21 +2852,13 @@
                     })
                     .catch(error => {
                         console.error('Error accepting ticket:', error);
-
-                        // Even if there's an error in parsing, the action might have succeeded
-                        // So let's refresh the data and show a generic success message
-                        showNotification('success', 'Tiket berhasil diterima');
-                        loadRecentTickets();
-                        if (currentMonth) {
-                            loadDataForMonth(currentMonth);
-                        }
-                        closeTicketModal();
+                        showNotification('danger', 'Terjadi kesalahan saat menerima tiket.');
                     });
             }
         }
 
         function rejectTicket(ticketId) {
-            const reason = prompt('Alasan penolakan:');
+            const reason = prompt('Alasan penolakan (minimal 5 karakter):');
             if (reason && confirm('Apakah Anda yakin ingin menolak tiket ini?')) {
                 fetch(`/admin/tickets/${ticketId}/reject`, {
                         method: 'POST',
@@ -2920,15 +2909,7 @@
                     })
                     .catch(error => {
                         console.error('Error rejecting ticket:', error);
-
-                        // Even if there's an error in parsing, the action might have succeeded
-                        // So let's refresh the data and show a generic success message
-                        showNotification('success', 'Tiket berhasil ditolak');
-                        loadRecentTickets();
-                        if (currentMonth) {
-                            loadDataForMonth(currentMonth);
-                        }
-                        closeTicketModal();
+                        showNotification('danger', 'Gagal menolak tiket. Pastikan alasan minimal 5 karakter.');
                     });
             }
         }

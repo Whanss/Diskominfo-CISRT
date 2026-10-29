@@ -719,9 +719,10 @@ class AdminController extends Controller
 
     public function getTicketDetails($id)
     {
-        $ticket = \App\Models\Ticket::with(['layanan', 'kabupaten', 'kecamatan'])->findOrFail($id);
+        $ticket = \App\Models\Ticket::with(['layanan', 'layananCategory', 'kecamatan'])->findOrFail($id);
 
         return response()->json([
+            'success' => true,
             'ticket' => $ticket,
             'processing_time' => $ticket->created_at ?
                 Carbon::parse($ticket->created_at)->diffForHumans() : null
